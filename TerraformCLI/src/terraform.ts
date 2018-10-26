@@ -18,7 +18,9 @@ export class Terraform{
 
     public async execute(command: TerraformCommand){
         var terraform = this.terraformProvider.create();
-        terraform.arg(command.name)
+        terraform.arg(command.name);
+        // todo: this should only be added for certain commands
+        terraform.arg(`-var-file=${command.varsFile}`);
         return terraform.exec(<IExecOptions>{
             cwd: command.workingDirectory
         });

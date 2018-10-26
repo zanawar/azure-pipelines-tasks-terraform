@@ -18,6 +18,19 @@
   },
   "minimumAgentVersion": "1.95.0",
   "instanceNameFormat": "terraform $(command)",
+  "groups" : [
+    {
+      "name": "variables",
+      "displayName": "Variables",
+      "isExpanded": false,
+      "visibleRule": "command = validate || command = plan || command = apply"
+    },
+    {
+        "name": "advanced",
+        "displayName": "Advanced",
+        "isExpanded": false
+    }
+  ],
   "inputs": [
     {
       "name": "command",
@@ -37,11 +50,20 @@
       }
     },
     {
+      "name": "varsFile",
+      "type": "filePath",
+      "label": "Variables File",
+      "required": false,
+      "helpMarkDown": "The name of the terraform variables file to use",
+      "groupName": "variables"
+    },
+    {
         "name": "workingDirectory",
         "type": "filePath",
         "label": "Working Directory",
-        "helpMarkDown": "Current working directory where the command is run. If empty, the root of the repo (build) or artifacts (release) is used, which is $(System.DefaultWorkingDirectory)",
-        "required": "false"
+        "helpMarkDown": "Current working directory where the command is run. If empty, the root of the repository (build) or artifacts (release) is used, which is $(System.DefaultWorkingDirectory)",
+        "required": "false",
+        "groupName": "advanced"
     }
   ],
   "execution": {

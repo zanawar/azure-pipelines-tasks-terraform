@@ -9,7 +9,8 @@ tf.verifyVersion()
     .then(() => {
         var command = new TerraformCommand(
             tasks.getInput("command"),
-            tasks.getPathInput("workingDirectory")
+            tasks.getPathInput("workingDirectory"),
+            tasks.getPathInput("varsFile"),
         );
         return tf.execute(command);
     })
