@@ -27,7 +27,10 @@
       "required": true,
       "helpMarkDown": "The terraform command to run.",
       "options": {
-          "validate": "validate"
+          "init" : "init",
+          "validate": "validate",
+          "plan" : "plan",
+          "apply" : "apply"
       },
       "properties": {
           "EditableOptions": "False"
