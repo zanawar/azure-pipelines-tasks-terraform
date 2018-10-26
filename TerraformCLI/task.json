@@ -68,7 +68,7 @@
   ],
   "execution": {
     "Node": {
-      "target": "lib/terraform.js",
+      "target": "lib/index.js",
       "argumentFormat": ""
     }
   }
