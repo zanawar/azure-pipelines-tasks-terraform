@@ -1,0 +1,35 @@
+{
+  "name": "azure-pipelines-tasks-terraform-installer",
+  "version": "0.1.0",
+  "description": "Azure devops pipeline task to install terraform",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc --build",
+    "upload": "tfx build tasks delete --task-id 394bcc10-d92b-11e8-a4b1-db8327881b46 | tfx build tasks upload --task-path .",
+    "test": "tsc --build | node -r dotenv/config lib/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/charleszipp/azure-pipelines-tasks-terraform.git"
+  },
+  "keywords": [
+    "terraform",
+    "azure-devops",
+    "vsts"
+  ],
+  "author": "Charles Zipp",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/charleszipp/azure-pipelines-tasks-terraform/issues"
+  },
+  "homepage": "https://github.com/charleszipp/azure-pipelines-tasks-terraform#readme",
+  "dependencies": {
+    "vsts-task-lib": "^2.7.0",
+    "vsts-task-tool-lib": "^0.10.0"
+  },
+  "devDependencies": {
+    "@types/node": "^10.12.0",
+    "@types/q": "^1.5.1",
+    "dotenv": "^6.1.0"
+  }
+}
