@@ -4,6 +4,11 @@ This contains the Azure Devops Pipeline tasks for executing terraform commands w
 
 ## Dev Environment Operations
 
+### Visual Studio Code Debugging Support
+There is a configuration for each task provided. The each configuration will allow setting break points and debugging the execution of the task
+- TerraformInstaller: NPM DEBUG
+- TerraformCLI: NPM DEBUG
+
 ### Restore the npm packages for each task 
 ```
 cd TerraformCLI
