@@ -1,0 +1,35 @@
+{
+  "name": "azure-pipelines-tasks-terraform-cli",
+  "version": "0.1.0",
+  "description": "Azure deveops pipeline task to execute terraform cli commands",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc --build",
+    "upload": "tfx build tasks delete --task-id 721c3f90-d938-11e8-9d92-09d7594721b5 | tfx build tasks upload --task-path .",
+    "test": "tsc --build | node -r dotenv/config lib/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/charleszipp/azure-pipelines-tasks-terraform.git"
+  },
+  "keywords": [
+    "terraform",
+    "azure-devops",
+    "vsts"
+  ],
+  "author": "Charles Zipp",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/charleszipp/azure-pipelines-tasks-terraform/issues"
+  },
+  "homepage": "https://github.com/charleszipp/azure-pipelines-tasks-terraform#readme",
+  "devDependencies": {
+    "@types/node": "^10.12.0",
+    "@types/q": "^1.5.1",
+    "dotenv": "^6.1.0"
+  },
+  "dependencies": {
+    "vsts-task-lib": "^2.7.0",
+    "vsts-task-tool-lib": "^0.10.0"
+  }
+}

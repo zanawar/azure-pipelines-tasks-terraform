@@ -1,0 +1,29 @@
+{
+  "id": "721c3f90-d938-11e8-9d92-09d7594721b5",
+  "name": "TerraformCLI",
+  "friendlyName": "Terraform CLI",
+  "description": "Execute terraform cli commands",
+  "author": "Charles Zipp",
+  "helpMarkDown": "",
+  "category": "Utility",
+  "visibility": [
+    "Build",
+    "Release"
+  ],
+  "demands": [],
+  "version": {
+    "Major": "0",
+    "Minor": "1",
+    "Patch": "0"
+  },
+  "minimumAgentVersion": "1.95.0",
+  "instanceNameFormat": "terraform $(command)",
+  "inputs": [
+  ],
+  "execution": {
+    "Node": {
+      "target": "lib/index.js",
+      "argumentFormat": ""
+    }
+  }
+}
