@@ -1,15 +1,18 @@
-import tasks = require('vsts-task-lib/task');
-import * as tools from 'vsts-task-tool-lib/tool';
+import tasks = require("vsts-task-lib/task");
+import { Terraform } from './terraform';
+import { TerraformCommand } from "./terraform-command";
+import { ITerraformProvider, TerraformProvider } from "./terraform-provider";
 
-async function verifyTerraform(){
-    console.log("Verifying Terraform installation. Executing 'terraform version'");
-    var terraformToolPath = tasks.which("terraform", true);
-    var terraformTool = tasks.tool(terraformToolPath);
-    terraformTool.arg("version");
-    return terraformTool.exec()
-}
-
-verifyTerraform()
+var terraformProvider: ITerraformProvider = new TerraformProvider(tasks);
+var tf = new Terraform(terraformProvider);
+tf.verifyVersion()
+    .then(() => {
+        var command = new TerraformCommand(
+            tasks.getInput("command"),
+            tasks.getPathInput("workingDirectory")
+        );
+        return tf.execute(command);
+    })
     .then(() => {
         tasks.setResult(tasks.TaskResult.Succeeded, "");
     })

@@ -19,10 +19,31 @@
   "minimumAgentVersion": "1.95.0",
   "instanceNameFormat": "terraform $(command)",
   "inputs": [
+    {
+      "name": "command",
+      "type": "pickList",
+      "label": "Command",
+      "defaultValue": "validate",
+      "required": true,
+      "helpMarkDown": "The terraform command to run.",
+      "options": {
+          "validate": "validate"
+      },
+      "properties": {
+          "EditableOptions": "False"
+      }
+    },
+    {
+        "name": "workingDirectory",
+        "type": "filePath",
+        "label": "Working Directory",
+        "helpMarkDown": "Current working directory where the command is run. If empty, the root of the repo (build) or artifacts (release) is used, which is $(System.DefaultWorkingDirectory)",
+        "required": "false"
+    }
   ],
   "execution": {
     "Node": {
-      "target": "lib/index.js",
+      "target": "lib/terraform.js",
       "argumentFormat": ""
     }
   }
