@@ -11,16 +11,20 @@ export class Terraform{
 
     public async verifyVersion(){
         var terraform = this.terraformProvider.create();
-        console.log("Verifying Terraform version'");
+        console.log("Verifying Terraform version");
         terraform.arg("version");
         return terraform.exec()
     }
 
     public async execute(command: TerraformCommand){
+        console.log("Executing terraform command: ", command);
         var terraform = this.terraformProvider.create();
         terraform.arg(command.name);
         // todo: this should only be added for certain commands
-        terraform.arg(`-var-file=${command.varsFile}`);
+        if(command.varsFile && command.name != "init") {
+            terraform.arg(`-var-file=${command.varsFile}`);
+        }
+            
         return terraform.exec(<IExecOptions>{
             cwd: command.workingDirectory
         });
