@@ -1,4 +1,4 @@
-import { IExecOptions } from "vsts-task-lib/toolrunner";
+import { IExecOptions } from "azure-pipelines-task-lib/toolrunner";
 import { TerraformCommand } from "./terraform-command";
 import { ITerraformProvider } from "./terraform-provider";
 

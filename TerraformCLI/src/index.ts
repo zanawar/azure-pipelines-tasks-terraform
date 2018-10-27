@@ -1,4 +1,4 @@
-import tasks = require("vsts-task-lib/task");
+import tasks = require("azure-pipelines-task-lib/task");
 import { Terraform } from './terraform';
 import { TerraformCommand } from "./terraform-command";
 import { ITerraformProvider, TerraformProvider } from "./terraform-provider";
