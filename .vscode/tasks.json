@@ -4,7 +4,7 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label" : "tsc: build tf cli",
+            "label": "tsc: build tf cli",
             "type": "typescript",
             "tsconfig": "TerraformCLI\\tsconfig.json",
             "problemMatcher": [
@@ -12,12 +12,22 @@
             ]
         },
         {
-            "label" : "tsc: build tf installer",
+            "label": "tsc: build tf installer",
             "type": "typescript",
             "tsconfig": "TerraformInstaller\\tsconfig.json",
             "problemMatcher": [
                 "$tsc"
             ]
+        },
+        {
+            "label": "npm: test tf cli",
+            "type": "npm",
+            "script": "test",
+            "path": "TerraformCLI/",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
         }
     ]
 }
