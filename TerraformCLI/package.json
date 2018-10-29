@@ -5,8 +5,8 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc --build",
-    "upload": "tfx build tasks delete --task-id 721c3f90-d938-11e8-9d92-09d7594721b5 | tfx build tasks upload --task-path .",
-    "test": "mocha \"lib/tests/**/_suite.js\""
+    "upload": "tfx build tasks delete --task-id 721c3f90-d938-11e8-9d92-09d7594721b5 && tfx build tasks upload --task-path .",
+    "test": "npm run build && mocha \"lib/tests/**/_suite.js\""
   },
   "repository": {
     "type": "git",
