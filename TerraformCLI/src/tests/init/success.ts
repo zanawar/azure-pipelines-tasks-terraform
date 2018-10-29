@@ -10,6 +10,9 @@ taskRunner.setAnswers(<ma.TaskLibAnswers>{
     which : {
         "terraform" : "terraform"
     },
+    checkPath : {
+        "terraform" : true
+    },
     exec : {
         "terraform version" : <ma.TaskLibAnswerExecResult>{
             code : 0,
