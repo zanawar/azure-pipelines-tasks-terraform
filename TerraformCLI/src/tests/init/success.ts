@@ -8,7 +8,16 @@ taskRunner.setInput("command", "init");
 taskRunner.setInput("workingDirectory", "./../TerraformTemplates/sample");
 taskRunner.setAnswers(<ma.TaskLibAnswers>{
     which : {
-        "terraform" : "C:\\terraform\\terraform.exe"
+        "terraform" : "terraform"
+    },
+    exec : {
+        "terraform version" : <ma.TaskLibAnswerExecResult>{
+            code : 0,
+            stdout : "Terraform v0.11.10"
+        },
+        "terraform init"  : <ma.TaskLibAnswerExecResult>{
+            code : 0
+        }
     }
 });
 taskRunner.run();
