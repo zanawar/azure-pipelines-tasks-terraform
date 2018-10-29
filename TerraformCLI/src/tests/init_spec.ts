@@ -6,7 +6,7 @@ describe('terraform init', function(){
         let taskRunnerPath = require.resolve('./init-success');
         let testRunner = new MockTestRunner(taskRunnerPath);    
         testRunner.run();
-        assert.equal(testRunner.succeeded, true, 'should have failed');
-        assert.equal(testRunner.errorIssues.length, 0, "should have errors");
+        assert.equal(testRunner.succeeded, true, 'should have succeeded');
+        assert.equal(testRunner.errorIssues.length, 0, "should have no errors");
     });
 });
