@@ -25,11 +25,9 @@
             "program": "${workspaceFolder}/TerraformCLI/node_modules/mocha/bin/_mocha",
             "cwd": "${workspaceFolder}/TerraformCLI",
             "args": [
-                "-r",
-                "ts-node/register",
                 "--timeout",
                 "999999",
-                "src/tests/**/_suite.ts"
+                "lib/tests/**/_suite.js"
             ],
             "protocol": "inspector",
             "console": "integratedTerminal"

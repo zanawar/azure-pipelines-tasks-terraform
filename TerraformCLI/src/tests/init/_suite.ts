@@ -19,8 +19,7 @@ describe('sample task test', function(){
         console.error(testRunner.stderr);   
         assert.equal(testRunner.succeeded, true, 'should have succeeded');
         assert.equal(testRunner.warningIssues.length, 0, "should have no warnings");
-        assert.equal(testRunner.errorIssues.length, 0, "should have no errors");
-        assert.equal(testRunner.stderr.length, 0, "should have not emitted errors");            
+        assert.equal(testRunner.errorIssues.length, 0, "should have no errors");      
 
         done();
     })
