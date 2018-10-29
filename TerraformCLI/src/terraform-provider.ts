@@ -7,7 +7,7 @@ export class TerraformProvider implements ITerraformProvider{
     }
 
     public create(): ToolRunner {
-        var terraformPath = this.tasks.which("terraform", true);
+        var terraformPath = this.tasks.which("terraform");
         return this.tasks.tool(terraformPath);
     }
 }

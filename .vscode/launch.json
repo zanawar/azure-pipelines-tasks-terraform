@@ -7,26 +7,45 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "TerraformCLI: NPM DEBUG",
+            "name": "tf cli",
+            "preLaunchTask": "tsc: build tf cli",
+            "program": "${workspaceFolder}/TerraformCLI/src/index.ts",
             "cwd": "${workspaceFolder}/TerraformCLI",
-            "runtimeExecutable": "npm",
-            "runtimeArgs": [
-                "run-script",
-                "debug"
-            ],
-            "port": 9229
+            "protocol": "inspector",
+            "console": "integratedTerminal",
+            "outFiles": [
+              "${workspaceFolder}/TerraformCLI/lib/**/*.js"
+            ]
         },
         {
             "type": "node",
             "request": "launch",
-            "name": "TerraformInstaller: NPM DEBUG",
-            "cwd": "${workspaceFolder}/TerraformInstaller",
-            "runtimeExecutable": "npm",
-            "runtimeArgs": [
-                "run-script",
-                "debug"
+            "name": "tf cli tests",
+            "preLaunchTask": "tsc: build tf cli",
+            "program": "${workspaceFolder}/TerraformCLI/node_modules/mocha/bin/_mocha",
+            "cwd": "${workspaceFolder}/TerraformCLI",
+            "args": [
+                "-r",
+                "ts-node/register",
+                "--timeout",
+                "999999",
+                "src/tests/**/_suite.ts"
             ],
-            "port": 9229
+            "protocol": "inspector",
+            "console": "integratedTerminal"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "tf installer",
+            "preLaunchTask": "tsc: build tf installer",
+            "program": "${workspaceFolder}/TerraformInstaller/src/index.ts",
+            "cwd": "${workspaceFolder}/TerraformInstaller",
+            "protocol": "inspector",
+            "console": "integratedTerminal",
+            "outFiles": [
+              "${workspaceFolder}/TerraformInstaller/lib/**/*.js"
+            ]
         }
     ]
 }
