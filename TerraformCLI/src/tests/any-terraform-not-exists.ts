@@ -1,7 +1,7 @@
 import ma = require('azure-pipelines-task-lib/mock-answer');
 import { TaskMockRunner } from 'azure-pipelines-task-lib/mock-run';
 
-var taskPath = require.resolve('./../../index');
+var taskPath = require.resolve('./../index');
 let taskRunner: TaskMockRunner = new TaskMockRunner(taskPath);
 
 taskRunner.setInput("command", "version");

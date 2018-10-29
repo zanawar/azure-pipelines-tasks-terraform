@@ -27,7 +27,7 @@
             "args": [
                 "--timeout",
                 "999999",
-                "lib/tests/**/_suite.js"
+                "lib/tests/**/*_spec.js"
             ],
             "protocol": "inspector",
             "console": "integratedTerminal"
