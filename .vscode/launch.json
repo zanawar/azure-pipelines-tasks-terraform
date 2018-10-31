@@ -35,6 +35,21 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "debug:tf cli:e2e",
+            "preLaunchTask": "tsc: build tf cli",
+            "program": "${workspaceFolder}/TerraformCLI/node_modules/mocha/bin/_mocha",
+            "cwd": "${workspaceFolder}/TerraformCLI",
+            "args": [
+                "--timeout",
+                "999999",
+                "lib/e2e/**/*_spec.js"
+            ],
+            "protocol": "inspector",
+            "console": "integratedTerminal"
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "debug:tf installer",
             "preLaunchTask": "tsc: build tf installer",
             "program": "${workspaceFolder}/TerraformInstaller/src/index.ts",
