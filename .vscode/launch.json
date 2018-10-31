@@ -13,6 +13,10 @@
             "cwd": "${workspaceFolder}/TerraformCLI",
             "protocol": "inspector",
             "console": "integratedTerminal",
+            "runtimeArgs": [
+                "--require",
+                "dotenv/config"
+            ],
             "outFiles": [
               "${workspaceFolder}/TerraformCLI/lib/**/*.js"
             ]

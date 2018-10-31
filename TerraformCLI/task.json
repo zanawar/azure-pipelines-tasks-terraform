@@ -50,6 +50,17 @@
       }
     },
     {
+      "name": "connectedServiceNameARM",
+      "aliases": [
+          "azureSubscription"
+      ],
+      "type": "connectedService:AzureRM",
+      "label": "Azure subscription",
+      "required": false,
+      "visibleRule" : "command = plan || command = apply",
+      "helpMarkDown": "Select an Azure resource manager subscription for the deployment"
+    },
+    {
       "name": "varsFile",
       "type": "filePath",
       "label": "Variables File",

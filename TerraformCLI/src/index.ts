@@ -11,6 +11,7 @@ tf.verifyVersion()
             tasks.getInput("command"),
             tasks.getPathInput("workingDirectory"),
             tasks.getPathInput("varsFile"),
+            tasks.getInput("connectedServiceNameARM")
         );
         return tf.execute(command);
     })
