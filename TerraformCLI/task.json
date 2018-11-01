@@ -20,6 +20,12 @@
   "instanceNameFormat": "terraform $(command)",
   "groups" : [
     {
+      "name": "backendAzureRm",
+      "displayName": "AzureRM Backend Configuration",
+      "isExpanded": false,
+      "visibleRule": "command = init && backendType = azurerm"
+    },
+    {
       "name": "variables",
       "displayName": "Variables",
       "isExpanded": false,
@@ -75,6 +81,62 @@
         "helpMarkDown": "Current working directory where the command is run. If empty, the root of the repository (build) or artifacts (release) is used, which is $(System.DefaultWorkingDirectory)",
         "required": "false",
         "groupName": "advanced"
+    },
+    {
+      "name": "backendType",
+      "type": "pickList",
+      "label": "Backend Type",
+      "defaultValue": "local",
+      "required": false,
+      "helpMarkDown": "Select the terraform backend type to use.",
+      "options": {
+          "local" : "local",
+          "azurerm" : "azurerm"
+      },
+      "properties": {
+          "EditableOptions": "False"
+      },
+      "visibleRule" : "command = init"
+    },
+    {
+      "name": "backendServiceArm",
+      "type": "connectedService:AzureRM",
+      "label": "Azure subscription",
+      "required": false,
+      "helpMarkDown": "Select an Azure resource manager subscription for the terraform backend configuration",
+      "groupName": "backendAzureRm"
+    },
+    {
+      "name" : "backendAzureRmResourceGroupName",
+      "type" : "string",
+      "label" : "Resource Group Name",
+      "required" : false,
+      "helpMarkDown" : "The resource group which contains the storage account.",
+      "groupName": "backendAzureRm"
+    },
+    {
+      "name" : "backendAzureRmStorageAccountName",
+      "type" : "string",
+      "label" : "Storage Account Name",
+      "required" : false,
+      "helpMarkDown" : "The name of the storage account.",
+      "groupName": "backendAzureRm"
+    },
+    {
+      "name" : "backendAzureRmContainerName",
+      "type" : "string",
+      "label" : "Container Name",
+      "required" : false,
+      "helpMarkDown" : "The name of the container to use within the storage account.",
+      "groupName": "backendAzureRm"
+    },
+    {
+      "name" : "backendAzureRmKey",
+      "type" : "string",
+      "label" : "Key",
+      "required" : false,
+      "helpMarkDown" : "The key where to place/look for state file inside the container",
+      "groupName": "backendAzureRm"
     }
   ],
   "execution": {
