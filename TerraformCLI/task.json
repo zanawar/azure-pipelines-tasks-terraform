@@ -30,11 +30,6 @@
       "displayName": "Variables",
       "isExpanded": false,
       "visibleRule": "command = validate || command = plan || command = apply"
-    },
-    {
-        "name": "advanced",
-        "displayName": "Advanced",
-        "isExpanded": false
     }
   ],
   "inputs": [
@@ -54,6 +49,14 @@
       "properties": {
           "EditableOptions": "False"
       }
+    },
+    {
+      "name": "workingDirectory",
+      "type": "filePath",
+      "label": "Configuration Directory",
+      "defaultValue" : "$(System.DefaultWorkingDirectory)",
+      "helpMarkDown": "Terraform configuration directory. If empty, the root of the repository (build) or artifacts (release) is used, which is $(System.DefaultWorkingDirectory)",
+      "required": "false"
     },
     {
       "name": "connectedServiceNameARM",
