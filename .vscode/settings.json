@@ -3,6 +3,10 @@
         "Terraform",
         "terraform",
         "vsts",
-        "toolrunner"
+        "toolrunner",
+        "injectable",
+        "inversify",
+        "azurerm",
+        "backend"
     ]
 }

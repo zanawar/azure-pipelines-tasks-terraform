@@ -6,6 +6,7 @@
   "scripts": {
     "build": "tsc --build",
     "upload": "tfx build tasks delete --task-id 721c3f90-d938-11e8-9d92-09d7594721b5 && tfx build tasks upload --task-path .",
+    "start": "npm run build && node --require dotenv/config lib/index.js",
     "test": "npm run build && mocha \"lib/tests/**/*_spec.js\""
   },
   "repository": {
@@ -34,6 +35,8 @@
   },
   "dependencies": {
     "azure-pipelines-task-lib": "^2.7.1",
-    "path": "^0.12.7"
+    "inversify": "^5.0.1",
+    "path": "^0.12.7",
+    "reflect-metadata": "^0.1.12"
   }
 }

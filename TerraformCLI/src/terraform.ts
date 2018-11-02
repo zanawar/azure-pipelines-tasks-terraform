@@ -1,46 +1,64 @@
-import { IExecOptions } from "azure-pipelines-task-lib/toolrunner";
-import { TerraformCommand } from "./terraform-command";
-import { ITerraformProvider } from "./terraform-provider";
-import tasks = require("azure-pipelines-task-lib/task");
+import { Container, injectable, inject } from 'inversify';
+import { ToolRunner } from "azure-pipelines-task-lib/toolrunner";
 
-export class Terraform{
-    private readonly terraformProvider: ITerraformProvider;
+export interface ICommand {
+    name: string;
+    workingDirectory: string;
+}
 
-    constructor(terraformProvider: ITerraformProvider) {
-        this.terraformProvider = terraformProvider;
-    }
-
-    public async verifyVersion(){
-        var terraform = this.terraformProvider.create();
-        console.log("Verifying Terraform version");
-        terraform.arg("version");
-        return terraform.exec()
-    }
-
-    public async execute(command: TerraformCommand){
-        console.log("Executing terraform command: ", command);
-        var terraform = this.terraformProvider.create();
-        terraform.arg(command.name);
-        // todo: this should only be added for certain commands
-        if(command.varsFile && command.name != "init") {
-            terraform.arg(`-var-file=${command.varsFile}`);
-        }
-        
-        if(command.connectedServiceNameARM){
-            let scheme = tasks.getEndpointAuthorizationScheme(command.connectedServiceNameARM, false);
-            if(scheme != "ServicePrincipal"){
-                throw "Terraform only supports service principal authorization for azure";
-            }
-
-            process.env['ARM_SUBSCRIPTION_ID'] = tasks.getEndpointDataParameter(command.connectedServiceNameARM, "subscriptionid", false);
-            process.env['ARM_TENANT_ID'] = tasks.getEndpointAuthorizationParameter(command.connectedServiceNameARM, "tenantid", false);
-            process.env['ARM_CLIENT_ID'] = tasks.getEndpointAuthorizationParameter(command.connectedServiceNameARM, "serviceprincipalid", false);
-            process.env['ARM_CLIENT_SECRET'] = tasks.getEndpointAuthorizationParameter(command.connectedServiceNameARM, "serviceprincipalkey", false);
-        }
-        
-        return terraform.exec(<IExecOptions>{
-            cwd: command.workingDirectory
-        });
+export class TerraformCommand implements ICommand {
+    public readonly name: string;
+    public readonly workingDirectory: string;
+    constructor(
+        name: string, 
+        workingDirectory: string) {        
+        this.name = name;
+        this.workingDirectory = workingDirectory;
     }
 }
 
+export interface IHandleCommand{
+    execute(command: string): Promise<number>;
+}
+
+export interface IMediator{
+    execute(command: string) : Promise<number>;
+}
+
+@injectable()
+export class Mediator implements IMediator{
+    private readonly container: Container;
+    constructor(
+        @inject("container") container: Container
+    ) {
+        this.container = container;
+    }
+    public async execute(command: string) : Promise<number> {
+        let handler = this.container.getNamed<IHandleCommand>(TYPES.IHandleCommand, command);
+        return await handler.execute(command);
+    }
+
+}
+
+export interface ITerraformProvider{
+    create() : ToolRunner
+}
+
+@injectable()
+export class TerraformProvider implements ITerraformProvider{
+    private readonly tasks: any;
+    constructor(tasks: any) {
+        this.tasks = tasks
+    }
+
+    public create(): ToolRunner {
+        var terraformPath = this.tasks.which("terraform", true);
+        return this.tasks.tool(terraformPath);
+    }
+}
+
+export const TYPES = {
+    IMediator : Symbol("IMediator"),
+    IHandleCommand : Symbol("IHandleCommand"),
+    ITerraformProvider : Symbol("ITerraformProvider")
+}

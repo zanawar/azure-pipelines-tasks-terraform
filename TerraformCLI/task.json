@@ -59,12 +59,9 @@
       "required": "false"
     },
     {
-      "name": "connectedServiceNameARM",
-      "aliases": [
-          "azureSubscription"
-      ],
+      "name": "environmentServiceName",
       "type": "connectedService:AzureRM",
-      "label": "Azure subscription",
+      "label": "Environment Azure Subscription",
       "required": false,
       "visibleRule" : "command = plan || command = apply",
       "helpMarkDown": "Select an Azure resource manager subscription for the deployment"
@@ -104,7 +101,7 @@
     {
       "name": "backendServiceArm",
       "type": "connectedService:AzureRM",
-      "label": "Azure subscription",
+      "label": "Backend Azure Subscription",
       "required": false,
       "helpMarkDown": "Select an Azure resource manager subscription for the terraform backend configuration",
       "groupName": "backendAzureRm"
