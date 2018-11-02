@@ -57,7 +57,6 @@ export class TerraformInitHandler implements IHandleCommand{
                 throw "Terraform backend initialization for AzureRM only support service principal authorization";
             }
 
-            //todo: setup backend-config args...
             let backendConfig: any = {
                 storage_account_name    : tasks.getInput("backendAzureRmStorageAccountName", true),
                 container_name          : tasks.getInput("backendAzureRmContainerName", true),
