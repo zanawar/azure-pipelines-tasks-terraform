@@ -26,13 +26,13 @@ container.bind<IHandleCommand>(TYPES.IHandleCommand).to(TerraformApplyHandler).w
 let mediator = container.get<IMediator>(TYPES.IMediator);
 mediator.execute("version")
     // what should be used when executed by az dev ops
-    // .then(() => mediator.execute(tasks.getInput("command")))
+    .then(() => mediator.execute(tasks.getInput("command")))
 
     // for testing only
-    .then(() => mediator.execute("init"))
-    .then(() => mediator.execute("validate"))
-    .then(() => mediator.execute("plan"))
-    .then(() => mediator.execute("apply"))
+    // .then(() => mediator.execute("init"))
+    // .then(() => mediator.execute("validate"))
+    // .then(() => mediator.execute("plan"))
+    // .then(() => mediator.execute("apply"))
     // end for testing only
 
     .then(() => {
