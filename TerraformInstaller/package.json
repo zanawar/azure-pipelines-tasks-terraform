@@ -5,9 +5,8 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "tsc --build",
-    "upload": "tfx build tasks delete --task-id 394bcc10-d92b-11e8-a4b1-db8327881b46 | tfx build tasks upload --task-path .",
-    "test": "tsc --build | node -r dotenv/config lib/index.js",
-    "debug": "tsc --build | node -r dotenv/config --inspect-brk=9229 lib/index.js"
+    "upload": "tfx build tasks delete --task-id 11645770-d18e-11e8-8f5b-1b8b62612b3b && tfx build tasks upload --task-path .",
+    "start": "npm run build && node --require dotenv/config lib/index.js"
   },
   "repository": {
     "type": "git",
