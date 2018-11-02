@@ -100,8 +100,12 @@ The following configurations have also been provided to support debugging other 
 - `debug:tf cli:tests` - Debug the unit tests.
 - `debug:tf cli:e2e` - Debug the end-to-end tests.
 ## Upload (To Azure DevOps)
+The following will upload the task to an Azure DevOps account. This will allow for testing how the UI will present the group/input configuration in task.json. Additionally, this will allow for executing the task as part of a build and/or release pipeline within Azure DevOps.
+
 Ensure the `tfx-cli` is logged into the target Azure DevOps account.
 ```
 tfx login
 ```
 The `npm run upload` will upload the task to the current authorized Azure DevOps Org & Project.
+
+The `tfx login` only needs to be executed once. After this is executed, `npm run upload` can be executed immediately.
