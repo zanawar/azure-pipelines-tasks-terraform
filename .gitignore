@@ -68,3 +68,6 @@ typings/
 
 # packaged marketplace extension
 *.vsix
+
+# unit test report for azure devops
+test-output/
