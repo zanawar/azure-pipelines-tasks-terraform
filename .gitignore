@@ -65,3 +65,6 @@ typings/
 
 # dotenv environment configuration files
 .env
+
+# packaged marketplace extension
+*.vsix

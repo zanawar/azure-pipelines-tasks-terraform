@@ -1,0 +1,79 @@
+{
+    "manifestVersion": 1,
+    "id": "azure-pipelines-tasks-terraform",
+    "name": "Terraform Build & Release Tasks",
+    "version": "0.1.3",
+    "publisher": "charleszipp",
+    "targets": [{
+        "id": "Microsoft.VisualStudio.Services"
+    }],
+    "description": "Tasks to execute terraform commands during Azure DevOps Build & Release pipelines",
+    "categories": [
+        "Build and release"
+    ],
+    "icons": {
+        "default": "vss-extension-icon.png"
+    },
+    "files": [{
+            "path": "TerraformCLI"
+        },
+        {
+            "path": "TerraformInstaller"
+        }
+    ],
+    "repository" : {
+        "type" : "git",
+        "uri" : "https://github.com/charleszipp/azure-pipelines-tasks-terraform"
+    },
+    "content": {
+        "details": {
+            "path": "overview.md"
+        }
+    },
+    "screenshots": [
+        {
+            "path": "screenshots/overview-tfcli-azure-sub.jpg"
+        },
+        {
+            "path": "screenshots/overview-tfcli-backend-azurerm.jpg"
+        },
+        {
+            "path": "screenshots/overview-tfinstall-task-fields.jpg"
+        }
+    ],
+    "links": {
+        "support": {
+            "uri": "https://github.com/charleszipp/azure-pipelines-tasks-terraform/issues"
+        },
+        "license": {
+            "uri": "https://github.com/charleszipp/azure-pipelines-tasks-terraform/blob/master/LICENSE"
+        }
+    }, 
+    "galleryFlags": [
+        "Preview"
+    ],
+    "tags" : [
+        "terraform", "azurerm", "azure", "infrastructure as code", "iac", "cloud", "deploy"
+    ],
+    "contributions": [{
+            "id": "azure-pipelines-tasks-terraform-cli",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "TerraformCLI"
+            }
+        },
+        {
+            "id": "azure-pipelines-tasks-terraform-installer",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "TerraformInstaller"
+            }
+        }
+    ]
+}
