@@ -7,7 +7,7 @@
     "build": "tsc --build",
     "upload": "tfx build tasks delete --task-id 721c3f90-d938-11e8-9d92-09d7594721b5 && tfx build tasks upload --task-path .",
     "start": "npm run build && node --require dotenv/config lib/index.js",
-    "test": "npm run build && mocha \"lib/tests/**/*_spec.js\""
+    "test": "mocha \"lib/tests/**/*_spec.js\""
   },
   "repository": {
     "type": "git",
