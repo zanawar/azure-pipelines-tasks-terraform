@@ -2,11 +2,12 @@
   "name": "azure-pipelines-tasks-terraform-installer",
   "version": "0.1.0",
   "description": "Azure devops pipeline task to install terraform",
-  "main": "lib/index.js",
+  "main": ".bin/index.js",
   "scripts": {
     "build": "tsc --build",
     "upload": "tfx build tasks delete --task-id 11645770-d18e-11e8-8f5b-1b8b62612b3b && tfx build tasks upload --task-path .",
-    "start": "npm run build && node --require dotenv/config lib/index.js"
+    "start": "npm run build && node --require dotenv/config .bin/index.js",
+    "test": "./node_modules/.bin/mocha \".bin/tests/**/*_spec.js\" --reporter mocha-junit-reporter --reporter-options mochaFile=./.test-output/terraform-installer.xml"
   },
   "repository": {
     "type": "git",

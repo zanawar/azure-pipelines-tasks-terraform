@@ -2,12 +2,12 @@
   "name": "azure-pipelines-tasks-terraform-cli",
   "version": "0.1.0",
   "description": "Azure deveops pipeline task to execute terraform cli commands",
-  "main": "lib/index.js",
+  "main": ".bin/index.js",
   "scripts": {
     "build": "tsc --build",
     "upload": "tfx build tasks delete --task-id 721c3f90-d938-11e8-9d92-09d7594721b5 && tfx build tasks upload --task-path .",
-    "start": "npm run build && node --require dotenv/config lib/index.js",
-    "test": "./node_modules/.bin/mocha \"lib/tests/**/*_spec.js\" --reporter mocha-junit-reporter --reporter-options mochaFile=./test-output/test-results.xml"
+    "start": "npm run build && node --require dotenv/config .bin/index.js",
+    "test": "./node_modules/.bin/mocha \".bin/tests/**/*_spec.js\" --reporter mocha-junit-reporter --reporter-options mochaFile=./.test-output/terraform-cli.xml"
   },
   "repository": {
     "type": "git",

@@ -58,7 +58,7 @@ typings/
 .next
 
 # built modules
-**/lib/*
+.bin/
 
 # tfx runtime files
 .taskkey
@@ -70,4 +70,4 @@ typings/
 *.vsix
 
 # unit test report for azure devops
-test-output/
+.test-output/

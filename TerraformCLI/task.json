@@ -141,7 +141,7 @@
   ],
   "execution": {
     "Node": {
-      "target": "lib/index.js",
+      "target": ".bin/index.js",
       "argumentFormat": ""
     }
   }
