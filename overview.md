@@ -11,7 +11,7 @@ Installs a specific version of terraform on the build agent. This only needs to 
 ## Version
 Input the version of terraform to install on the agent. The version must be a valid terraform version. If empty the version defaults to **0.11.8**.
 
-![Terraform Installer Task Definition](screenshots/overview-tfinstall-task-fields.jpg)
+![Terraform Installer Task Definition](https://raw.githubusercontent.com/charleszipp/azure-pipelines-tasks-terraform/master/screenshots/overview-tfinstall-task-fields.jpg)
 
 # Executing Terraform Commands
 
@@ -29,7 +29,7 @@ The task definition will adjust to the selected command to prompt for what is re
 ## Deployment Target Environment
 When executing `plan` or `apply` commands, the task will prompt for the target azure subscription to use. This is specified as a service connection/principal for deploying azure resources.
 
-![Terraform Azure Environment Subscription](screenshots/overview-tfcli-azure-sub.jpg)
+![Terraform Azure Environment Subscription](https://raw.githubusercontent.com/charleszipp/azure-pipelines-tasks-terraform/master/screenshots/overview-tfcli-azure-sub.jpg)
 
 ## Backend State Support
 The task currently supports two backend configurations
@@ -38,4 +38,4 @@ The task currently supports two backend configurations
 
 The backend configuration will be prompted when relevant for the selected command. If azurerm selected, the task will prompt for a service connection and storage account details to use for the backend.
 
-![Terraform AzureRM Backend Configuration](screenshots/overview-tfcli-backend-azurerm.jpg)
+![Terraform AzureRM Backend Configuration](https://raw.githubusercontent.com/charleszipp/azure-pipelines-tasks-terraform/master/screenshots/overview-tfcli-backend-azurerm.jpg)
