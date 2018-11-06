@@ -1,0 +1,7 @@
+next-version: 0.1.8
+branches:
+  (pull|pull\-requests|pr)[/-]:
+    mode: ContinuousDeployment
+    tag: beta
+ignore:
+  sha: []
