@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "azure-pipelines-tasks-terraform",
     "name": "Terraform Build & Release Tasks",
-    "version": "0.1.4",
+    "version": "0.1.6",
     "publisher": "charleszipp",
     "targets": [{
         "id": "Microsoft.VisualStudio.Services"
@@ -50,7 +50,6 @@
         }
     }, 
     "galleryFlags": [
-        "Public",
         "Preview"
     ],
     "tags" : [
