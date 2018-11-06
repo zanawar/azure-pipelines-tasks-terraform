@@ -1,0 +1,23 @@
+{
+  "name": "azure-pipelines-tasks-terraform",
+  "version": "0.1.7",
+  "description": "This contains the Azure DevOps Pipeline tasks for installing and executing terraform commands within a build or release. These tasks are intended to work on any build agent. They are also intended to provide a guided abstraction to deploying infrastructure within Azure.",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "tfx-cli": "^0.6.3"
+  },
+  "scripts": {
+    "pack" : "./node_modules/.bin/tfx extension create --manifests vss-extension.json --output-path .bin"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/charleszipp/azure-pipelines-tasks-terraform.git"
+  },
+  "author": "Charles Zipp",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/charleszipp/azure-pipelines-tasks-terraform/issues"
+  },
+  "homepage": "https://github.com/charleszipp/azure-pipelines-tasks-terraform#readme"
+}
