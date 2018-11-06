@@ -5,10 +5,11 @@
   "main": "index.js",
   "dependencies": {},
   "devDependencies": {
+    "cross-var": "^1.1.0",
     "tfx-cli": "^0.6.3"
   },
   "scripts": {
-    "pack" : "./node_modules/.bin/tfx extension create --manifests vss-extension.json --output-path .bin"
+    "pack" : "cross-var ./node_modules/.bin/tfx extension create --manifests vss-extension.json --output-path .bin --override { \\\"version\\\" : \\\"$npm_package_version\\\" }"
   },
   "repository": {
     "type": "git",
