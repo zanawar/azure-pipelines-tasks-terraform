@@ -1,7 +1,8 @@
 next-version: 0.1.8
 branches:
-  (pull|pull\-requests|pr)[/-]:
+  pull-request:
+    regex: (pull|pull\-requests|pr)[/-]
     mode: ContinuousDeployment
-    tag: beta
+    tag: pr
 ignore:
   sha: []
