@@ -1,23 +1,8 @@
-import ma = require('azure-pipelines-task-lib/mock-answer');
-import { TaskMockRunner } from 'azure-pipelines-task-lib/mock-run';
+import { TaskScenario } from './task-scenario-builder';
+import { TerraformCommandAndWorkingDirectory, TerraformExists } from './any-steps';
 
-var taskPath = require.resolve('./../index');
-let taskRunner: TaskMockRunner = new TaskMockRunner(taskPath);
-
-taskRunner.setInput("command", "version");
-taskRunner.setAnswers(<ma.TaskLibAnswers>{
-    which : {
-        "terraform" : "terraform"
-    },
-    checkPath : {
-        "terraform" : false
-    },
-    exec : {
-        "terraform version" : <ma.TaskLibAnswerExecResult>{
-            code : 0,
-            stdout : "Terraform v0.11.10"
-        }
-    }
-});
-taskRunner.run();
-
+let scenario = new TaskScenario()
+    .givenInput(new TerraformCommandAndWorkingDirectory("version"))
+    
+    .givenAnswer(new TerraformExists(false))
+    .run();
