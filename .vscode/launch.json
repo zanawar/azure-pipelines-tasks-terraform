@@ -18,7 +18,7 @@
                 "dotenv/config"
             ],
             "outFiles": [
-              "${workspaceFolder}/TerraformCLI/lib/**/*.js"
+              "${workspaceFolder}/TerraformCLI/.bin/**/*.js"
             ]
         },
         {
@@ -31,7 +31,7 @@
             "args": [
                 "--timeout",
                 "999999",
-                "lib/tests/**/*_spec.js"
+                ".bin/tests/**/*_spec.js"
             ],
             "protocol": "inspector",
             "console": "integratedTerminal"
@@ -46,7 +46,7 @@
             "args": [
                 "--timeout",
                 "999999",
-                "lib/e2e/**/*_spec.js"
+                ".bin/e2e/**/*_spec.js"
             ],
             "protocol": "inspector",
             "console": "integratedTerminal"
@@ -61,7 +61,7 @@
             "protocol": "inspector",
             "console": "integratedTerminal",
             "outFiles": [
-              "${workspaceFolder}/TerraformInstaller/lib/**/*.js"
+              "${workspaceFolder}/TerraformInstaller/.bin/**/*.js"
             ]
         }
     ]
