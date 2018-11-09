@@ -3,6 +3,7 @@ import { initWithInvalidBackend } from './init-with-backend-invalid';
 import { initWithBackendNull } from './init-with-backend-null'
 import { initWithBackendAzureRm } from './init-with-backend-azurerm';
 import { validateWithNoArgs } from './validate-with-no-args';
+import { initWithBackendAzureRmWithInvalidAuth } from './init-with-backend-azurerm-with-invalid-auth'
 
 describe('terraform', function(){
     it('terraform does not exist', function(){
@@ -11,15 +12,18 @@ describe('terraform', function(){
 });
 
 describe('terraform init', function(){
-    it('executes init successfully no backend', function(){        
+    it('no backend', function(){        
         initWithBackendNull.run();
     });
-    it('executes init successfully with invalid backend', function(){
+    it('with invalid backend', function(){
         initWithInvalidBackend.run();
     }); 
-    it('executes init successfully with azurerm backend', function(){
+    it('with azurerm backend', function(){
         initWithBackendAzureRm.run();
     });       
+    it('with azurerm backend with invalid auth scheme', function(){
+        initWithBackendAzureRmWithInvalidAuth.run();
+    });
 });
 
 describe('terraform validate', function(){
