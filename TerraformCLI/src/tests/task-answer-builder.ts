@@ -1,26 +1,5 @@
-import { TaskInputBuilder, TaskInputs, TaskInputDecorator, TaskAnswerBuilder, TaskAnswerDecorator } from "./task-scenario-builder";
-import path from 'path';
+import { TaskAnswerDecorator, TaskAnswerBuilder, TaskInputs } from "./task-scenario-builder";
 import { TaskLibAnswers, TaskLibAnswerExecResult } from "azure-pipelines-task-lib/mock-answer";
-
-export class TerraformCommandAndWorkingDirectory extends TaskInputBuilder{
-    private readonly workingDirectory: string;
-    private readonly command: string;
-    constructor(command: string, workingDirectory: string = "./../TerraformTemplates/sample") {
-        super();
-        this.command = command;
-        this.workingDirectory = workingDirectory;
-    }
-    build(): TaskInputs {
-        let cwd = path.resolve(this.workingDirectory);
-        let inputs = <TaskInputs>{
-            command: this.command,
-            workingDirectory: cwd,
-            // az devops will set this to the working directory since its a file path type input
-            varsFile: cwd
-        };
-        return inputs;
-    }
-}
 
 export class TerraformCommandWithVarsFileAsWorkingDirFails extends TaskAnswerDecorator{
     constructor(builder: TaskAnswerBuilder) {
@@ -38,36 +17,23 @@ export class TerraformCommandWithVarsFileAsWorkingDirFails extends TaskAnswerDec
 }
 
 export class TerraformCommandIsSuccessful extends TaskAnswerDecorator{
-    constructor(builder: TaskAnswerBuilder) {
+    private readonly args: string | undefined;
+    constructor(builder: TaskAnswerBuilder, args?: string) {
         super(builder);
+        this.args = args;
     }
     build(inputs: TaskInputs): TaskLibAnswers {
         let a = this.builder.build(inputs);
         a.exec = a.exec || {};
-        a.exec[`terraform ${inputs.command}`] = <TaskLibAnswerExecResult>{
+        let command = `terraform ${inputs.command}`;
+        if(this.args)
+            command = `${command} ${this.args}`;
+
+        a.exec[command] = <TaskLibAnswerExecResult>{
             code : 0,
             stdout : `${inputs.command} successful`
         }
         return a;
-    }
-}
-
-export class TaskInputIs extends TaskInputDecorator{
-    private readonly setter: (inputs: TaskInputs) => void;
-    constructor(inputs: TaskInputBuilder, setter: (inputs: TaskInputs)=>void) {
-        super(inputs);
-        this.setter = setter;
-    }
-    build(): TaskInputs {
-        let inputs = this.inputs.build();
-        this.setter(inputs);
-        return inputs;
-    }
-}
-
-export class VarsFileIs extends TaskInputIs {
-    constructor(inputs: TaskInputBuilder, varsFile: string) {
-        super(inputs, (i) => { i.varsFile = varsFile });
     }
 }
 

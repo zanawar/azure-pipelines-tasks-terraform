@@ -7,7 +7,8 @@
     "build": "tsc --build",
     "upload": "tfx build tasks delete --task-id 721c3f90-d938-11e8-9d92-09d7594721b5 && tfx build tasks upload --task-path .",
     "start": "npm run build && node --require dotenv/config .bin/index.js",
-    "test": "nyc -r cobertura -r html ./node_modules/.bin/mocha \".bin/tests/**/*_spec.js\" --reporter mocha-junit-reporter --reporter-options mochaFile=./.test-output/terraform-cli.xml"
+    "test": "nyc -r cobertura -r html ./node_modules/.bin/mocha \".bin/tests/**/*_spec.js\" --reporter mocha-junit-reporter --reporter-options mochaFile=./.test-output/terraform-cli.xml",
+    "test:local": "npm run build && mocha \".bin/tests/**/*_spec.js\""
   },
   "repository": {
     "type": "git",
