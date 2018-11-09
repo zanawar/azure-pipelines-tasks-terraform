@@ -27,8 +27,28 @@ export class TaskExecutedCommand extends TaskAssertionDecorator{
     }
 }
 
-export class TaskExecutedTerraformVersion extends TaskExecutedCommand{
+export class TaskExecutedTerraformCommand extends TaskExecutedCommand{
+    constructor(builder: TaskAssertionBuilder, terraformCommand: string) {
+        super(builder, `terraform ${terraformCommand}`);
+    }
+}
+
+export class TaskExecutedTerraformVersion extends TaskExecutedTerraformCommand{
     constructor(builder: TaskAssertionBuilder) {
-        super(builder, "terraform version");
+        super(builder, "version");
+    }
+}
+
+export class TaskExecutedWithEnvironmentVariables extends TaskAssertionDecorator {
+    private readonly env: { [key: string]: string; };
+    constructor(assertions: TaskAssertionBuilder, env: { [key: string]: string }) {
+        super(assertions);
+        this.env = env;
+    }
+    run(context: TaskContext): void {        
+        this.builder.run(context);
+        for(var v in this.env){
+            assert.equal(process.env[v], this.env[v], `Expected env var '${v}' to be '${this.env[v]}'. Actual was '${process.env[v]}'`);
+        }        
     }
 }

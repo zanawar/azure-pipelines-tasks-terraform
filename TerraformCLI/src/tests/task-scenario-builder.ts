@@ -97,6 +97,7 @@ export interface TaskInputs {
     backendAzureRmStorageAccountName?: string;
     backendAzureRmContainerName?: string;
     backendAzureRmKey?: string;
+    environmentServiceName?: string;
 }
 
 export abstract class TaskInputBuilder{
