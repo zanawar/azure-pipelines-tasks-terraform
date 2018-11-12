@@ -50,6 +50,7 @@
         }
     }, 
     "galleryFlags": [
+        "Public",
         "Preview"
     ],
     "tags" : [
