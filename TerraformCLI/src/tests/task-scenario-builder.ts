@@ -8,13 +8,11 @@ const outOfOrderAssertionException: string = "No then has been provided. 'and' c
 export class TaskScenario{
     readonly taskRunner: TaskMockRunner;
     readonly taskPath: string;
-    readonly testPath: string;
     answers: TaskAnswerBuilder | undefined;
     inputs: TaskInputBuilder | undefined;
     endpoints: TaskEndpointBuilder | undefined;    
     
-    constructor(testPath: string, taskPath: string = "./../index") {
-        this.testPath = require.resolve(testPath);
+    constructor(taskPath: string = "./../index") {
         this.taskPath = require.resolve(taskPath);
         this.taskRunner = new TaskMockRunner(this.taskPath);
         this.answers = undefined;
@@ -56,7 +54,7 @@ export class TaskScenario{
         return this;
     }
 
-    public whenTaskIsRun(): TaskScenarioAssertion {
+    public whenTaskIsRun(): void {
         if(!this.inputs || !this.answers)
             throw "No scenario steps defined. Unable to execute scenario";
         
@@ -83,7 +81,6 @@ export class TaskScenario{
 
         this.taskRunner.setAnswers(answers);        
         this.taskRunner.run();
-        return new TaskScenarioAssertion(this.testPath, inputs, answers, this.taskRunner);
     }
 }
 
@@ -144,9 +141,6 @@ export abstract class TaskEndpointDecorator extends TaskEndpointBuilder {
 }
 
 export interface TaskContext{
-    inputs: TaskInputs;
-    answers: ma.TaskLibAnswers;
-    taskRunner: TaskMockRunner;
     testRunner: MockTestRunner;
 }
 
@@ -163,16 +157,10 @@ export abstract class TaskAssertionDecorator extends TaskAssertionBuilder{
 }
 
 export class TaskScenarioAssertion{
-    private readonly context: TaskContext;
     private readonly testPath: string;
     private assertions: TaskAssertionBuilder | undefined = undefined;    
-    constructor(testPath:string, inputs: TaskInputs, answers: ma.TaskLibAnswers, taskRunner: TaskMockRunner) {
-        this.testPath = testPath;
-        this.context = <TaskContext>{
-            inputs: inputs,
-            answers: answers,
-            taskRunner: taskRunner
-        };
+    constructor(testPath:string) {
+        this.testPath = require.resolve(testPath);
     }
 
     public thenAssert(assertion: TaskAssertionBuilder): TaskScenarioAssertion{
@@ -191,8 +179,10 @@ export class TaskScenarioAssertion{
         if(!this.assertions)
             throw "no assertions defined for scenario";       
 
-        this.context.testRunner = new MockTestRunner(this.testPath);
-        this.context.testRunner.run();
-        this.assertions.run(this.context);
+        var context = <TaskContext>{
+            testRunner : new MockTestRunner(this.testPath)
+        };
+        context.testRunner.run();
+        this.assertions.run(context);
     }
 }
