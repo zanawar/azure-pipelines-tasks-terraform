@@ -1,4 +1,3 @@
-
 import { TaskMockRunner } from "azure-pipelines-task-lib/mock-run";
 import { MockTestRunner } from 'azure-pipelines-task-lib/mock-test';
 import { TaskInputBuilder, DefaultTaskInput, TaskInputDecorator } from './task-input-builder';
@@ -85,36 +84,5 @@ export abstract class TaskAssertionDecorator extends TaskAssertionBuilder{
     constructor(builder: TaskAssertionBuilder) {
         super();
         this.builder = builder;
-    }
-}
-
-export class TaskScenarioAssertion{
-    private readonly testPath: string;
-    private assertions: TaskAssertionBuilder | undefined = undefined;    
-    constructor(testPath:string) {
-        this.testPath = require.resolve(testPath);
-    }
-
-    public thenAssert(assertion: TaskAssertionBuilder): TaskScenarioAssertion{
-        this.assertions = assertion;
-        return this;
-    }
-
-    public andAssert(assertion: (assertions: TaskAssertionBuilder) => TaskAssertionDecorator): TaskScenarioAssertion{
-        if(!this.assertions)
-            throw outOfOrderAssertionException
-        this.assertions = assertion(this.assertions);
-        return this;
-    }
-
-    public run(): void{        
-        if(!this.assertions)
-            throw "no assertions defined for scenario";       
-
-        var context = <TaskContext>{
-            testRunner : new MockTestRunner(this.testPath)
-        };
-        context.testRunner.run();
-        this.assertions.run(context);
     }
 }

@@ -4,7 +4,7 @@ import './terraform-input-decorators'
 import './terraform-answer-decorators'
 import './task-endpoint-decorators'
 
-const backendServiceName = "backend";
+const backendServiceName: string = "backend";
 const backendStorageAccountName: string = "storage";
 const backendContainerName: string = "container";
 const backendKey: string = "storageKey123";
