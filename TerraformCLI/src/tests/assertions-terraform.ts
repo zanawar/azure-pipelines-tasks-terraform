@@ -1,6 +1,6 @@
-import { TestScenario, TaskExecutedCommand, TestAssertionBuilder } from "./test-scenario-runner";
+import { TestScenario, TaskExecutedCommand, TestAssertionBuilder } from "./assertions";
 
-declare module './test-scenario-runner'{
+declare module './assertions'{
     interface TestScenario {        
         assertExecutedTerraformVersion(this: TestScenario) : TestScenario;
         assertExecutedTerraformCommand(this: TestScenario, terraformCommand: string) : TestScenario;

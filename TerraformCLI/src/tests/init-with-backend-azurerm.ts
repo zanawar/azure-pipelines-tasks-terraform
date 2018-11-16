@@ -1,8 +1,6 @@
-import { TaskScenario } from './task-scenario-builder';
-import { TerraformInputs } from './terraform-input-decorators';
-import './terraform-input-decorators'
-import './terraform-answer-decorators'
-import './task-endpoint-decorators'
+import { TaskScenario } from './scenarios';
+import { TerraformInputs } from './scenarios-terraform';
+import './scenarios-terraform'
 
 const backendServiceName: string = "backend";
 const backendStorageAccountName: string = "storage";

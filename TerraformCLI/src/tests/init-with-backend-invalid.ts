@@ -1,7 +1,6 @@
-import { TaskScenario } from './task-scenario-builder';
-import { TerraformInputs } from './terraform-input-decorators';
-import './terraform-input-decorators'
-import './terraform-answer-decorators'
+import { TaskScenario } from './scenarios';
+import { TerraformInputs } from './scenarios-terraform';
+import './scenarios-terraform'
 
 new TaskScenario<TerraformInputs>()
     .inputTerraformCommand('init')

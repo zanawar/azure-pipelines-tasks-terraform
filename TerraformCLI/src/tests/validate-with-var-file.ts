@@ -1,7 +1,6 @@
-import { TaskScenario } from './task-scenario-builder';
-import { TerraformInputs } from './terraform-input-decorators';
-import './terraform-input-decorators'
-import './terraform-answer-decorators'
+import { TaskScenario } from './scenarios';
+import { TerraformInputs } from './scenarios-terraform';
+import './scenarios-terraform'
 
 export let validateWithNoArgs = new TaskScenario<TerraformInputs>()
     .inputTerraformCommand("validate")

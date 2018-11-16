@@ -1,5 +1,5 @@
-import { TestScenario } from './test-scenario-runner';
-import './terraform-assertion-decorators';
+import { TestScenario } from './assertions';
+import './assertions-terraform';
 
 describe('terraform', function(){    
     it('terraform does not exist', function(){
