@@ -59,7 +59,17 @@ describe('terraform validate', function(){
             .andAssert((assertions) => new TaskExecutedTerraformVersion(assertions))
             .run();
     });
-    it('with var file');
+    it('with var file', function(){
+        let varFile = 'foo.vars';
+        let terraformCommand = 'validate';
+        let commandArgs = `-var-file=${varFile}`
+        let expectedCommand = `${terraformCommand} ${commandArgs}`
+        new TaskScenarioAssertion('./validate-with-var-file')
+            .thenAssert(new TaskExecutionSucceeded())
+            .andAssert((assertions) => new TaskExecutedTerraformCommand(assertions, expectedCommand))
+            .andAssert((assertions) => new TaskExecutedTerraformVersion(assertions))
+            .run();
+    });
 });
 
 describe('terraform plan', function(){
@@ -72,6 +82,61 @@ describe('terraform plan', function(){
             //.andAssert((assertions) => new TaskExecutedWithEnvironmentVariables(assertions, expectedEnv));
             .run();
     });
-    it('azurerm with var file');
-    it('azurerm with invalid auth scheme');
+    it('azurerm with var file', function(){
+        let varFile = 'foo.vars';
+        let terraformCommand = 'plan';
+        let commandArgs = `-var-file=${varFile}`
+        let expectedCommand = `${terraformCommand} ${commandArgs}`
+        new TaskScenarioAssertion('./plan-azurerm-with-var-file')
+            .thenAssert(new TaskExecutionSucceeded())
+            .andAssert((assertions) => new TaskExecutedTerraformVersion(assertions))    
+            .andAssert((assertions) => new TaskExecutedTerraformCommand(assertions, expectedCommand))
+            // test runner does not expose env vars set within the task so cannot use this yet
+            //.andAssert((assertions) => new TaskExecutedWithEnvironmentVariables(assertions, expectedEnv));
+            .run();
+    });
+    it('azurerm with invalid auth scheme', function(){
+        new TaskScenarioAssertion('./plan-azurerm-with-invalid-auth-scheme')
+            .thenAssert(new TaskExecutionFailed('Terraform only supports service principal authorization for azure'))
+            .andAssert((assertions) => new TaskExecutedTerraformVersion(assertions))
+            // test runner does not expose env vars set within the task so cannot use this yet
+            //.andAssert((assertions) => new TaskExecutedWithEnvironmentVariables(assertions, expectedEnv));
+            .run();
+    });
+});
+
+describe('terraform apply', function(){
+    it('azurerm', function(){
+        let terraformCommand = 'apply';
+        let commandArgs = '-auto-approve'
+        let expectedCommand = `${terraformCommand} ${commandArgs}`
+        new TaskScenarioAssertion('./apply-azurerm')
+            .thenAssert(new TaskExecutionSucceeded())
+            .andAssert((assertions) => new TaskExecutedTerraformVersion(assertions))    
+            .andAssert((assertions) => new TaskExecutedTerraformCommand(assertions, expectedCommand))
+            // test runner does not expose env vars set within the task so cannot use this yet
+            //.andAssert((assertions) => new TaskExecutedWithEnvironmentVariables(assertions, expectedEnv));
+            .run();
+    });
+    it('azurerm with var file', function(){
+        let varFile = 'foo.vars';
+        let terraformCommand = 'apply';
+        let commandArgs = `-auto-approve -var-file=${varFile}`
+        let expectedCommand = `${terraformCommand} ${commandArgs}`
+        new TaskScenarioAssertion('./apply-azurerm-with-var-file')
+            .thenAssert(new TaskExecutionSucceeded())
+            .andAssert((assertions) => new TaskExecutedTerraformVersion(assertions))    
+            .andAssert((assertions) => new TaskExecutedTerraformCommand(assertions, expectedCommand))
+            // test runner does not expose env vars set within the task so cannot use this yet
+            //.andAssert((assertions) => new TaskExecutedWithEnvironmentVariables(assertions, expectedEnv));
+            .run();
+    });
+    it('azurerm with invalid auth scheme', function(){
+        new TaskScenarioAssertion('./apply-azurerm-with-invalid-auth-scheme')
+            .thenAssert(new TaskExecutionFailed('Terraform only supports service principal authorization for azure'))
+            .andAssert((assertions) => new TaskExecutedTerraformVersion(assertions))
+            // test runner does not expose env vars set within the task so cannot use this yet
+            //.andAssert((assertions) => new TaskExecutedWithEnvironmentVariables(assertions, expectedEnv));
+            .run();
+    })
 });

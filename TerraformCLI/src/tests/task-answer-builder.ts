@@ -28,6 +28,9 @@ export class TerraformCommandIsSuccessful extends TaskAnswerDecorator{
         let command = `terraform ${inputs.command}`;
         if(this.args)
             command = `${command} ${this.args}`;
+        if(inputs.varsFile && inputs.varsFile != inputs.workingDirectory){
+            command = `${command} -var-file=${inputs.varsFile}`
+        }       
 
         a.exec[command] = <TaskLibAnswerExecResult>{
             code : 0,

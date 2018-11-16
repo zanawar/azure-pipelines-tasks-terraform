@@ -9,9 +9,17 @@ export class TaskExecutionSucceeded extends TaskAssertionBuilder{
 }
 
 export class TaskExecutionFailed extends TaskAssertionBuilder{
+    private readonly expectedError: string | undefined;
+    constructor(expectedError? : string) {
+        super();
+        this.expectedError = expectedError;
+    }
     run(context: TaskContext): void {
         assert.equal(context.testRunner.succeeded, false, 'should have succeeded');
         assert.notEqual(context.testRunner.errorIssues.length, 0, "should have no errors");
+        if(this.expectedError){
+            assert.notEqual(context.testRunner.errorIssues.indexOf(this.expectedError), -1, `Expected error not found '${this.expectedError}'`);
+        }
     }
 }
 

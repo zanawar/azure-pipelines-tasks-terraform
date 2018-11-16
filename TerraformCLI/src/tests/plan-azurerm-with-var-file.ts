@@ -1,7 +1,6 @@
 import { TaskScenario } from './task-scenario-builder';
-import { TerraformCommandAndWorkingDirectory, TaskInputIs } from './task-input-builder';
+import { TerraformCommandAndWorkingDirectory, TaskInputIs, VarsFileIs } from './task-input-builder';
 import { TerraformExists, TerraformCommandIsSuccessful, TerraformCommandWithVarsFileAsWorkingDirFails } from './task-answer-builder';
-import { TaskExecutionSucceeded, TaskExecutedTerraformVersion, TaskExecutedTerraformCommand, TaskExecutedWithEnvironmentVariables } from './task-assertion-builder';
 import { TaskAzureRmServiceEndpoint } from './task-endpoints-builder';
 
 const environmentServiceName = "dev";
@@ -23,8 +22,9 @@ export let planAzureRm = new TaskScenario()
     .givenEndpoint(new TaskAzureRmServiceEndpoint(environmentServiceName, subscriptionId, tenantId, servicePrincipalId, servicePrincipalKey))
     .givenInput(new TerraformCommandAndWorkingDirectory(terraformCommand))
     .andInput((inputs) => new TaskInputIs(inputs, (i) => { i.environmentServiceName = environmentServiceName}))
+    .andInput((inputs) => new VarsFileIs(inputs, 'foo.vars'))
     .givenAnswer(new TerraformExists())
     .andAnswer((answers) => new TerraformCommandIsSuccessful(answers))
     .andAnswer((answers) => new TerraformCommandWithVarsFileAsWorkingDirFails(answers))
-    .whenTaskIsRun()
+    .whenTaskIsRun();
 
