@@ -2,13 +2,11 @@ import { TestScenario } from '../assertions';
 import '../assertions-terraform';
 
 describe('terraform apply', function(){
-    it('azurerm', function(){
-        let terraformCommand = 'apply';
-        let commandArgs = '-auto-approve'
-        let expectedCommand = `${terraformCommand} ${commandArgs}`
-        new TestScenario(require.resolve('./apply-azurerm'))
+    it('azurerm', function(){    
+        let env = require('./apply-azurerm.env');
+        new TestScenario(env.taskScenarioPath)
             .assertExecutionSucceeded()   
-            .assertExecutedTerraformCommand(expectedCommand)
+            .assertExecutedTerraformCommand(env.expectedCommand)
             .assertExecutedTerraformVersion()
             // test runner does not expose env vars set within the task so cannot use this yet
             //.andAssert((assertions) => new TaskExecutedWithEnvironmentVariables(assertions, expectedEnv));
