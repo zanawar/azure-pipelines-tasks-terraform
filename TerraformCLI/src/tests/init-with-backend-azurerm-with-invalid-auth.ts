@@ -1,8 +1,8 @@
 import { TaskScenario } from './task-scenario-builder';
-import { TerraformCommandAndWorkingDirectory, TerraformAzureRmBackend } from './task-input-builder';
-import { TerraformExists } from './task-answer-builder';
-import { TaskExecutedTerraformVersion, TaskExecutionFailed } from './task-assertion-builder';
-import { TaskAzureRmServiceEndpoint } from './task-endpoints-builder';
+import { TerraformInputs } from './terraform-input-decorators';
+import './terraform-input-decorators'
+import './terraform-answer-decorators'
+import './task-endpoint-decorators'
 
 const backendServiceName = "backend";
 const backendStorageAccountName: string = "storage";
@@ -16,10 +16,10 @@ const servicePrincipalKey: string = "servicePrincipalKey123";
 
 const terraformCommand: string = "init";
 
-export let initWithBackendAzureRmWithInvalidAuth = new TaskScenario()
-    .givenEndpoint(new TaskAzureRmServiceEndpoint(backendServiceName, subscriptionId, tenantId, servicePrincipalId, servicePrincipalKey, "foo"))
-    .givenInput(new TerraformCommandAndWorkingDirectory(terraformCommand))
-    .andInput((inputs) => new TerraformAzureRmBackend(inputs, backendServiceName, backendStorageAccountName, backendContainerName, backendKey, backendResourceGroupName))
-    .givenAnswer(new TerraformExists())
-    .whenTaskIsRun()
+export let initWithBackendAzureRmWithInvalidAuth = new TaskScenario<TerraformInputs>()
+    .withAzureRmServiceEndpoint(backendServiceName, subscriptionId, tenantId, servicePrincipalId, servicePrincipalKey, "foo")
+    .inputTerraformCommand(terraformCommand)
+    .inputAzureRmBackend(backendServiceName, backendStorageAccountName, backendContainerName, backendKey, backendResourceGroupName)
+    .answerTerraformExists()    
+    .run()
 

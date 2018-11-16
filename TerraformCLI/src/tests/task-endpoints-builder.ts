@@ -1,47 +1,24 @@
-import { TaskEndpointBuilder, TaskEndpoint } from "./task-scenario-builder";
-
-export interface AzureRmServiceEndpointDataParameters{
-    subscriptionId: string;
+export interface TaskEndpoint {
+    name: string;
+    authScheme: string;
+    dataParameters: any;
+    authParameters: any;
 }
 
-export interface AzureRmServiceEndpointAuthParameters {
-    tenantId: string;
-    servicePrincipalId: string;
-    servicePrincipalKey: string;
+export abstract class TaskEndpointBuilder {
+    abstract build(): TaskEndpoint[];
 }
 
-export class TaskAzureRmServiceEndpoint extends TaskEndpointBuilder{
-    private readonly name: string;
-    private readonly authScheme: string;
-    private readonly subscriptionId: string;
-    private readonly tenantId: string;
-    private readonly servicePrincipalId: string;
-    private readonly servicePrincipalKey: string;    
-    
-    constructor(name: string, subscriptionId: string, tenantId: string, servicePrincipalId: string, servicePrincipalKey: string, authScheme: string = "ServicePrincipal") {
+export abstract class TaskEndpointDecorator extends TaskEndpointBuilder {
+    protected readonly builder: TaskEndpointBuilder;
+    constructor(builder: TaskEndpointBuilder) {
         super();
-        this.name = name;
-        this.authScheme = authScheme;
-        this.subscriptionId = subscriptionId;
-        this.tenantId = tenantId;
-        this.servicePrincipalId = servicePrincipalId;
-        this.servicePrincipalKey = servicePrincipalKey;
+        this.builder = builder;
     }
-    build(): TaskEndpoint[] {
-        let endpoint = <TaskEndpoint>{
-            name:  this.name,
-            authScheme: this.authScheme,
-            dataParameters: <AzureRmServiceEndpointDataParameters>{
-                subscriptionId: this.subscriptionId
-            },
-            authParameters: <AzureRmServiceEndpointAuthParameters>{
-                tenantId: this.tenantId,
-                servicePrincipalId: this.servicePrincipalId,
-                servicePrincipalKey: this.servicePrincipalKey
-            }            
-        };
+}
 
-        return <TaskEndpoint[]>[endpoint];
+export class DefaultTaskEndpoint extends TaskEndpointBuilder{
+    build(): TaskEndpoint[] {
+        return <TaskEndpoint[]>[];
     }
-    
 }

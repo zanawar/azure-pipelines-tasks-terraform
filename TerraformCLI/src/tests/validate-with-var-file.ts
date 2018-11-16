@@ -1,12 +1,13 @@
 import { TaskScenario } from './task-scenario-builder';
-import { TerraformCommandAndWorkingDirectory, VarsFileIs } from './task-input-builder';
-import { TerraformExists, TerraformCommandIsSuccessful, TerraformCommandWithVarsFileAsWorkingDirFails } from './task-answer-builder';
+import { TerraformInputs } from './terraform-input-decorators';
+import './terraform-input-decorators'
+import './terraform-answer-decorators'
 
-export let validateWithNoArgs = new TaskScenario()
-    .givenInput(new TerraformCommandAndWorkingDirectory(("validate")))       
-    .andInput((inputs) => new VarsFileIs(inputs, 'foo.vars')) 
-    .givenAnswer(new TerraformExists())
-    .andAnswer((answers) => new TerraformCommandIsSuccessful(answers))
-    .andAnswer((answers) => new TerraformCommandWithVarsFileAsWorkingDirFails(answers))
-    .whenTaskIsRun();
+export let validateWithNoArgs = new TaskScenario<TerraformInputs>()
+    .inputTerraformCommand("validate")
+    .inputTerraformVarsFile("foo.vars")
+    .answerTerraformExists()
+    .answerTerraformCommandIsSuccessful()
+    .answerTerraformCommandWithVarsFileAsWorkingDirFails()
+    .run();
 

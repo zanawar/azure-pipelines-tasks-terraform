@@ -1,7 +1,8 @@
 import { TaskScenario } from './task-scenario-builder';
-import { TerraformCommandAndWorkingDirectory, TaskInputIs, VarsFileIs } from './task-input-builder';
-import { TerraformExists, TerraformCommandIsSuccessful, TerraformCommandWithVarsFileAsWorkingDirFails } from './task-answer-builder';
-import { TaskAzureRmServiceEndpoint } from './task-endpoints-builder';
+import { TerraformInputs } from './terraform-input-decorators';
+import './terraform-input-decorators'
+import './terraform-answer-decorators'
+import './task-endpoint-decorators'
 
 const environmentServiceName = "dev";
 const subscriptionId: string = "sub1";
@@ -19,13 +20,12 @@ const expectedEnv: { [key: string]: string } = {
 const terraformCommand: string = "apply";
 const commandArgs: string = '-auto-approve';
 
-export let planAzureRm = new TaskScenario()
-    .givenEndpoint(new TaskAzureRmServiceEndpoint(environmentServiceName, subscriptionId, tenantId, servicePrincipalId, servicePrincipalKey))
-    .givenInput(new TerraformCommandAndWorkingDirectory(terraformCommand))
-    .andInput((inputs) => new TaskInputIs(inputs, (i) => { i.environmentServiceName = environmentServiceName}))
-    .andInput((inputs) => new VarsFileIs(inputs, 'foo.vars'))
-    .givenAnswer(new TerraformExists())
-    .andAnswer((answers) => new TerraformCommandIsSuccessful(answers, commandArgs))
-    .andAnswer((answers) => new TerraformCommandWithVarsFileAsWorkingDirFails(answers))
-    .whenTaskIsRun();
-
+new TaskScenario<TerraformInputs>()
+    .withAzureRmServiceEndpoint(environmentServiceName, subscriptionId, tenantId, servicePrincipalId, servicePrincipalKey)
+    .inputTerraformCommand(terraformCommand)
+    .withInputs({ environmentServiceName: environmentServiceName })
+    .inputTerraformVarsFile('foo.vars')
+    .answerTerraformExists()
+    .answerTerraformCommandIsSuccessful(commandArgs)
+    .answerTerraformCommandWithVarsFileAsWorkingDirFails()
+    .run()

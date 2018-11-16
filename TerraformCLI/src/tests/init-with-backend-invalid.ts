@@ -1,13 +1,13 @@
 import { TaskScenario } from './task-scenario-builder';
-import { TerraformCommandAndWorkingDirectory, TaskInputIs } from './task-input-builder';
-import { TerraformExists, TerraformCommandIsSuccessful, TerraformCommandWithVarsFileAsWorkingDirFails } from './task-answer-builder';
-import { TaskExecutionSucceeded, TaskExecutedCommand, TaskExecutedTerraformVersion } from './task-assertion-builder';
+import { TerraformInputs } from './terraform-input-decorators';
+import './terraform-input-decorators'
+import './terraform-answer-decorators'
 
-export let initWithInvalidBackend = new TaskScenario()
-    .givenInput(new TerraformCommandAndWorkingDirectory("init"))
-    .andInput((inputs) => new TaskInputIs(inputs, (i) => { i.backendType = "foo" }))    
-    .givenAnswer(new TerraformExists())
-    .andAnswer((answers) => new TerraformCommandIsSuccessful(answers))
-    .andAnswer((answers) => new TerraformCommandWithVarsFileAsWorkingDirFails(answers))
-    .whenTaskIsRun()
+new TaskScenario<TerraformInputs>()
+    .inputTerraformCommand('init')
+    .withInputs({ backendType : 'foo'})
+    .answerTerraformExists()    
+    .answerTerraformCommandIsSuccessful()
+    .answerTerraformCommandWithVarsFileAsWorkingDirFails()
+    .run()
 

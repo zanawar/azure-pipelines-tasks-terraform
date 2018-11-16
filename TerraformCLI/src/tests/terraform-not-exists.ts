@@ -1,8 +1,9 @@
 import { TaskScenario } from './task-scenario-builder';
-import { TerraformCommandAndWorkingDirectory } from './task-input-builder';
-import { TerraformExists } from './task-answer-builder';
+import { TerraformInputs } from './terraform-input-decorators';
+import './terraform-input-decorators'
+import './terraform-answer-decorators'
 
-new TaskScenario()
-    .givenInput(new TerraformCommandAndWorkingDirectory("version"))    
-    .givenAnswer(new TerraformExists(false))
-    .whenTaskIsRun();
+new TaskScenario<TerraformInputs>()
+    .inputTerraformCommand("version")
+    .answerTerraformExists(false)
+    .run();
