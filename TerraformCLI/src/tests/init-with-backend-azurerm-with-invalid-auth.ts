@@ -22,6 +22,4 @@ export let initWithBackendAzureRmWithInvalidAuth = new TaskScenario()
     .andInput((inputs) => new TerraformAzureRmBackend(inputs, backendServiceName, backendStorageAccountName, backendContainerName, backendKey, backendResourceGroupName))
     .givenAnswer(new TerraformExists())
     .whenTaskIsRun()
-    // .thenAssert(new TaskExecutionFailed())
-    // .andAssert((assertions) => new TaskExecutedTerraformVersion(assertions));
 

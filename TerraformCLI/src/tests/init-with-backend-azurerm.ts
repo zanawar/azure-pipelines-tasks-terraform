@@ -26,7 +26,4 @@ export let initWithBackendAzureRm = new TaskScenario()
     .andAnswer((answers) => new TerraformCommandIsSuccessful(answers, terraformCommandArgs))
     .andAnswer((answers) => new TerraformCommandWithVarsFileAsWorkingDirFails(answers))
     .whenTaskIsRun()
-    // .thenAssert(new TaskExecutionSucceeded())
-    // .andAssert((assertions) => new TaskExecutedCommand(assertions, expectedCommand))
-    // .andAssert((assertions) => new TaskExecutedTerraformVersion(assertions));
 

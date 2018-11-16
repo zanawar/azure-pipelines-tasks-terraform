@@ -9,8 +9,5 @@ export let initWithBackendNull = new TaskScenario()
     .andAnswer((answers) => new TerraformCommandIsSuccessful(answers))
     .andAnswer((answers) => new TerraformCommandWithVarsFileAsWorkingDirFails(answers))
     .whenTaskIsRun()
-    // .thenAssert(new TaskExecutionSucceeded())
-    // .andAssert((assertions) => new TaskExecutedCommand(assertions, "terraform init"))
-    // .andAssert((assertions) => new TaskExecutedTerraformVersion(assertions));
 
 
