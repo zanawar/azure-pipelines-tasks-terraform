@@ -15,7 +15,7 @@ const servicePrincipalKey: string = "servicePrincipalKey123";
 const terraformCommand: string = "init";
 
 export let initWithBackendAzureRmWithInvalidAuth = new TaskScenario<TerraformInputs>()
-    .withAzureRmServiceEndpoint(backendServiceName, subscriptionId, tenantId, servicePrincipalId, servicePrincipalKey, "foo")
+    .inputAzureRmServiceEndpoint(backendServiceName, subscriptionId, tenantId, servicePrincipalId, servicePrincipalKey, "foo")
     .inputTerraformCommand(terraformCommand)
     .inputAzureRmBackend(backendServiceName, backendStorageAccountName, backendContainerName, backendKey, backendResourceGroupName)
     .answerTerraformExists()    

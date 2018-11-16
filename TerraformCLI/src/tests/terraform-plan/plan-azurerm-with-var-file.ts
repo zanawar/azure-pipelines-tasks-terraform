@@ -18,9 +18,9 @@ const expectedEnv: { [key: string]: string } = {
 const terraformCommand: string = "plan";
 
 new TaskScenario<TerraformInputs>()
-    .withAzureRmServiceEndpoint(environmentServiceName, subscriptionId, tenantId, servicePrincipalId, servicePrincipalKey)
+    .inputAzureRmServiceEndpoint(environmentServiceName, subscriptionId, tenantId, servicePrincipalId, servicePrincipalKey)
     .inputTerraformCommand(terraformCommand)
-    .withInputs({ environmentServiceName: environmentServiceName })
+    .input({ environmentServiceName: environmentServiceName })
     .inputTerraformVarsFile('foo.vars')
     .answerTerraformExists()
     .answerTerraformCommandIsSuccessful()

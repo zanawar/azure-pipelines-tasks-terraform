@@ -17,7 +17,7 @@ const terraformCommandArgs: string = `-backend-config=storage_account_name=${bac
 const expectedCommand: string = `terraform ${terraformCommand} ${terraformCommandArgs}`;
 
 new TaskScenario<TerraformInputs>()
-    .withAzureRmServiceEndpoint(backendServiceName, subscriptionId, tenantId, servicePrincipalId, servicePrincipalKey)
+    .inputAzureRmServiceEndpoint(backendServiceName, subscriptionId, tenantId, servicePrincipalId, servicePrincipalKey)
     .inputTerraformCommand(terraformCommand)
     .inputAzureRmBackend(backendServiceName, backendStorageAccountName, backendContainerName, backendKey, backendResourceGroupName)
     .answerTerraformExists()    

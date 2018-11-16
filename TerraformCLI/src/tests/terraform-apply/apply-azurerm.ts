@@ -19,9 +19,9 @@ const terraformCommand: string = "apply";
 const commandArgs: string = '-auto-approve';
 
 new TaskScenario<TerraformInputs>()
-    .withAzureRmServiceEndpoint(environmentServiceName, subscriptionId, tenantId, servicePrincipalId, servicePrincipalKey)
+    .inputAzureRmServiceEndpoint(environmentServiceName, subscriptionId, tenantId, servicePrincipalId, servicePrincipalKey)
     .inputTerraformCommand(terraformCommand)
-    .withInputs({ environmentServiceName: environmentServiceName })
+    .input({ environmentServiceName: environmentServiceName })
     .answerTerraformExists()
     .answerTerraformCommandIsSuccessful(commandArgs)
     .answerTerraformCommandWithVarsFileAsWorkingDirFails()

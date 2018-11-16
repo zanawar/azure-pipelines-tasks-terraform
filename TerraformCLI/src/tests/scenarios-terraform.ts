@@ -37,7 +37,7 @@ export class TerraformCommandAndWorkingDirectory extends TaskInputsAre<Terraform
     }
 }
 TaskScenario.prototype.inputTerraformCommand = function(this: TaskScenario<TerraformInputs>, command: string, workingDirectory?: string): TaskScenario<TerraformInputs>{
-    this.withInputDecorator((builder) => new TerraformCommandAndWorkingDirectory(builder, command, workingDirectory));
+    this.inputFactory((builder) => new TerraformCommandAndWorkingDirectory(builder, command, workingDirectory));
     return this;
 }
 
@@ -49,7 +49,7 @@ export class VarsFileIs extends TaskInputsAre<TerraformInputs> {
     }
 }
 TaskScenario.prototype.inputTerraformVarsFile = function(this: TaskScenario<TerraformInputs>, varsFile: string) : TaskScenario<TerraformInputs>{
-    this.withInputDecorator((builder) => new VarsFileIs(builder, varsFile));
+    this.inputFactory((builder) => new VarsFileIs(builder, varsFile));
     return this;
 }
 
@@ -66,7 +66,7 @@ export class TerraformAzureRmBackend extends TaskInputsAre<TerraformInputs> {
     }    
 }
 TaskScenario.prototype.inputAzureRmBackend = function(this: TaskScenario<TerraformInputs>, serviceName: string, storageAccountName: string, containerName: string, key: string, resourceGroupName: string): TaskScenario<TerraformInputs>{
-    this.withInputDecorator((builder) => new TerraformAzureRmBackend(builder, serviceName, storageAccountName, containerName, key, resourceGroupName));
+    this.inputFactory((builder) => new TerraformAzureRmBackend(builder, serviceName, storageAccountName, containerName, key, resourceGroupName));
     return this;
 }
 
@@ -85,7 +85,7 @@ export class TerraformCommandWithVarsFileAsWorkingDirFails extends TaskAnswerDec
     }
 }
 TaskScenario.prototype.answerTerraformCommandWithVarsFileAsWorkingDirFails = function(this: TaskScenario<TerraformInputs>): TaskScenario<TerraformInputs>{
-    this.withAnswerDecorator((builder) => new TerraformCommandWithVarsFileAsWorkingDirFails(builder));
+    this.answerFactory((builder) => new TerraformCommandWithVarsFileAsWorkingDirFails(builder));
     return this;
 }
 
@@ -113,7 +113,7 @@ export class TerraformCommandIsSuccessful extends TaskAnswerDecorator<TerraformI
     }
 }
 TaskScenario.prototype.answerTerraformCommandIsSuccessful = function(this: TaskScenario<TerraformInputs>, args?: string): TaskScenario<TerraformInputs>{
-    this.withAnswerDecorator((builder) => new TerraformCommandIsSuccessful(builder, args));
+    this.answerFactory((builder) => new TerraformCommandIsSuccessful(builder, args));
     return this;
 }
 
@@ -141,7 +141,7 @@ export class TerraformExists extends TaskAnswerDecorator<TerraformInputs>{
     }
 }
 TaskScenario.prototype.answerTerraformExists = function(this: TaskScenario<TerraformInputs>, terraformExists?: boolean): TaskScenario<TerraformInputs>{
-    this.withAnswerDecorator((builder) => new TerraformExists(builder, terraformExists));
+    this.answerFactory((builder) => new TerraformExists(builder, terraformExists));
     return this;
 }
 

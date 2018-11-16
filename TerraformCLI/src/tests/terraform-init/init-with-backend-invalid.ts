@@ -4,7 +4,7 @@ import '../scenarios-terraform'
 
 new TaskScenario<TerraformInputs>()
     .inputTerraformCommand('init')
-    .withInputs({ backendType : 'foo'})
+    .input({ backendType : 'foo'})
     .answerTerraformExists()    
     .answerTerraformCommandIsSuccessful()
     .answerTerraformCommandWithVarsFileAsWorkingDirFails()

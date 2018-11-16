@@ -140,28 +140,28 @@ export class TaskScenario<TInputs>{
             .forEach(key => delete process.env[key]);
     }
 
-    public withInputDecorator(input: (inputs: TaskInputBuilder<TInputs>) => TaskInputDecorator<TInputs>): TaskScenario<TInputs>{
+    public inputFactory(input: (inputs: TaskInputBuilder<TInputs>) => TaskInputDecorator<TInputs>): TaskScenario<TInputs>{
         this.inputs = input(this.inputs);
         return this;
     }
 
-    public withInputs(inputs: Partial<TInputs>): TaskScenario<TInputs>{
-        this.withInputDecorator((builder) => new TaskInputsAre(builder, inputs));
+    public input(inputs: Partial<TInputs>): TaskScenario<TInputs>{
+        this.inputFactory((builder) => new TaskInputsAre(builder, inputs));
         return this;
     }
 
-    public withAnswerDecorator(answer: (answers: TaskAnswerBuilder<TInputs>) => TaskAnswerDecorator<TInputs>): TaskScenario<TInputs>{
+    public answerFactory(answer: (answers: TaskAnswerBuilder<TInputs>) => TaskAnswerDecorator<TInputs>): TaskScenario<TInputs>{
         this.answers = answer(this.answers);
         return this;
     }
 
-    public withEndpointDecorator(endpoint: (endpoints: TaskEndpointBuilder) => TaskEndpointDecorator): TaskScenario<TInputs>{
+    public endpointFactory(endpoint: (endpoints: TaskEndpointBuilder) => TaskEndpointDecorator): TaskScenario<TInputs>{
         this.endpoints = endpoint(this.endpoints);
         return this;
     }
 
-    public withAzureRmServiceEndpoint(name: string, subscriptionId: string, tenantId: string, servicePrincipalId: string, servicePrincipalKey: string, authScheme?: string): TaskScenario<TInputs>{
-        this.withEndpointDecorator((builder) => new TaskAzureRmServiceEndpoint(builder, name, subscriptionId, tenantId, servicePrincipalId, servicePrincipalKey, authScheme));
+    public inputAzureRmServiceEndpoint(name: string, subscriptionId: string, tenantId: string, servicePrincipalId: string, servicePrincipalKey: string, authScheme?: string): TaskScenario<TInputs>{
+        this.endpointFactory((builder) => new TaskAzureRmServiceEndpoint(builder, name, subscriptionId, tenantId, servicePrincipalId, servicePrincipalKey, authScheme));
         return this;
     }
 
