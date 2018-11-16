@@ -1,6 +1,6 @@
-import { TaskScenario } from './scenarios';
-import { TerraformInputs } from './scenarios-terraform';
-import './scenarios-terraform'
+import { TaskScenario } from '../scenarios';
+import { TerraformInputs } from '../scenarios-terraform';
+import '../scenarios-terraform'
 
 const environmentServiceName = "dev";
 const subscriptionId: string = "sub1";
@@ -15,14 +15,14 @@ const expectedEnv: { [key: string]: string } = {
     'ARM_CLIENT_SECRET': servicePrincipalKey,
 }
 
-const terraformCommand: string = "plan";
+const terraformCommand: string = "apply";
+const commandArgs: string = '-auto-approve';
 
 new TaskScenario<TerraformInputs>()
     .withAzureRmServiceEndpoint(environmentServiceName, subscriptionId, tenantId, servicePrincipalId, servicePrincipalKey)
     .inputTerraformCommand(terraformCommand)
     .withInputs({ environmentServiceName: environmentServiceName })
-    .inputTerraformVarsFile('foo.vars')
     .answerTerraformExists()
-    .answerTerraformCommandIsSuccessful()
+    .answerTerraformCommandIsSuccessful(commandArgs)
     .answerTerraformCommandWithVarsFileAsWorkingDirFails()
     .run()

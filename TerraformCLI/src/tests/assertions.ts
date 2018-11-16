@@ -89,7 +89,7 @@ export class TestScenario{
     public readonly taskScenarioPath: string;
     private assertions: TestAssertionBuilder;    
     constructor(taskScenarioPath:string) {
-        this.taskScenarioPath = require.resolve(taskScenarioPath);
+        this.taskScenarioPath = taskScenarioPath;
         this.assertions = new DefaultTestAssertion();
     }
     public assert(assertion: (assertions: TestAssertionBuilder) => TestAssertionDecorator): TestScenario{

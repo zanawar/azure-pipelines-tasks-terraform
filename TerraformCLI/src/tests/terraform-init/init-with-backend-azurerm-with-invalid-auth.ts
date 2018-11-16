@@ -1,6 +1,6 @@
-import { TaskScenario } from './scenarios';
-import { TerraformInputs } from './scenarios-terraform';
-import './scenarios-terraform'
+import { TaskScenario } from '../scenarios';
+import { TerraformInputs } from '../scenarios-terraform';
+import '../scenarios-terraform'
 
 const backendServiceName = "backend";
 const backendStorageAccountName: string = "storage";

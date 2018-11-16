@@ -1,6 +1,6 @@
-import { TaskScenario } from './scenarios';
-import { TerraformInputs } from './scenarios-terraform';
-import './scenarios-terraform'
+import { TaskScenario } from '../scenarios';
+import { TerraformInputs } from '../scenarios-terraform';
+import '../scenarios-terraform'
 
 const environmentServiceName = "dev";
 const subscriptionId: string = "sub1";
