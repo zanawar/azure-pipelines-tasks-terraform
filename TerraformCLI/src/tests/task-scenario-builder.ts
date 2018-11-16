@@ -1,10 +1,7 @@
 import { TaskMockRunner } from "azure-pipelines-task-lib/mock-run";
-import { MockTestRunner } from 'azure-pipelines-task-lib/mock-test';
 import { TaskInputBuilder, DefaultTaskInput, TaskInputDecorator } from './task-input-builder';
 import { TaskEndpoint, TaskEndpointBuilder, DefaultTaskEndpoint, TaskEndpointDecorator } from './task-endpoints-builder';
 import { TaskAnswerBuilder, DefaultTaskAnswer, TaskAnswerDecorator } from "./task-answer-builder";
-
-const outOfOrderAssertionException: string = "No then has been provided. 'and' cannot be executed before a then";
 
 export class TaskScenario<TInputs>{
     private readonly taskRunner: TaskMockRunner;
@@ -68,21 +65,5 @@ export class TaskScenario<TInputs>{
 
         this.taskRunner.setAnswers(answers);        
         this.taskRunner.run();
-    }
-}
-
-export interface TaskContext{
-    testRunner: MockTestRunner;
-}
-
-export abstract class TaskAssertionBuilder{
-    abstract run(context: TaskContext): void;
-}
-
-export abstract class TaskAssertionDecorator extends TaskAssertionBuilder{
-    protected readonly builder: TaskAssertionBuilder;
-    constructor(builder: TaskAssertionBuilder) {
-        super();
-        this.builder = builder;
     }
 }

@@ -1,6 +1,4 @@
-import { TaskExecutedCommand } from "./test-assertion-decorators";
-import { TestAssertionBuilder } from "./test-assertion-builder";
-import { TestScenario } from "./test-scenario-runner";
+import { TestScenario, TaskExecutedCommand, TestAssertionBuilder } from "./test-scenario-runner";
 
 declare module './test-scenario-runner'{
     interface TestScenario {        
