@@ -1,27 +1,12 @@
 import { TaskScenario } from '../scenarios';
 import { TerraformInputs } from '../scenarios-terraform';
+import { env } from './apply-azurerm-with-invalid-auth-scheme.env'
 import '../scenarios-terraform';
 
-const environmentServiceName = "dev";
-const subscriptionId: string = "sub1";
-const tenantId: string = "ten1";
-const servicePrincipalId: string = "servicePrincipal1";
-const servicePrincipalKey: string = "servicePrincipalKey123";
-const authScheme: string = 'foo';
-
-const expectedEnv: { [key: string]: string } = {
-    'ARM_SUBSCRIPTION_ID': subscriptionId,
-    'ARM_TENANT_ID': tenantId,
-    'ARM_CLIENT_ID': servicePrincipalId,
-    'ARM_CLIENT_SECRET': servicePrincipalKey,
-}
-
-const terraformCommand: string = "apply";
-
 new TaskScenario<TerraformInputs>()
-    .inputAzureRmServiceEndpoint(environmentServiceName, subscriptionId, tenantId, servicePrincipalId, servicePrincipalKey, authScheme)
-    .inputTerraformCommand(terraformCommand)
-    .input({ environmentServiceName: environmentServiceName })
+    .inputAzureRmServiceEndpoint(env.environmentServiceName, env.subscriptionId, env.tenantId, env.servicePrincipalId, env.servicePrincipalKey, env.authScheme)
+    .inputTerraformCommand(env.terraformCommand)
+    .input({ environmentServiceName: env.environmentServiceName })
     .answerTerraformExists()
     .answerTerraformCommandIsSuccessful()
     .answerTerraformCommandWithVarsFileAsWorkingDirFails()
