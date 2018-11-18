@@ -101,7 +101,7 @@ export class TerraformCommandIsSuccessful extends TaskAnswerDecorator<TerraformI
         let command = `terraform ${inputs.command}`;
         if(this.args)
             command = `${command} ${this.args}`;
-        if(inputs.varsFile && inputs.varsFile != inputs.workingDirectory){
+        if(inputs.varsFile && inputs.varsFile != inputs.workingDirectory && command.indexOf('-var-file') < 0){
             command = `${command} -var-file=${inputs.varsFile}`
         }       
 
