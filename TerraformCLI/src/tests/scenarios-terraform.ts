@@ -4,7 +4,7 @@ import { TaskLibAnswers, TaskLibAnswerExecResult } from 'azure-pipelines-task-li
 
 declare module "./scenarios"{
     interface TaskScenario<TInputs>{
-        inputTerraformCommand(this: TaskScenario<TerraformInputs>, command: string, workingDirectory?: string): TaskScenario<TerraformInputs>;
+        inputTerraformCommand(this: TaskScenario<TerraformInputs>, command: string, options?: string, workingDirectory?: string): TaskScenario<TerraformInputs>;
         inputTerraformVarsFile(this: TaskScenario<TerraformInputs>, varsFile: string) : TaskScenario<TerraformInputs>;
         inputAzureRmBackend(this: TaskScenario<TerraformInputs>, serviceName: string, storageAccountName: string, containerName: string, key: string, resourceGroupName: string): TaskScenario<TerraformInputs>;
         answerTerraformExists(this: TaskScenario<TerraformInputs>, terraformExists?: boolean): TaskScenario<TerraformInputs>;
@@ -16,6 +16,7 @@ declare module "./scenarios"{
 export interface TerraformInputs {
     command: string;
     workingDirectory: string;
+    commandOptions?: string;
     varsFile: string;
     backendType: string;
     backendServiceArm?: string;
@@ -27,17 +28,18 @@ export interface TerraformInputs {
 }
 
 export class TerraformCommandAndWorkingDirectory extends TaskInputsAre<TerraformInputs>{
-    constructor(builder: TaskInputBuilder<TerraformInputs>, command: string, workingDirectory: string = "./../TerraformTemplates/sample") {
+    constructor(builder: TaskInputBuilder<TerraformInputs>, command: string, options?: string, workingDirectory: string = "./../TerraformTemplates/sample") {
         let cwd = path.resolve(workingDirectory);
-        super(builder, { 
-            command: command,  
+        super(builder, {
+            command: command,
+            commandOptions: options,
             workingDirectory: cwd,
-            varsFile : cwd
+            varsFile: cwd,
         });
     }
 }
-TaskScenario.prototype.inputTerraformCommand = function(this: TaskScenario<TerraformInputs>, command: string, workingDirectory?: string): TaskScenario<TerraformInputs>{
-    this.inputFactory((builder) => new TerraformCommandAndWorkingDirectory(builder, command, workingDirectory));
+TaskScenario.prototype.inputTerraformCommand = function(this: TaskScenario<TerraformInputs>, command: string, options?: string, workingDirectory?: string): TaskScenario<TerraformInputs>{
+    this.inputFactory((builder) => new TerraformCommandAndWorkingDirectory(builder, command, options, workingDirectory));
     return this;
 }
 
