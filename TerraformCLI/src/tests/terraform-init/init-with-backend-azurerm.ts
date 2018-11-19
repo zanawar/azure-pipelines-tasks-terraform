@@ -1,26 +1,13 @@
 import { TaskScenario } from '../scenarios';
 import { TerraformInputs } from '../scenarios-terraform';
 import '../scenarios-terraform'
-
-const backendServiceName: string = "backend";
-const backendStorageAccountName: string = "storage";
-const backendContainerName: string = "container";
-const backendKey: string = "storageKey123";
-const backendResourceGroupName: string = "rg-backend-storage";
-const subscriptionId: string = "sub1";
-const tenantId: string = "ten1";
-const servicePrincipalId: string = "prin1";
-const servicePrincipalKey: string = "servicePrincipalKey123";
-
-const terraformCommand: string = "init";
-const terraformCommandArgs: string = `-backend-config=storage_account_name=${backendStorageAccountName} -backend-config=container_name=${backendContainerName} -backend-config=key=${backendKey} -backend-config=resource_group_name=${backendResourceGroupName} -backend-config=arm_subscription_id=${subscriptionId} -backend-config=arm_tenant_id=${tenantId} -backend-config=arm_client_id=${servicePrincipalId} -backend-config=arm_client_secret=${servicePrincipalKey}`
-const expectedCommand: string = `terraform ${terraformCommand} ${terraformCommandArgs}`;
+import { env } from './init-with-backend-azurerm.env';
 
 new TaskScenario<TerraformInputs>()
-    .inputAzureRmServiceEndpoint(backendServiceName, subscriptionId, tenantId, servicePrincipalId, servicePrincipalKey)
-    .inputTerraformCommand(terraformCommand)
-    .inputAzureRmBackend(backendServiceName, backendStorageAccountName, backendContainerName, backendKey, backendResourceGroupName)
+    .inputAzureRmServiceEndpoint(env.backendServiceName, env.subscriptionId, env.tenantId, env.servicePrincipalId, env.servicePrincipalKey)
+    .inputTerraformCommand(env.terraformCommand)
+    .inputAzureRmBackend(env.backendServiceName, env.backendStorageAccountName, env.backendContainerName, env.backendKey, env.backendResourceGroupName)
     .answerTerraformExists()    
-    .answerTerraformCommandIsSuccessful(terraformCommandArgs)
+    .answerTerraformCommandIsSuccessful(env.commandArgs)
     .answerTerraformCommandWithVarsFileAsWorkingDirFails()
     .run()
