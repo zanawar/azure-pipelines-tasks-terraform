@@ -187,7 +187,8 @@ export class TaskScenario<TInputs>{
         });
 
         for(var i in inputs){
-            this.taskRunner.setInput(i, inputs[i]);
+            if(inputs[i])
+                this.taskRunner.setInput(i, inputs[i]);
         }    
 
         this.taskRunner.setAnswers(answers);        
