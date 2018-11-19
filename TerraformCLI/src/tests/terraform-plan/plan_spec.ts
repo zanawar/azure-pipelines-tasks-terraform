@@ -2,23 +2,21 @@ import { TestScenario } from '../assertions';
 import '../assertions-terraform';
 
 describe('terraform plan', function(){
+    let env = require('./plan-azurerm.env').env;
     it('azurerm', function(){    
-        new TestScenario(require.resolve('./plan-azurerm'))
+        new TestScenario(env.taskScenarioPath)
             .assertExecutionSucceeded()   
-            .assertExecutedTerraformCommand("plan")
+            .assertExecutedTerraformCommand(env.terraformCommand)
             .assertExecutedTerraformVersion()
             // test runner does not expose env vars set within the task so cannot use this yet
             //.andAssert((assertions) => new TaskExecutedWithEnvironmentVariables(assertions, expectedEnv));
             .run();
     });
     it('azurerm with var file', function(){
-        let varFile = 'foo.vars';
-        let terraformCommand = 'plan';
-        let commandArgs = `-var-file=${varFile}`
-        let expectedCommand = `${terraformCommand} ${commandArgs}`
-        new TestScenario(require.resolve('./plan-azurerm-with-var-file'))
+        let env = require('./plan-azurerm-with-var-file.env').env;
+        new TestScenario(env.taskScenarioPath)
             .assertExecutionSucceeded()   
-            .assertExecutedTerraformCommand(expectedCommand)
+            .assertExecutedTerraformCommand(env.expectedCommand)
             .assertExecutedTerraformVersion()
             // test runner does not expose env vars set within the task so cannot use this yet
             //.andAssert((assertions) => new TaskExecutedWithEnvironmentVariables(assertions, expectedEnv));

@@ -1,27 +1,13 @@
 import { TaskScenario } from '../scenarios';
 import { TerraformInputs } from '../scenarios-terraform';
 import '../scenarios-terraform'
-
-const environmentServiceName = "dev";
-const subscriptionId: string = "sub1";
-const tenantId: string = "ten1";
-const servicePrincipalId: string = "servicePrincipal1";
-const servicePrincipalKey: string = "servicePrincipalKey123";
-
-const expectedEnv: { [key: string]: string } = {
-    'ARM_SUBSCRIPTION_ID': subscriptionId,
-    'ARM_TENANT_ID': tenantId,
-    'ARM_CLIENT_ID': servicePrincipalId,
-    'ARM_CLIENT_SECRET': servicePrincipalKey,
-}
-
-const terraformCommand: string = "plan";
+import { env } from './plan-azurerm-with-var-file.env';
 
 new TaskScenario<TerraformInputs>()
-    .inputAzureRmServiceEndpoint(environmentServiceName, subscriptionId, tenantId, servicePrincipalId, servicePrincipalKey)
-    .inputTerraformCommand(terraformCommand)
-    .input({ environmentServiceName: environmentServiceName })
-    .inputTerraformVarsFile('foo.vars')
+    .inputAzureRmServiceEndpoint(env.environmentServiceName, env.subscriptionId, env.tenantId, env.servicePrincipalId, env.servicePrincipalKey)
+    .inputTerraformCommand(env.terraformCommand)
+    .input({ environmentServiceName: env.environmentServiceName })
+    .inputTerraformVarsFile(env.varsFile)
     .answerTerraformExists()
     .answerTerraformCommandIsSuccessful()
     .answerTerraformCommandWithVarsFileAsWorkingDirFails()
