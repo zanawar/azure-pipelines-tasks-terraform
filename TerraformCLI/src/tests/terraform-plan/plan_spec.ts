@@ -11,8 +11,9 @@ describe('terraform plan', function(){
             // test runner does not expose env vars set within the task so cannot use this yet
             //.andAssert((assertions) => new TaskExecutedWithEnvironmentVariables(assertions, expectedEnv));
             .run();
-    });it('azurerm with command options', function(){        
-        let env = require('./plan-with-options.env').env
+    });
+    it('azurerm with command options', function(){        
+        let env = require('./plan-azurerm-with-options.env').env
         new TestScenario(env.taskScenarioPath)
             .assertExecutionSucceeded()
             .assertExecutedTerraformCommand(env.expectedCommand)
