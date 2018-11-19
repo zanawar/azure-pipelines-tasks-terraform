@@ -4,12 +4,5 @@ branches:
     regex: (pull|pull\-requests|pr)[/-]
     mode: ContinuousDeployment
     tag: pr
-  master: 
-    mode: ContinuousDeployment
-    tag: ''
-  feature:
-    regex: (!master)
-    mode: ContinuousDeployment
-    tag: pr
 ignore:
   sha: []
