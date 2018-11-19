@@ -56,14 +56,14 @@ export class TerraformProvider implements ITerraformProvider{
 
     public create(command?: TerraformCommand): ToolRunner {
         let terraformPath = this.tasks.which("terraform", true);
-        let terraform = this.tasks.tool(terraformPath);
+        let terraform: ToolRunner = this.tasks.tool(terraformPath);
         if(command){
             terraform.arg(command.name);
             if(command.options){            
-                let args = command.options.split(' ');            
-                args.forEach((arg) => terraform.arg(arg));
+                terraform.line(command.options);
             }
         }        
+        
         return terraform;
     }
 }
