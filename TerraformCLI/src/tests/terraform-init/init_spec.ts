@@ -9,6 +9,14 @@ describe('terraform init', function(){
             .assertExecutedTerraformVersion()
             .run();
     });
+    it('with command options', function(){        
+        let env = require('./init-with-options.env').env
+        new TestScenario(env.taskScenarioPath)
+            .assertExecutionSucceeded()
+            .assertExecutedTerraformCommand(env.expectedCommand)
+            .assertExecutedTerraformVersion()
+            .run();
+    });
     it('invalid backend', function(){
         new TestScenario(require.resolve('./init-with-backend-invalid'))
             .assertExecutionSucceeded()
