@@ -5,8 +5,9 @@
   "main": ".bin/index.js",
   "scripts": {
     "build": "tsc --build",
+    "pack": "./node_modules/.bin/copyfiles task.json icon.png \".bin/*.js\" -e \".bin/tests/*\" .dist",
     "delete": "./node_modules/.bin/tfx build tasks delete --task-id 721c3f90-d938-11e8-9d92-09d7594721b5",
-    "upload": "./node_modules/.bin/tfx build tasks upload --task-path .",
+    "upload": "./node_modules/.bin/tfx build tasks upload --task-path \"./.dist\"",
     "start": "npm run build && node --require dotenv/config .bin/index.js",
     "test": "nyc -r cobertura -r html ./node_modules/.bin/mocha \".bin/tests/**/*_spec.js\" --reporter mocha-junit-reporter --reporter-options mochaFile=./.test-output/terraform-cli.xml",
     "test:local": "npm run build && mocha \".bin/tests/**/*_spec.js\""
@@ -30,13 +31,14 @@
     "@types/mocha": "^5.2.5",
     "@types/node": "^10.12.0",
     "@types/q": "^1.5.1",
+    "copyfiles": "^2.1.0",
     "dotenv": "^6.1.0",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.18.0",
     "nyc": "^13.1.0",
+    "tfx-cli": "^0.6.3",
     "ts-node": "^7.0.1",
-    "typescript": "^3.1.3",
-    "tfx-cli": "^0.6.3"
+    "typescript": "^3.1.3"
   },
   "dependencies": {
     "azure-pipelines-task-lib": "^2.7.1",
