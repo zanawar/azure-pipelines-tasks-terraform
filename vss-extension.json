@@ -14,12 +14,9 @@
     "icons": {
         "default": "vss-extension-icon.png"
     },
-    "files": [{
-            "path": "TerraformCLI"
-        },
-        {
-            "path": "TerraformInstaller"
-        }
+    "files": [
+        { "path": "TerraformCLI/.dist", "packagePath": "TerraformCLI" },
+        { "path": "TerraformInstaller/.dist", "packagePath": "TerraformInstaller" }
     ],
     "repository" : {
         "type" : "git",
