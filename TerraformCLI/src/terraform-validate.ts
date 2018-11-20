@@ -9,8 +9,9 @@ export class TerraformValidate extends TerraformCommand{
     constructor(
         name: string, 
         workingDirectory: string,
-        varsFile: string | undefined) {
-        super(name, workingDirectory);
+        varsFile: string | undefined,
+        options?: string) {
+        super(name, workingDirectory, options);
         
         if(varsFile != workingDirectory){
             this.varsFile = varsFile;
@@ -32,14 +33,14 @@ export class TerraformValidateHandler implements IHandleCommand{
         let init = new TerraformValidate(
             command,
             tasks.getInput("workingDirectory"),
-            tasks.getInput("varsFile")
+            tasks.getInput("varsFile"),
+            tasks.getInput("commandOptions")
         );
         return this.onExecute(init);
     }
 
     private async onExecute(command: TerraformValidate): Promise<number> {
-        var terraform = this.terraformProvider.create();
-        terraform.arg(command.name);
+        var terraform = this.terraformProvider.create(command);
         this.setupVars(command, terraform);
         return terraform.exec(<IExecOptions>{
             cwd: command.workingDirectory

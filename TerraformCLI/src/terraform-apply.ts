@@ -11,8 +11,9 @@ export class TerraformApply extends TerraformCommand{
         name: string, 
         workingDirectory: string,
         environmentServiceName: string, 
-        varsFile: string | undefined) {
-        super(name, workingDirectory);
+        varsFile: string | undefined,
+        options?: string) {
+        super(name, workingDirectory, options);
         this.environmentServiceName = environmentServiceName;
         if(varsFile != workingDirectory){
             this.varsFile = varsFile;
@@ -35,15 +36,16 @@ export class TerraformApplyHandler implements IHandleCommand{
             command,
             tasks.getInput("workingDirectory"),
             tasks.getInput("environmentServiceName", true),
-            tasks.getInput("varsFile")
+            tasks.getInput("varsFile"),
+            tasks.getInput("commandOptions")
         );
         return this.onExecute(init);
     }
 
     private async onExecute(command: TerraformApply): Promise<number> {
-        var terraform = this.terraformProvider.create();
-        terraform.arg(command.name);
-        terraform.arg("-auto-approve");
+        let terraform: ToolRunner = this.terraformProvider.create(command);
+        if((<any>terraform).args.indexOf("-auto-approve") < 0)
+            terraform.arg("-auto-approve");
         this.setupAzureRmProvider(command, terraform);
         this.setupVars(command, terraform);
 
