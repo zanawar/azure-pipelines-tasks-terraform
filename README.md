@@ -12,11 +12,6 @@ See readme for each of the tasks for development setup for each.
 
 ## Release Notes
 
-### 0.2.3
-
-#### Marketplace Extension Shrink
-Implemented new scripts for selecting only files required for task execution to be included in vsix. See [#8 VSIX Size Too Large for Marketplace Upload](https://github.com/charleszipp/azure-pipelines-tasks-terraform/pull/9)
-
 ### 0.2.2
 
 #### TerraformCLI: Support Arbitrary Command Options 
