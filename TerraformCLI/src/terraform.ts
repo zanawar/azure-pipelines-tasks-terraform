@@ -68,8 +68,13 @@ export class TerraformProvider implements ITerraformProvider{
     }
 }
 
+export interface ITaskAgent{
+    downloadSecureFile(secureFileId: string): Promise<string>
+}
+
 export const TYPES = {
     IMediator : Symbol("IMediator"),
     IHandleCommand : Symbol("IHandleCommand"),
-    ITerraformProvider : Symbol("ITerraformProvider")
+    ITerraformProvider : Symbol("ITerraformProvider"),
+    ITaskAgent: Symbol('ITaskAgent')
 }
