@@ -75,18 +75,12 @@
       "groupName": "variables"
     },
     {
-      "name": "workingDirectory",
-      "type": "filePath",
-      "label": "Working Directory",
-      "helpMarkDown": "Current working directory where the command is run. If empty, the root of the repository (build) or artifacts (release) is used, which is $(System.DefaultWorkingDirectory)",
-      "required": "false"
-    },
-    {
-      "name": "commandOptions",
-      "type": "string",
-      "label": "Command Options",
-      "helpMarkDown": "Any additional options for the selected command such as `-input=true`. Multiple options can be provided delimited by spaces as `-option1=value -option2=value -option3=value`",
-      "required": "false"
+        "name": "workingDirectory",
+        "type": "filePath",
+        "label": "Working Directory",
+        "helpMarkDown": "Current working directory where the command is run. If empty, the root of the repository (build) or artifacts (release) is used, which is $(System.DefaultWorkingDirectory)",
+        "required": "false",
+        "groupName": "advanced"
     },
     {
       "name": "backendType",

@@ -12,15 +12,4 @@ See readme for each of the tasks for development setup for each.
 
 ## Release Notes
 
-### 0.2.2
 
-#### TerraformCLI: Support Arbitrary Command Options 
-A new input has been added `Command Options` that will allow for defining command options that do not otherwise have dedicated inputs. For example, the following value could be provided in the command options field when running `validate`
-```
--input=true -lock=false -no-color
-```
-This would result in the task executing `validate` as follows
-```
-terraform validate -input=true -lock=false -no-color
-```
-Command options will always preceed any other options that are generated via dedicated input such as backend config and/or variable file. 

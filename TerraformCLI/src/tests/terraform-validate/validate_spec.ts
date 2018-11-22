@@ -9,14 +9,6 @@ describe('terraform validate', function(){
             .assertExecutedTerraformVersion()
             .run();
     });
-    it('with command options', function(){        
-        let env = require('./validate-with-options.env').env
-        new TestScenario(env.taskScenarioPath)
-            .assertExecutionSucceeded()
-            .assertExecutedTerraformCommand(env.expectedCommand)
-            .assertExecutedTerraformVersion()
-            .run();
-    });
     it('with var file', function(){
         let varFile = 'foo.vars';
         let terraformCommand = 'validate';

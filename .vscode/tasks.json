@@ -22,10 +22,10 @@
         {
             "label": "npm: test tf cli",
             "type": "npm",
-            "script": "test:local",
+            "script": "test",
             "path": "TerraformCLI/",
             "group": {
-                "kind": "build",
+                "kind": "test",
                 "isDefault": true
             }
         }

@@ -8,15 +8,12 @@ export interface ICommand {
 
 export class TerraformCommand implements ICommand {
     public readonly name: string;
-    public readonly options: string | undefined;
-    public readonly workingDirectory: string;    
+    public readonly workingDirectory: string;
     constructor(
-        name: string,         
-        workingDirectory: string,
-        options?: string) {        
-        this.name = name;        
+        name: string, 
+        workingDirectory: string) {        
+        this.name = name;
         this.workingDirectory = workingDirectory;
-        this.options = options;
     }
 }
 
@@ -44,7 +41,7 @@ export class Mediator implements IMediator{
 }
 
 export interface ITerraformProvider{
-    create(command?: TerraformCommand) : ToolRunner
+    create() : ToolRunner
 }
 
 @injectable()
@@ -54,17 +51,9 @@ export class TerraformProvider implements ITerraformProvider{
         this.tasks = tasks
     }
 
-    public create(command?: TerraformCommand): ToolRunner {
-        let terraformPath = this.tasks.which("terraform", true);
-        let terraform: ToolRunner = this.tasks.tool(terraformPath);
-        if(command){
-            terraform.arg(command.name);
-            if(command.options){            
-                terraform.line(command.options);
-            }
-        }        
-        
-        return terraform;
+    public create(): ToolRunner {
+        var terraformPath = this.tasks.which("terraform", true);
+        return this.tasks.tool(terraformPath);
     }
 }
 

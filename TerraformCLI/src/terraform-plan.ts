@@ -11,9 +11,8 @@ export class TerraformPlan extends TerraformCommand{
         name: string, 
         workingDirectory: string,
         environmentServiceName: string, 
-        varsFile: string | undefined, 
-        options?: string) {
-        super(name, workingDirectory, options);
+        varsFile: string | undefined) {
+        super(name, workingDirectory);
         this.environmentServiceName = environmentServiceName;
         if(varsFile != workingDirectory){
             this.varsFile = varsFile;
@@ -36,14 +35,14 @@ export class TerraformPlanHandler implements IHandleCommand{
             command,
             tasks.getInput("workingDirectory"),
             tasks.getInput("environmentServiceName", true),
-            tasks.getInput("varsFile"),
-            tasks.getInput("commandOptions")
+            tasks.getInput("varsFile")
         );
         return this.onExecute(init);
     }
 
     private async onExecute(command: TerraformPlan): Promise<number> {
-        var terraform = this.terraformProvider.create(command);
+        var terraform = this.terraformProvider.create();
+        terraform.arg(command.name);
         this.setupAzureRmProvider(command, terraform);
         this.setupVars(command, terraform);
         return terraform.exec(<IExecOptions>{

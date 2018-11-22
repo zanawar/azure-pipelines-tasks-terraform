@@ -13,9 +13,8 @@ export class TerraformInit extends TerraformCommand{
     constructor(
         name: string, 
         workingDirectory: string,
-        backendType: string,
-        options?: string | undefined) {
-        super(name, workingDirectory, options);
+        backendType: string) {
+        super(name, workingDirectory);
         if(backendType){
             this.backendType = BackendTypes[<keyof typeof BackendTypes> backendType];                
         }
@@ -34,16 +33,16 @@ export class TerraformInitHandler implements IHandleCommand{
 
     public async execute(command: string): Promise<number> {
         let init = new TerraformInit(
-            command,            
+            command,
             tasks.getInput("workingDirectory"),
-            tasks.getInput("backendType"),
-            tasks.getInput("commandOptions"),
+            tasks.getInput("backendType")
         );
         return this.onExecute(init);
     }
 
     private async onExecute(command: TerraformInit): Promise<number> {
-        var terraform = this.terraformProvider.create(command);
+        var terraform = this.terraformProvider.create();
+        terraform.arg(command.name);
         this.setupBackendConfig(command, terraform);
         return terraform.exec(<IExecOptions>{
             cwd: command.workingDirectory
