@@ -2,6 +2,7 @@
   "compilerOptions": {
     "target": "es6",
     "module": "commonjs",
+    "outDir": "./../../.bin/tests",
     "sourceMap": true,
     "strict": true,    
     "typeRoots": [
@@ -11,8 +12,7 @@
       "node", 
       "mocha", 
       "q", 
-      "reflect-metadata",
-      "webpack-env"
+      "reflect-metadata"
     ],
     "esModuleInterop": true,
     "experimentalDecorators": true,
