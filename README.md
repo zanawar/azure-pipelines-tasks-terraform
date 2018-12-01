@@ -12,7 +12,23 @@ See readme for each of the tasks for development setup for each.
 
 ## Release Notes
 
-### 0.2.5
+### 0.2.7
+
+#### TerraformCLI: Support Arbitrary Command Options 
+A new input has been added `Command Options` that will allow for defining command options that do not otherwise have dedicated inputs. For example, the following value could be provided in the command options field when running `validate`
+```
+-input=true -lock=false -no-color
+```
+This would result in the task executing `validate` as follows
+```
+terraform validate -input=true -lock=false -no-color
+```
+Command options will always preceed any other options that are generated via dedicated input such as backend config and/or variable file. 
+
+### 0.2.6
+
+#### Fixed `Error: Cannot find module` Error When Executing Installer and CLI Tasks
+This error was due to a packaging issue with the vsix that was introduced with the changes to shrink the vsix. The changes for the shrink has been reworked to ensure runtime dependencies are included with the vsix package.
 
 #### Marketplace Extension Shrink
 Implemented new scripts for selecting only files required for task execution to be included in vsix. See [#8 VSIX Size Too Large for Marketplace Upload](https://github.com/charleszipp/azure-pipelines-tasks-terraform/pull/9)
