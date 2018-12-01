@@ -3,7 +3,8 @@
     "target": "es6",
     "module": "commonjs",
     "sourceMap": true,
-    "strict": true,    
+    "strict": true,
+    "outDir": ".bin",    
     "typeRoots": [
       "node_modules/@types"
     ],
@@ -11,8 +12,7 @@
       "node", 
       "mocha", 
       "q", 
-      "reflect-metadata",
-      "webpack-env"
+      "reflect-metadata"
     ],
     "esModuleInterop": true,
     "experimentalDecorators": true,
