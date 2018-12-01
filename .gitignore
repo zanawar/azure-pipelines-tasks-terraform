@@ -72,5 +72,5 @@ typings/
 # unit test report for azure devops
 .test-output/
 
-# dist for vsix package
+#packaged output
 .dist/

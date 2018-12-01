@@ -3,8 +3,8 @@
     "target": "es6",
     "module": "commonjs",
     "sourceMap": true,
-    "outDir": "./.bin",
-    "strict": true,    
+    "strict": true,
+    "outDir": ".bin",    
     "typeRoots": [
       "node_modules/@types"
     ],

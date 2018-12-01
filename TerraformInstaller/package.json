@@ -5,12 +5,12 @@
   "main": ".bin/index.js",
   "scripts": {
     "build": "tsc --build",
-    "pack": "./node_modules/.bin/copyfiles task.json icon.png \".bin/*.js\" -e \".bin/tests/*\" .dist",
+    "pack": "./node_modules/.bin/copyfiles package.json task.json icon.png \".bin/*.js\" -e \".bin/tests/*\" .dist && cd .dist && npm install --only=prod",
     "delete": "./node_modules/.bin/tfx build tasks delete --task-id 11645770-d18e-11e8-8f5b-1b8b62612b3b",
-    "upload": "./node_modules/.bin/tfx build tasks upload --task-path \"./.dist\"",
-    "start": "npm run build && node --require dotenv/config .bin/index.js",
+    "upload": "./node_modules/.bin/tfx build tasks upload --task-path .dist",
+    "start": "node --require dotenv/config .bin/index.js",
     "test": "nyc -r cobertura -r html ./node_modules/.bin/mocha \".bin/tests/**/*_spec.js\" --reporter mocha-junit-reporter --reporter-options mochaFile=./.test-output/terraform-installer.xml",
-    "test:local": "npm run build && ./node_modules/.bin/mocha \".bin/tests/**/*_spec.js\""
+    "test:local": "./node_modules/.bin/mocha \".bin/tests/**/*_spec.js\""
   },
   "repository": {
     "type": "git",
@@ -39,6 +39,7 @@
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.18.0",
     "nyc": "^13.1.0",
-    "tfx-cli": "^0.6.3"
+    "tfx-cli": "^0.6.3",
+    "typescript": "^3.1.6"
   }
 }
