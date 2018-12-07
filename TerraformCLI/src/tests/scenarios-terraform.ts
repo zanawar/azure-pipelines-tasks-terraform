@@ -1,11 +1,13 @@
 import path from 'path';
 import { TaskScenario, TaskInputBuilder, TaskInputsAre, TaskAnswerDecorator, TaskAnswerBuilder } from "./scenarios";
 import { TaskLibAnswers, TaskLibAnswerExecResult } from 'azure-pipelines-task-lib/mock-answer';
+import { getSecureFileName } from 'azure-pipelines-task-lib';
 
 declare module "./scenarios"{
     interface TaskScenario<TInputs>{
         inputTerraformCommand(this: TaskScenario<TerraformInputs>, command: string, options?: string, workingDirectory?: string): TaskScenario<TerraformInputs>;
         inputTerraformVarsFile(this: TaskScenario<TerraformInputs>, varsFile: string) : TaskScenario<TerraformInputs>;
+        inputTerraformSecureVarsFile(this: TaskScenario<TerraformInputs>, secureVarsFile: string) : TaskScenario<TerraformInputs>;
         inputAzureRmBackend(this: TaskScenario<TerraformInputs>, serviceName: string, storageAccountName: string, containerName: string, key: string, resourceGroupName: string): TaskScenario<TerraformInputs>;
         answerTerraformExists(this: TaskScenario<TerraformInputs>, terraformExists?: boolean): TaskScenario<TerraformInputs>;
         answerTerraformCommandIsSuccessful(this: TaskScenario<TerraformInputs>, args?: string): TaskScenario<TerraformInputs>;
@@ -18,6 +20,7 @@ export interface TerraformInputs {
     workingDirectory: string;
     commandOptions?: string;
     varsFile: string;
+    secureVarsFile: string;
     backendType: string;
     backendServiceArm?: string;
     backendAzureRmResourceGroupName?: string;
@@ -52,6 +55,18 @@ export class VarsFileIs extends TaskInputsAre<TerraformInputs> {
 }
 TaskScenario.prototype.inputTerraformVarsFile = function(this: TaskScenario<TerraformInputs>, varsFile: string) : TaskScenario<TerraformInputs>{
     this.inputFactory((builder) => new VarsFileIs(builder, varsFile));
+    return this;
+}
+
+export class SecureVarsFileIs extends TaskInputsAre<TerraformInputs> {
+    constructor(inputs: TaskInputBuilder<TerraformInputs>, secureVarsFile: string) {
+        super(inputs, {
+            secureVarsFile: secureVarsFile
+        });
+    }
+}
+TaskScenario.prototype.inputTerraformSecureVarsFile = function(this: TaskScenario<TerraformInputs>, secureVarsFile: string) : TaskScenario<TerraformInputs>{
+    this.inputFactory((builder) => new SecureVarsFileIs(builder, secureVarsFile));
     return this;
 }
 
@@ -102,10 +117,14 @@ export class TerraformCommandIsSuccessful extends TaskAnswerDecorator<TerraformI
         a.exec = a.exec || {};
         let command = `terraform ${inputs.command}`;
         if(this.args)
-            command = `${command} ${this.args}`;
+            command = `${command} ${this.args}`;                  
+        if(inputs.secureVarsFile &&  command.indexOf('-var-file') < 0){
+            command = `${command} -var-file=${inputs.secureVarsFile}`
+        }
+        // todo: remove unsecured vars file
         if(inputs.varsFile && inputs.varsFile != inputs.workingDirectory && command.indexOf('-var-file') < 0){
             command = `${command} -var-file=${inputs.varsFile}`
-        }       
+        } 
 
         a.exec[command] = <TaskLibAnswerExecResult>{
             code : 0,
