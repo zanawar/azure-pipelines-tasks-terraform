@@ -1,12 +1,16 @@
 {
     "cSpell.words": [
+        "ACCESSTOKEN",
+        "SYSTEMVSSCONNECTION",
+        "TEAMPROJECT",
         "Terraform",
-        "terraform",
-        "vsts",
-        "toolrunner",
+        "azurerm",
+        "backend",
+        "devops",
         "injectable",
         "inversify",
-        "azurerm",
-        "backend"
+        "terraform",
+        "toolrunner",
+        "vsts"
     ]
 }
