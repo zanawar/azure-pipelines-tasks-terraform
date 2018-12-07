@@ -6,7 +6,6 @@ import { getSecureFileName } from 'azure-pipelines-task-lib';
 declare module "./scenarios"{
     interface TaskScenario<TInputs>{
         inputTerraformCommand(this: TaskScenario<TerraformInputs>, command: string, options?: string, workingDirectory?: string): TaskScenario<TerraformInputs>;
-        inputTerraformVarsFile(this: TaskScenario<TerraformInputs>, varsFile: string) : TaskScenario<TerraformInputs>;
         inputTerraformSecureVarsFile(this: TaskScenario<TerraformInputs>, secureVarsFile: string) : TaskScenario<TerraformInputs>;
         inputAzureRmBackend(this: TaskScenario<TerraformInputs>, serviceName: string, storageAccountName: string, containerName: string, key: string, resourceGroupName: string): TaskScenario<TerraformInputs>;
         answerTerraformExists(this: TaskScenario<TerraformInputs>, terraformExists?: boolean): TaskScenario<TerraformInputs>;
@@ -43,18 +42,6 @@ export class TerraformCommandAndWorkingDirectory extends TaskInputsAre<Terraform
 }
 TaskScenario.prototype.inputTerraformCommand = function(this: TaskScenario<TerraformInputs>, command: string, options?: string, workingDirectory?: string): TaskScenario<TerraformInputs>{
     this.inputFactory((builder) => new TerraformCommandAndWorkingDirectory(builder, command, options, workingDirectory));
-    return this;
-}
-
-export class VarsFileIs extends TaskInputsAre<TerraformInputs> {
-    constructor(inputs: TaskInputBuilder<TerraformInputs>, varsFile: string) {
-        super(inputs, {
-            varsFile: varsFile
-        });
-    }
-}
-TaskScenario.prototype.inputTerraformVarsFile = function(this: TaskScenario<TerraformInputs>, varsFile: string) : TaskScenario<TerraformInputs>{
-    this.inputFactory((builder) => new VarsFileIs(builder, varsFile));
     return this;
 }
 
