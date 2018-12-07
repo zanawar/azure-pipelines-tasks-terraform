@@ -12,12 +12,12 @@ let expectedEnv: { [key: string]: string } = {
 }
 
 let terraformCommand: string = 'apply';
-let varsFile: string = 'foo.vars';
-let commandArgs: string = `-auto-approve -var-file=${varsFile}`;
+let secureVarsFile: string = 'foo.vars';
+let commandArgs: string = `-auto-approve -var-file=${secureVarsFile}`;
 let expectedCommand: string = `${terraformCommand} ${commandArgs}`
 
 export let env: any = {
-    taskScenarioPath:           require.resolve('./apply-azurerm-with-var-file'),
+    taskScenarioPath:           require.resolve('./apply-azurerm-with-secure-var-file'),
     terraformCommand:           terraformCommand,
     commandArgs:                commandArgs,
     environmentServiceName:     environmentServiceName,
@@ -27,5 +27,5 @@ export let env: any = {
     servicePrincipalKey:        servicePrincipalKey,
     expectedEnv:                expectedEnv,
     expectedCommand:            expectedCommand,
-    varsFile:                   varsFile
+    secureVarsFile:             secureVarsFile
 }

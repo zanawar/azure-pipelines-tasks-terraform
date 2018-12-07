@@ -67,15 +67,6 @@
       "helpMarkDown": "Select an Azure resource manager subscription for the deployment"
     },
     {
-      "name": "varsFile",
-      "type": "filePath",
-      "label": "Source Artifact Variables File",
-      "required": false,
-      "helpMarkDown": "The name and path to a terraform variables file from source control (build pipeline) or build artifacts (release pipeline)",
-      "groupName": "variables",
-      "visibleRule": "command = apply"
-    },
-    {
       "name": "secureVarsFile",
       "type": "secureFile",
       "label": "Secured Variables File (Secrets)",
