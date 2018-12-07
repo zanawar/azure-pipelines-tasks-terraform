@@ -76,7 +76,7 @@
     },
     {
       "name": "secureVarsFile",
-      "type": "pickList",
+      "type": "secureFile",
       "label": "Secured Variables File (Secrets)",
       "required": false,
       "helpMarkDown": "Pick a terraform vars file from Azure DevOps Secure Files. This should be option should be used for terraform variable files that contain secrets.",
@@ -155,15 +155,6 @@
       "required" : false,
       "helpMarkDown" : "The key where to place/look for state file inside the container",
       "groupName": "backendAzureRm"
-    }
-  ],
-  "sourceDefinitions": [
-    {
-      "target": "secureVarsFile",
-      "endpoint": "/$(system.teamProject)/_apis/distributedtask/securefiles?api-version=5.0-preview.1",
-      "selector": "jsonpath:$.value[*].name",
-      "keySelector": "jsonpath:$.value[*].id",
-      "authKey": "tfs:teamfoundation"
     }
   ],
   "execution": {
