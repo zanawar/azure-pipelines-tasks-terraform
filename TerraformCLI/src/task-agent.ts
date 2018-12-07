@@ -4,7 +4,9 @@ import * as tasks from 'azure-pipelines-task-lib/task';
 import { WebApi, getPersonalAccessTokenHandler } from 'azure-devops-node-api';
 import { ITaskAgentApi } from 'azure-devops-node-api/TaskAgentApi';
 import { ITaskAgent } from './terraform';
+import { injectable } from 'inversify';
 
+@injectable()
 export default class TaskAgent implements ITaskAgent {
     private readonly api: WebApi;
 

@@ -1,5 +1,8 @@
 import ma = require('azure-pipelines-task-lib/mock-answer');
 import { TaskMockRunner } from "azure-pipelines-task-lib/mock-run";
+import "reflect-metadata";
+import TaskAgentMock from './../task-agent-mock';
+
 
 export abstract class TaskInputBuilder<TInputs>{
     abstract build(): TInputs;
@@ -122,10 +125,10 @@ export class TaskAzureRmServiceEndpoint extends TaskEndpointDecorator{
 
 export class TaskScenario<TInputs>{
     private readonly taskRunner: TaskMockRunner;
-    public readonly taskPath: string;
+    public readonly taskPath: string;    
     answers: TaskAnswerBuilder<TInputs>;
     inputs: TaskInputBuilder<TInputs>;
-    endpoints: TaskEndpointBuilder;    
+    endpoints: TaskEndpointBuilder;
     
     constructor(taskPath: string = "./../index") {
         this.taskPath = require.resolve(taskPath);
@@ -138,6 +141,8 @@ export class TaskScenario<TInputs>{
         Object.keys(process.env)
             .filter(key => key.startsWith("INPUT_"))
             .forEach(key => delete process.env[key]);
+        
+        this.taskRunner.registerMock('./task-agent', TaskAgentMock);
     }
 
     public inputFactory(input: (inputs: TaskInputBuilder<TInputs>) => TaskInputDecorator<TInputs>): TaskScenario<TInputs>{

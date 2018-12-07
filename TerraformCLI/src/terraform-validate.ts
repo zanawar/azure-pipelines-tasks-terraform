@@ -4,20 +4,14 @@ import { IHandleCommand, TerraformCommand, TYPES, ITerraformProvider, ITaskAgent
 import { injectable, inject } from "inversify";
 
 export class TerraformValidate extends TerraformCommand{
-    readonly varsFile: string | undefined;
     readonly secureVarsFile: string | undefined;
 
     constructor(
         name: string, 
         workingDirectory: string,
-        varsFile: string | undefined,
         options?: string, 
         secureVarsFile?: string) {
         super(name, workingDirectory, options);
-        
-        if(varsFile != workingDirectory){
-            this.varsFile = varsFile;
-        }            
         this.secureVarsFile = secureVarsFile;
     }
 }
@@ -39,7 +33,6 @@ export class TerraformValidateHandler implements IHandleCommand{
         let init = new TerraformValidate(
             command,
             tasks.getInput("workingDirectory"),
-            tasks.getInput("varsFile"),
             tasks.getInput("commandOptions"),
             tasks.getInput("secureVarsFile")
         );
@@ -48,16 +41,13 @@ export class TerraformValidateHandler implements IHandleCommand{
 
     private async onExecute(command: TerraformValidate): Promise<number> {
         var terraform = this.terraformProvider.create(command);
-        this.setupVars(command, terraform);
+        await this.setupVars(command, terraform);
         return terraform.exec(<IExecOptions>{
             cwd: command.workingDirectory
         });
     }
 
     private async setupVars(command: TerraformValidate, terraform: ToolRunner){
-        if(command.varsFile){
-            terraform.arg(`-var-file=${command.varsFile}`);
-        }
         if(command.secureVarsFile){
             const secureFilePath = await this.taskAgent.downloadSecureFile(command.secureVarsFile);
             terraform.arg(`-var-file=${secureFilePath}`);

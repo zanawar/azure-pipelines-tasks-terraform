@@ -17,14 +17,11 @@ describe('terraform validate', function(){
             .assertExecutedTerraformVersion()
             .run();
     });
-    it('with var file', function(){
-        let varFile = 'foo.vars';
-        let terraformCommand = 'validate';
-        let commandArgs = `-var-file=${varFile}`
-        let expectedCommand = `${terraformCommand} ${commandArgs}`
-        new TestScenario(require.resolve('./validate-with-var-file'))
+    it('with secure var file', function(){
+        let env = require('./validate-with-secure-var-file.env').env;
+        new TestScenario(env.taskScenarioPath)
             .assertExecutionSucceeded()   
-            .assertExecutedTerraformCommand(expectedCommand)
+            .assertExecutedTerraformCommand(env.expectedCommand)
             .assertExecutedTerraformVersion()
             .run();
     });
