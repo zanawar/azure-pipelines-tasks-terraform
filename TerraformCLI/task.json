@@ -73,7 +73,7 @@
       "required": false,
       "helpMarkDown": "The name and path to a terraform variables file from source control (build pipeline) or build artifacts (release pipeline)",
       "groupName": "variables",
-      "visibleRule": "command = plan || command = apply"
+      "visibleRule": "command = apply"
     },
     {
       "name": "secureVarsFile",
