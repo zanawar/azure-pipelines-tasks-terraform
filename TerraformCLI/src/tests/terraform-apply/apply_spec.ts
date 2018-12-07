@@ -21,8 +21,8 @@ describe('terraform apply', function(){
             .run();
             
     });
-    it('azurerm with var file', function(){        
-        let env = require('./apply-azurerm-with-var-file.env').env;
+    it('azurerm with secure var file', function(){        
+        let env = require('./apply-azurerm-with-secure-var-file.env').env;
         new TestScenario(env.taskScenarioPath)
             .assertExecutionSucceeded()   
             .assertExecutedTerraformCommand(env.expectedCommand)
