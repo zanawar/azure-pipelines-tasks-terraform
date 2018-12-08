@@ -39,6 +39,21 @@
         {
             "type": "node",
             "request": "launch",
+            "name": "debug:tf cli:tests:scenario",
+            "preLaunchTask": "tsc: build tf cli",
+            "program": "${workspaceFolder}/TerraformCLI/node_modules/mocha/bin/_mocha",
+            "cwd": "${workspaceFolder}/TerraformCLI",
+            "args": [
+                "--timeout",
+                "999999",
+                ".bin/tests/terraform-apply/apply_spec.js"
+            ],
+            "protocol": "inspector",
+            "console": "integratedTerminal"
+        },
+        {
+            "type": "node",
+            "request": "launch",
             "name": "debug:tf cli:e2e",
             "preLaunchTask": "tsc: build tf cli",
             "program": "${workspaceFolder}/TerraformCLI/node_modules/mocha/bin/_mocha",

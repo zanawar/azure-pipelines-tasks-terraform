@@ -2,6 +2,11 @@
 
 The tasks in this extension allow for running terraform cli commands from both the Build and Release pipelines in Azure DevOps. The motivation for this extension was to provide terraform pipeline tasks that could execute on all build agent operating systems and provide contextual/guided task configuration.
 
+## (NEW) Secure Variable Secrets
+There are two methods to provide secrets within the vars provided to terraform commands. First, if providing individual `-var` options to the command line, the secret pipeline variables can be used. Use the Command Options field to input your secret vars as `-var 'secret=$(mySecretPipelineVar)`. Secondly, a var file secured in Secure Files Library of Azure DevOps pipeline can be specified via drop-down menu. Storing sensitive var files in the Secure Files Library not only provides encryption at rest, it also allows the files to have different access control applied than that of the Source Repository and Build/Release Pipelines.
+
+![Terraform CLI Secure Vars and Var Files](https://raw.githubusercontent.com/charleszipp/azure-pipelines-tasks-terraform/master/screenshots/overview-tfcli-secure-vars.jpg)
+
 ## Compatible with Linux Build Agents
 
 The tasks can execute on all supported build agent operating systems **including Ubuntu and MacOS**.
