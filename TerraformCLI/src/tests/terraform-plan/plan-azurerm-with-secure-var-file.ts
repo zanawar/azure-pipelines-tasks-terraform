@@ -1,14 +1,13 @@
 import { TaskScenario } from '../scenarios';
 import { TerraformInputs } from '../scenarios-terraform';
-import { env } from './apply-azurerm-with-var-file.env';
 import '../scenarios-terraform'
+import { env } from './plan-azurerm-with-secure-var-file.env';
 
 new TaskScenario<TerraformInputs>()
     .inputAzureRmServiceEndpoint(env.environmentServiceName, env.subscriptionId, env.tenantId, env.servicePrincipalId, env.servicePrincipalKey)
     .inputTerraformCommand(env.terraformCommand)
     .input({ environmentServiceName: env.environmentServiceName })
-    .inputTerraformVarsFile(env.varsFile)
+    .inputTerraformSecureVarsFile(env.secureVarsFile)
     .answerTerraformExists()
-    .answerTerraformCommandIsSuccessful(env.commandArgs)
-    .answerTerraformCommandWithVarsFileAsWorkingDirFails()
+    .answerTerraformCommandIsSuccessful()
     .run()

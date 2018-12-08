@@ -12,9 +12,9 @@
   ],
   "demands": [],
   "version": {
-    "Major": "#{GitVersion.Major}#",
-    "Minor": "#{GitVersion.Minor}#",
-    "Patch": "#{GitVersion.Patch}#"
+    "Major": "0",
+    "Minor": "2",
+    "Patch": "4"
   },
   "minimumAgentVersion": "1.95.0",
   "instanceNameFormat": "terraform $(command)",
@@ -67,12 +67,16 @@
       "helpMarkDown": "Select an Azure resource manager subscription for the deployment"
     },
     {
-      "name": "varsFile",
-      "type": "filePath",
-      "label": "Variables File",
+      "name": "secureVarsFile",
+      "type": "secureFile",
+      "label": "Secured Variables File (Secrets)",
       "required": false,
-      "helpMarkDown": "The name of the terraform variables file to use",
-      "groupName": "variables"
+      "helpMarkDown": "Pick a terraform vars file from Azure DevOps Secure Files. This should be option should be used for terraform variable files that contain secrets.",
+      "groupName": "variables",
+      "properties" : {
+        "EnableManage": "True",
+        "ManageLink": "https://dev.azure.com/chzipp/azure-pipelines-tasks-terraform/_library?itemType=SecureFiles"
+      }
     },
     {
       "name": "workingDirectory",
