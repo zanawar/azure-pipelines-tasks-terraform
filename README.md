@@ -12,7 +12,7 @@ See readme for each of the tasks for development setup for each.
 
 ## Release Notes
 
-### 0.2.8
+### 0.3.0
 
 #### TerraformCLI: Secure Secrets
 The task now supports the ability to upload and use a variable file that contains secrets. This stores the files using the (Secure Files)[https://docs.microsoft.com/en-us/azure/devops/pipelines/library/secure-files?view=vsts] feature in Azure DevOps. The files are downloaded to a temporary location on the build agent while running a build or release. The file is removed from the agent after the build or release completes.
