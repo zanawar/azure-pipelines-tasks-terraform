@@ -1,34 +1,35 @@
 import tasks = require("azure-pipelines-task-lib/task");
 import { IExecOptions, ToolRunner } from "azure-pipelines-task-lib/toolrunner";
-import { IHandleCommand, TerraformCommand, TYPES, ITerraformProvider } from "./terraform";
+import { IHandleCommand, TerraformCommand, TYPES, ITerraformProvider, ITaskAgent } from "./terraform";
 import { injectable, inject } from "inversify";
 
 export class TerraformApply extends TerraformCommand{
-    readonly varsFile: string | undefined;
+    readonly secureVarsFile: string | undefined;
     readonly environmentServiceName: string;
 
     constructor(
         name: string, 
         workingDirectory: string,
         environmentServiceName: string, 
-        varsFile: string | undefined,
+        secureVarsFile: string | undefined,
         options?: string) {
         super(name, workingDirectory, options);
         this.environmentServiceName = environmentServiceName;
-        if(varsFile != workingDirectory){
-            this.varsFile = varsFile;
-        }            
+        this.secureVarsFile = secureVarsFile;
     }
 }
 
 @injectable()
 export class TerraformApplyHandler implements IHandleCommand{
     private readonly terraformProvider: ITerraformProvider;
+    private readonly taskAgent: ITaskAgent;
 
     constructor(
-        @inject(TYPES.ITerraformProvider) terraformProvider: ITerraformProvider
+        @inject(TYPES.ITerraformProvider) terraformProvider: ITerraformProvider,
+        @inject(TYPES.ITaskAgent) taskAgent: ITaskAgent
     ) {
-        this.terraformProvider = terraformProvider;        
+        this.terraformProvider = terraformProvider;           
+        this.taskAgent = taskAgent;     
     }
 
     public async execute(command: string): Promise<number> {
@@ -36,7 +37,7 @@ export class TerraformApplyHandler implements IHandleCommand{
             command,
             tasks.getInput("workingDirectory"),
             tasks.getInput("environmentServiceName", true),
-            tasks.getInput("varsFile"),
+            tasks.getInput("secureVarsFile"),
             tasks.getInput("commandOptions")
         );
         return this.onExecute(init);
@@ -47,16 +48,17 @@ export class TerraformApplyHandler implements IHandleCommand{
         if((<any>terraform).args.indexOf("-auto-approve") < 0)
             terraform.arg("-auto-approve");
         this.setupAzureRmProvider(command, terraform);
-        this.setupVars(command, terraform);
+        await this.setupVars(command, terraform);
 
         return terraform.exec(<IExecOptions>{
             cwd: command.workingDirectory
         });
     }
 
-    private setupVars(command: TerraformApply, terraform: ToolRunner){
-        if(command.varsFile){
-            terraform.arg(`-var-file=${command.varsFile}`);
+    private async setupVars(command: TerraformApply, terraform: ToolRunner){
+        if(command.secureVarsFile){
+            const secureFilePath = await this.taskAgent.downloadSecureFile(command.secureVarsFile);
+            terraform.arg(`-var-file=${secureFilePath}`);
         }
     }
 
