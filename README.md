@@ -11,6 +11,10 @@ This repo provides two tasks
 See readme for each of the tasks for development setup for each.
 
 ## Release Notes
+### 0.3.1
+
+#### Bug Fixes
+Duplicated working directory input parameter was removed (#17)[https://github.com/charleszipp/azure-pipelines-tasks-terraform/issues/17]
 
 ### 0.3.0
 

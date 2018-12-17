@@ -79,13 +79,6 @@
       }
     },
     {
-      "name": "workingDirectory",
-      "type": "filePath",
-      "label": "Working Directory",
-      "helpMarkDown": "Current working directory where the command is run. If empty, the root of the repository (build) or artifacts (release) is used, which is $(System.DefaultWorkingDirectory)",
-      "required": "false"
-    },
-    {
       "name": "commandOptions",
       "type": "string",
       "label": "Command Options",
