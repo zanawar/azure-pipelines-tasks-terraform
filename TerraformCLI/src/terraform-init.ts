@@ -2,9 +2,22 @@ import { IExecOptions, ToolRunner } from "azure-pipelines-task-lib/toolrunner";
 import tasks = require("azure-pipelines-task-lib/task");
 import { IHandleCommand, TerraformCommand, TYPES, ITerraformProvider } from "./terraform";
 import { injectable, inject } from "inversify";
+import azcli, { IAzOptions, AzError } from 'azcli-npm';
+import { longStackSupport } from "q";
 
 export enum BackendTypes{
     azurerm = "azurerm"
+}
+
+export interface AzureBackendConfig {
+    storage_account_name    : string,
+    container_name          : string,
+    key                     : string,
+    resource_group_name     : string,
+    arm_subscription_id     : string,
+    arm_tenant_id           : string,
+    arm_client_id           : string,
+    arm_client_secret       : string    
 }
 
 export class TerraformInit extends TerraformCommand{
@@ -44,13 +57,13 @@ export class TerraformInitHandler implements IHandleCommand{
 
     private async onExecute(command: TerraformInit): Promise<number> {
         var terraform = this.terraformProvider.create(command);
-        this.setupBackendConfig(command, terraform);
+        await this.setupBackendConfig(command, terraform);
         return terraform.exec(<IExecOptions>{
             cwd: command.workingDirectory
         });
     }
 
-    private setupBackendConfig(command: TerraformInit, terraform: ToolRunner){
+    private async setupBackendConfig(command: TerraformInit, terraform: ToolRunner){
         if(command.backendType && command.backendType == BackendTypes.azurerm){
             let backendServiceName = tasks.getInput("backendServiceArm", true);
             let scheme = tasks.getEndpointAuthorizationScheme(backendServiceName, true);
@@ -58,7 +71,7 @@ export class TerraformInitHandler implements IHandleCommand{
                 throw "Terraform backend initialization for AzureRM only support service principal authorization";
             }
 
-            let backendConfig: any = {
+            let backendConfig: AzureBackendConfig | any = {
                 storage_account_name    : tasks.getInput("backendAzureRmStorageAccountName", true),
                 container_name          : tasks.getInput("backendAzureRmContainerName", true),
                 key                     : tasks.getInput("backendAzureRmKey", true),
@@ -72,6 +85,95 @@ export class TerraformInitHandler implements IHandleCommand{
             for(var config in backendConfig){
                 terraform.arg(`-backend-config=${config}=${backendConfig[config]}`);
             }
+
+            let ensureBackendChecked: boolean = tasks.getBoolInput("ensureBackend");
+            if(ensureBackendChecked === true){
+                let location = tasks.getInput("backendAzureRmResourceGroupLocation", true);
+                let sku = tasks.getInput("backendAzureRmStorageAccountSku", true);
+                await this.ensureBackend(backendConfig, location, sku);
+            }
         }
+    }
+
+    private async ensureBackend(backendConfig: AzureBackendConfig, location: string, sku: string){
+        /*
+        new args needed...
+        location: the region to which the resource group should be deployed
+        sku: storage account sku, default to Standard_LRS
+        */
+        var cli = new azcli(<IAzOptions>{ minVersion: '2.0.0' })
+            .login(backendConfig.arm_tenant_id, backendConfig.arm_client_id, backendConfig.arm_client_secret)
+            .setSubscription(backendConfig.arm_subscription_id);
+        
+        await this.ensureBackendResourceGroup(cli, backendConfig.resource_group_name, location);
+        await this.ensureBackendStorageAccount(cli, backendConfig.resource_group_name, backendConfig.storage_account_name, sku);
+        await this.ensureBackendContainer(cli, backendConfig.resource_group_name, backendConfig.storage_account_name, backendConfig.container_name);
+    }
+
+    private async ensureBackendResourceGroup(cli: azcli, resourceGroupName: string, location: string): Promise<any> {
+        return await cli.start()
+            .arg("group")
+            .arg("create")
+            .arg("--name")
+            .arg(resourceGroupName)
+            .arg("--location")
+            .arg(location)
+            .execJsonAsync<any>()
+            .then((response) => {
+                tasks.debug(`ensure backend: ensured resource group '${response.name}' at '${response.location}' with uri '${response.id}'`)
+                return response;
+            });        
+    }
+    private async ensureBackendStorageAccount(cli: azcli, resourceGroupName: string, storageAccountName: string, sku: string): Promise<any> {
+        return await cli.start()
+            .arg("storage")
+            .arg("account")
+            .arg("create")
+            .arg("--name")
+            .arg(storageAccountName)
+            .arg("--resource-group")
+            .arg(resourceGroupName)
+            .arg("--sku")
+            .arg(sku)
+            .arg("--kind")
+            .arg("BlobStorage")
+            .arg("--encryption-services")
+            .arg("blob")
+            .arg("--access-tier")
+            .arg("Hot")
+            .execJsonAsync<any>()
+            .then((response) => {
+                tasks.debug(`ensure backend: ensured storage account '${response.name}' at '${response.location}' with uri '${response.id}'`)
+                return response;
+            });
+    }
+    private async ensureBackendContainer(cli: azcli, resourceGroupName: string, storageAccountName: string, containerName: string): Promise<any> {
+        var primaryKey = await cli.start()
+            .arg("storage")
+            .arg("account")
+            .arg("keys")
+            .arg("list")
+            .arg("--account-name")
+            .arg(storageAccountName)
+            .arg("--resource-group")
+            .arg(resourceGroupName)
+            .arg("--query")
+            .arg("[0].value")
+            .execRawStringAsync();            
+        return await cli.start()
+            .arg("storage")
+            .arg("container")
+            .arg("create")
+            .arg("--name")
+            .arg(containerName)
+            .arg("--account-name ")
+            .arg(storageAccountName)
+            .arg("--account-key ")
+            .arg(primaryKey)
+            .execJsonAsync<any>()
+            .then((response) => {
+                tasks.debug(`ensure backend: ensured container '${containerName}'`)
+                return response;
+            });
     }
 }
