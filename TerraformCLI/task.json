@@ -28,7 +28,7 @@
             "name": "variables",
             "displayName": "Variables",
             "isExpanded": false,
-            "visibleRule": "command = validate || command = plan || command = apply"
+            "visibleRule": "command = validate || command = plan || command = apply || command = destroy"
         }
     ],
     "inputs": [{
@@ -62,7 +62,7 @@
             "type": "connectedService:AzureRM",
             "label": "Environment Azure Subscription",
             "required": false,
-            "visibleRule": "command = plan || command = apply",
+            "visibleRule": "command = plan || command = apply || command = destroy",
             "helpMarkDown": "Select an Azure resource manager subscription for the deployment"
         },
         {
