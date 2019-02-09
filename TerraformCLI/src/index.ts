@@ -7,6 +7,7 @@ import { TerraformVersionHandler } from "./terraform-version";
 import { TerraformValidateHandler } from "./terraform-validate";
 import { TerraformPlanHandler } from "./terraform-plan";
 import { TerraformApplyHandler } from "./terraform-apply";
+import { TerraformDestroyHandler } from "./terraform-destroy";
 import TaskAgent from "./task-agent";
 
 var container = new Container();
@@ -23,6 +24,7 @@ container.bind<IHandleCommand>(TYPES.IHandleCommand).to(TerraformVersionHandler)
 container.bind<IHandleCommand>(TYPES.IHandleCommand).to(TerraformValidateHandler).whenTargetNamed("validate");
 container.bind<IHandleCommand>(TYPES.IHandleCommand).to(TerraformPlanHandler).whenTargetNamed("plan");
 container.bind<IHandleCommand>(TYPES.IHandleCommand).to(TerraformApplyHandler).whenTargetNamed("apply");
+container.bind<IHandleCommand>(TYPES.IHandleCommand).to(TerraformDestroyHandler).whenTargetNamed("destroy");
 
 // execute the terraform command
 let mediator = container.get<IMediator>(TYPES.IMediator);
