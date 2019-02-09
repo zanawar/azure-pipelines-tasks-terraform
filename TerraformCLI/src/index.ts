@@ -1,7 +1,7 @@
 import tasks = require("azure-pipelines-task-lib/task");
 import { Container, interfaces } from 'inversify';
 import "reflect-metadata";
-import { IMediator, TYPES, Mediator, IHandleCommand, TerraformProvider, ITerraformProvider, ITaskAgent } from "./terraform";
+import { IMediator, TYPES, Mediator, IHandleCommand, TerraformProvider, ITerraformProvider, ITaskAgent, IAzureCliProvider, AzureCliProvider } from "./terraform";
 import { TerraformInitHandler } from "./terraform-init";
 import { TerraformVersionHandler } from "./terraform-version";
 import { TerraformValidateHandler } from "./terraform-validate";
@@ -16,6 +16,7 @@ container.bind<Container>("container").toConstantValue(container);
 container.bind<ITerraformProvider>(TYPES.ITerraformProvider).toDynamicValue((context: interfaces.Context) => new TerraformProvider(tasks));
 container.bind<IMediator>(TYPES.IMediator).to(Mediator);
 container.bind<ITaskAgent>(TYPES.ITaskAgent).to(TaskAgent);
+container.bind<IAzureCliProvider>(TYPES.IAzureCliProvider).toDynamicValue((context: interfaces.Context) => new AzureCliProvider(tasks));
 
 // bind the handlers for each terraform command
 container.bind<IHandleCommand>(TYPES.IHandleCommand).to(TerraformInitHandler).whenTargetNamed("init");

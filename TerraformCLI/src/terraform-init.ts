@@ -1,8 +1,7 @@
 import { IExecOptions, ToolRunner } from "azure-pipelines-task-lib/toolrunner";
 import tasks = require("azure-pipelines-task-lib/task");
-import { IHandleCommand, TerraformCommand, TYPES, ITerraformProvider } from "./terraform";
+import { IHandleCommand, TerraformCommand, TYPES, ITerraformProvider, IAzureContext, IAzureCli, IAzureCliProvider } from "./terraform";
 import { injectable, inject } from "inversify";
-import azcli, { IAzOptions, AzError } from 'azcli-npm';
 import { longStackSupport } from "q";
 
 export enum BackendTypes{
@@ -38,11 +37,14 @@ export class TerraformInit extends TerraformCommand{
 @injectable()
 export class TerraformInitHandler implements IHandleCommand{
     private readonly terraformProvider: ITerraformProvider;
+    private readonly azcliProvider: IAzureCliProvider;
 
     constructor(
-        @inject(TYPES.ITerraformProvider) terraformProvider: ITerraformProvider
+        @inject(TYPES.ITerraformProvider) terraformProvider: ITerraformProvider,
+        @inject(TYPES.IAzureCliProvider) azcliProvider: IAzureCliProvider
     ) {
         this.terraformProvider = terraformProvider;        
+        this.azcliProvider = azcliProvider
     }
 
     public async execute(command: string): Promise<number> {
@@ -96,84 +98,90 @@ export class TerraformInitHandler implements IHandleCommand{
     }
 
     private async ensureBackend(backendConfig: AzureBackendConfig, location: string, sku: string){
+        let azcli: IAzureCli = await this.azcliProvider.createAsync(<IAzureContext>{
+            subscriptionId: backendConfig.arm_subscription_id,
+            tenantId: backendConfig.arm_tenant_id,
+            clientId: backendConfig.arm_client_id,
+            clientSecret: backendConfig.arm_client_secret
+        });
         /*
         new args needed...
         location: the region to which the resource group should be deployed
         sku: storage account sku, default to Standard_LRS
         */
-        var cli = new azcli(<IAzOptions>{ minVersion: '2.0.0' })
-            .login(backendConfig.arm_tenant_id, backendConfig.arm_client_id, backendConfig.arm_client_secret)
-            .setSubscription(backendConfig.arm_subscription_id);
+        // var cli = new azcli(<IAzOptions>{ minVersion: '2.0.0' })
+        //     .login(backendConfig.arm_tenant_id, backendConfig.arm_client_id, backendConfig.arm_client_secret)
+        //     .setSubscription(backendConfig.arm_subscription_id);
         
-        await this.ensureBackendResourceGroup(cli, backendConfig.resource_group_name, location);
-        await this.ensureBackendStorageAccount(cli, backendConfig.resource_group_name, backendConfig.storage_account_name, sku);
-        await this.ensureBackendContainer(cli, backendConfig.resource_group_name, backendConfig.storage_account_name, backendConfig.container_name);
+        // await this.ensureBackendResourceGroup(cli, backendConfig.resource_group_name, location);
+        // await this.ensureBackendStorageAccount(cli, backendConfig.resource_group_name, backendConfig.storage_account_name, sku);
+        // await this.ensureBackendContainer(cli, backendConfig.resource_group_name, backendConfig.storage_account_name, backendConfig.container_name);
     }
 
-    private async ensureBackendResourceGroup(cli: azcli, resourceGroupName: string, location: string): Promise<any> {
-        return await cli.start()
-            .arg("group")
-            .arg("create")
-            .arg("--name")
-            .arg(resourceGroupName)
-            .arg("--location")
-            .arg(location)
-            .execJsonAsync<any>()
-            .then((response) => {
-                tasks.debug(`ensure backend: ensured resource group '${response.name}' at '${response.location}' with uri '${response.id}'`)
-                return response;
-            });        
-    }
-    private async ensureBackendStorageAccount(cli: azcli, resourceGroupName: string, storageAccountName: string, sku: string): Promise<any> {
-        return await cli.start()
-            .arg("storage")
-            .arg("account")
-            .arg("create")
-            .arg("--name")
-            .arg(storageAccountName)
-            .arg("--resource-group")
-            .arg(resourceGroupName)
-            .arg("--sku")
-            .arg(sku)
-            .arg("--kind")
-            .arg("BlobStorage")
-            .arg("--encryption-services")
-            .arg("blob")
-            .arg("--access-tier")
-            .arg("Hot")
-            .execJsonAsync<any>()
-            .then((response) => {
-                tasks.debug(`ensure backend: ensured storage account '${response.name}' at '${response.location}' with uri '${response.id}'`)
-                return response;
-            });
-    }
-    private async ensureBackendContainer(cli: azcli, resourceGroupName: string, storageAccountName: string, containerName: string): Promise<any> {
-        var primaryKey = await cli.start()
-            .arg("storage")
-            .arg("account")
-            .arg("keys")
-            .arg("list")
-            .arg("--account-name")
-            .arg(storageAccountName)
-            .arg("--resource-group")
-            .arg(resourceGroupName)
-            .arg("--query")
-            .arg("[0].value")
-            .execRawStringAsync();            
-        return await cli.start()
-            .arg("storage")
-            .arg("container")
-            .arg("create")
-            .arg("--name")
-            .arg(containerName)
-            .arg("--account-name ")
-            .arg(storageAccountName)
-            .arg("--account-key ")
-            .arg(primaryKey)
-            .execJsonAsync<any>()
-            .then((response) => {
-                tasks.debug(`ensure backend: ensured container '${containerName}'`)
-                return response;
-            });
-    }
+    // private async ensureBackendResourceGroup(cli: azcli, resourceGroupName: string, location: string): Promise<any> {
+    //     return await cli.start()
+    //         .arg("group")
+    //         .arg("create")
+    //         .arg("--name")
+    //         .arg(resourceGroupName)
+    //         .arg("--location")
+    //         .arg(location)
+    //         .execJsonAsync<any>()
+    //         .then((response) => {
+    //             tasks.debug(`ensure backend: ensured resource group '${response.name}' at '${response.location}' with uri '${response.id}'`)
+    //             return response;
+    //         });        
+    // }
+    // private async ensureBackendStorageAccount(cli: azcli, resourceGroupName: string, storageAccountName: string, sku: string): Promise<any> {
+    //     return await cli.start()
+    //         .arg("storage")
+    //         .arg("account")
+    //         .arg("create")
+    //         .arg("--name")
+    //         .arg(storageAccountName)
+    //         .arg("--resource-group")
+    //         .arg(resourceGroupName)
+    //         .arg("--sku")
+    //         .arg(sku)
+    //         .arg("--kind")
+    //         .arg("BlobStorage")
+    //         .arg("--encryption-services")
+    //         .arg("blob")
+    //         .arg("--access-tier")
+    //         .arg("Hot")
+    //         .execJsonAsync<any>()
+    //         .then((response) => {
+    //             tasks.debug(`ensure backend: ensured storage account '${response.name}' at '${response.location}' with uri '${response.id}'`)
+    //             return response;
+    //         });
+    // }
+    // private async ensureBackendContainer(cli: azcli, resourceGroupName: string, storageAccountName: string, containerName: string): Promise<any> {
+    //     var primaryKey = await cli.start()
+    //         .arg("storage")
+    //         .arg("account")
+    //         .arg("keys")
+    //         .arg("list")
+    //         .arg("--account-name")
+    //         .arg(storageAccountName)
+    //         .arg("--resource-group")
+    //         .arg(resourceGroupName)
+    //         .arg("--query")
+    //         .arg("[0].value")
+    //         .execRawStringAsync();            
+    //     return await cli.start()
+    //         .arg("storage")
+    //         .arg("container")
+    //         .arg("create")
+    //         .arg("--name")
+    //         .arg(containerName)
+    //         .arg("--account-name ")
+    //         .arg(storageAccountName)
+    //         .arg("--account-key ")
+    //         .arg(primaryKey)
+    //         .execJsonAsync<any>()
+    //         .then((response) => {
+    //             tasks.debug(`ensure backend: ensured container '${containerName}'`)
+    //             return response;
+    //         });
+    // }
 }
