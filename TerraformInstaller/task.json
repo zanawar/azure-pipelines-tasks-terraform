@@ -23,7 +23,7 @@
       "name": "terraformVersion",
       "type": "string",
       "label": "Version",
-      "defaultValue": "0.11.8",
+      "defaultValue": "0.11.11",
       "required": true,
       "helpMarkDown": "Specify the version of terraform that should be installed"
     }
