@@ -73,63 +73,10 @@ export interface ITaskAgent{
     downloadSecureFile(secureFileId: string): Promise<string>
 }
 
-export interface IAzureContext{
-    subscriptionId: string;
-    tenantId: string;
-    clientId: string;
-    clientSecret: string;
-}
-
-export interface IAzureCliProvider{
-    createAsync(context: IAzureContext) : Promise<IAzureCli>
-}
-
-@injectable()
-export class AzureCliProvider implements IAzureCliProvider{    
-    private readonly tasks: any;
-    constructor(tasks: any) {
-        this.tasks = tasks;
-    }
-    async createAsync(context: IAzureContext): Promise<IAzureCli> {
-        let azurePath = this.tasks.which("az", true);
-        let cli = new AzureCli(azurePath, this.tasks);
-        await cli.login(context);
-        await cli.accountSet(context.subscriptionId);
-        return cli;   
-    }    
-}
-
-export interface IAzureCli{
-    login(command: IAzureContext): Promise<number>
-    accountSet(subscriptionId: string): Promise<number>
-}
-
-export class AzureCli implements IAzureCli{
-    private readonly azcliPath: string;
-    private readonly tasks: any;
-    constructor(azcliPath: string, tasks: any) {
-        this.azcliPath = azcliPath;
-        this.tasks = tasks;
-    }
-    async login(command: IAzureContext): Promise<number>{
-        let cli = this.tasks.tool(this.azcliPath);
-        cli.line(`login --service-principal -t "${command.tenantId}" -u "${command.clientId}" -p "${command.clientSecret}"`);
-        return await cli.exec();        
-    }
-    async accountSet(subscriptionId: string): Promise<number>{
-        let cli = this.tasks.tool(this.azcliPath);
-        cli.line(`account set -s "${subscriptionId}"`);
-        return await cli.exec();
-    }
-}
-
-
-
 export const TYPES = {
     IMediator : Symbol("IMediator"),
     IHandleCommand : Symbol("IHandleCommand"),
     ITerraformProvider : Symbol("ITerraformProvider"),
     IAzureProvider : Symbol("IAzureProvider"),
-    ITaskAgent: Symbol('ITaskAgent'),
-    IAzureCliProvider: Symbol('IAzureCliProvider')
+    ITaskAgent: Symbol('ITaskAgent')
 }

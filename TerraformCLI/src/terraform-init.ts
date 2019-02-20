@@ -1,8 +1,11 @@
 import { IExecOptions, ToolRunner } from "azure-pipelines-task-lib/toolrunner";
 import tasks = require("azure-pipelines-task-lib/task");
-import { IHandleCommand, TerraformCommand, TYPES, ITerraformProvider, IAzureContext, IAzureCli, IAzureCliProvider } from "./terraform";
+import { IHandleCommand, TerraformCommand, TYPES, ITerraformProvider } from "./terraform";
 import { injectable, inject } from "inversify";
-import { longStackSupport } from "q";
+import { AzureMediator, IAzureMediator } from "./azcli/mediator";
+import { AzureShell } from "./azcli/azure-shell";
+import { Login } from "./azcli/commands/login";
+import { SetAccount } from "./azcli/commands/account-set";
 
 export enum BackendTypes{
     azurerm = "azurerm"
@@ -37,14 +40,14 @@ export class TerraformInit extends TerraformCommand{
 @injectable()
 export class TerraformInitHandler implements IHandleCommand{
     private readonly terraformProvider: ITerraformProvider;
-    private readonly azcliProvider: IAzureCliProvider;
+    private readonly mediator: IAzureMediator;
 
     constructor(
         @inject(TYPES.ITerraformProvider) terraformProvider: ITerraformProvider,
-        @inject(TYPES.IAzureCliProvider) azcliProvider: IAzureCliProvider
+        @inject(AzureMediator) mediator: IAzureMediator
     ) {
         this.terraformProvider = terraformProvider;        
-        this.azcliProvider = azcliProvider
+        this.mediator = mediator
     }
 
     public async execute(command: string): Promise<number> {
@@ -59,13 +62,13 @@ export class TerraformInitHandler implements IHandleCommand{
 
     private async onExecute(command: TerraformInit): Promise<number> {
         var terraform = this.terraformProvider.create(command);
-        await this.setupBackendConfig(command, terraform);
+        this.setupBackendConfig(command, terraform);
         return terraform.exec(<IExecOptions>{
             cwd: command.workingDirectory
         });
     }
 
-    private async setupBackendConfig(command: TerraformInit, terraform: ToolRunner){
+    private setupBackendConfig(command: TerraformInit, terraform: ToolRunner){
         if(command.backendType && command.backendType == BackendTypes.azurerm){
             let backendServiceName = tasks.getInput("backendServiceArm", true);
             let scheme = tasks.getEndpointAuthorizationScheme(backendServiceName, true);
@@ -92,18 +95,22 @@ export class TerraformInitHandler implements IHandleCommand{
             if(ensureBackendChecked === true){
                 let location = tasks.getInput("backendAzureRmResourceGroupLocation", true);
                 let sku = tasks.getInput("backendAzureRmStorageAccountSku", true);
-                await this.ensureBackend(backendConfig, location, sku);
+                this.ensureBackend(backendConfig, location, sku);
             }
         }
     }
 
-    private async ensureBackend(backendConfig: AzureBackendConfig, location: string, sku: string){
-        let azcli: IAzureCli = await this.azcliProvider.createAsync(<IAzureContext>{
-            subscriptionId: backendConfig.arm_subscription_id,
-            tenantId: backendConfig.arm_tenant_id,
-            clientId: backendConfig.arm_client_id,
-            clientSecret: backendConfig.arm_client_secret
-        });
+    private ensureBackend(backendConfig: AzureBackendConfig, location: string, sku: string){
+        let shell = new AzureShell()
+            .azLogin(new Login(
+                backendConfig.arm_tenant_id,
+                backendConfig.arm_client_id,
+                backendConfig.arm_client_secret
+            ))
+            .azAccountSet(new SetAccount(
+                backendConfig.arm_subscription_id
+            ))
+            .execute(this.mediator);
         /*
         new args needed...
         location: the region to which the resource group should be deployed
