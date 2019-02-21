@@ -8,6 +8,8 @@ import { Login } from "./azcli/commands/login";
 import { AccountSet } from "./azcli/commands/account-set";
 import { GroupCreate, GroupCreateResult } from "./azcli/commands/group-create";
 import { StorageAccountCreate } from "./azcli/commands/storage-account-create";
+import { StorageAccountKeysList, StorageAccountKeysListResult } from "./azcli/commands/storage-account-keys-list";
+import { StorageContainerCreate } from "./azcli/commands/storage-container-create";
 
 export enum BackendTypes{
     azurerm = "azurerm"
@@ -120,6 +122,15 @@ export class TerraformInitHandler implements IHandleCommand{
                 backendConfig.storage_account_name,
                 backendConfig.resource_group_name,
                 sku
+            ))
+            .azStorageAccountKeysList(new StorageAccountKeysList(
+                backendConfig.storage_account_name,
+                backendConfig.resource_group_name
+            ))
+            .azStorageContainerCreateFrom((result: StorageAccountKeysListResult) => new StorageContainerCreate(
+                backendConfig.container_name,
+                backendConfig.storage_account_name,
+                result.keys[0].value
             ))
             .execute(this.mediator);
         /*

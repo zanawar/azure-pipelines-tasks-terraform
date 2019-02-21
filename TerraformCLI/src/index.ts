@@ -15,6 +15,8 @@ import { HandleCommand } from "./azcli/command";
 import { LoginResult, Login, LoginHandler } from "./azcli/commands/login";
 import { GroupCreate, GroupCreateResult, GroupCreateHandler } from "./azcli/commands/group-create";
 import { StorageAccountCreate, StorageAccountCreateResult, StorageAccountCreateHandler } from "./azcli/commands/storage-account-create";
+import { StorageAccountKeysList, StorageAccountKeysListResult, StorageAccountKeysListHandler } from "./azcli/commands/storage-account-keys-list";
+import { StorageContainerCreate, StorageContainerCreateHandler, StorageContainerCreateResult } from "./azcli/commands/storage-container-create";
 
 var container = new Container();
 
@@ -36,6 +38,8 @@ container.bind<HandleCommand<Login, LoginResult>>(HandleCommand).to(LoginHandler
 container.bind<HandleCommand<AccountSet, AccountSetResult>>(HandleCommand).to(SetAccountHandler).whenTargetNamed(AccountSet.name);
 container.bind<HandleCommand<GroupCreate, GroupCreateResult>>(HandleCommand).to(GroupCreateHandler).whenTargetNamed(GroupCreate.name);
 container.bind<HandleCommand<StorageAccountCreate, StorageAccountCreateResult>>(HandleCommand).to(StorageAccountCreateHandler).whenTargetNamed(StorageAccountCreate.name);
+container.bind<HandleCommand<StorageAccountKeysList, StorageAccountKeysListResult>>(HandleCommand).to(StorageAccountKeysListHandler).whenTargetNamed(StorageAccountKeysList.name);
+container.bind<HandleCommand<StorageContainerCreate, StorageContainerCreateResult>>(HandleCommand).to(StorageContainerCreateHandler).whenTargetNamed(StorageContainerCreate.name);
 
 // bind the handlers for each terraform command
 container.bind<IHandleCommand>(TYPES.IHandleCommand).to(TerraformInitHandler).whenTargetNamed("init");
