@@ -37,6 +37,16 @@ The example below contains all the possible inputs the task supports
 AGENT_TOOLSDIRECTORY=./../_test-agent/tools
 AGENT_TEMPDIRECTORY=./../_test-agent/temp
 
+# These settings are needed to access secure files that are uploaded to Pipelines > Library > Secure Files. 
+# The connection handshake is currently happening when the task starts. 
+# This means these settings currently have to be in place when running locally even if you did not specify a secure file
+# The azure devops url to your target or (i.e. https://dev.azure.com/chzipp)
+SYSTEM_TEAMFOUNDATIONCOLLECTIONURI=my-azure-devops-org-url
+# The name of the project within the org provided above
+SYSTEM_TEAMPROJECT=my-azure-devops-org-project
+# Personal Access Token for authentication
+ENDPOINT_AUTH_PARAMETER_SYSTEMVSSCONNECTION_ACCESSTOKEN=my-personal-access-token
+
 # The command to execute
 INPUT_COMMAND=init
 
@@ -45,32 +55,10 @@ INPUT_COMMAND=init
 INPUT_WORKINGDIRECTORY=./../TerraformTemplates/sample
 
 # The path to the var file to use when executing the commands that require it
-INPUT_VARSFILE=default.vars
+INPUT_COMMANDOPTIONS='-var-file default.vars'
 
 # This can be left as is, this would the service connection name that points to the deployment target (i.e. azure subscription)
 INPUT_ENVIRONMENTSERVICENAME=dev
-
-# Indicates what type of terraform backend to use. Current valid values are 'local', 'azurerm'. 
-INPUT_BACKENDTYPE=local
-
-# If using 'azurerm' backend, this is the service name to the tfstate storage account's subscription
-# This can be left as is
-INPUT_BACKENDSERVICEARM=backend
-
-# If using 'azurerm' backend, these indicate the resource group, storage account name, container name, and file name used to store state.
-# These are not required if using local backend
-INPUT_BACKENDAZURERMRESOURCEGROUPNAME=my-resource-group-name-here
-INPUT_BACKENDAZURERMSTORAGEACCOUNTNAME=my-storage-account-name
-INPUT_BACKENDAZURERMCONTAINERNAME=my-blob-container-name
-INPUT_BACKENDAZURERMKEY=my-blob-file-name
-
-# If using 'azurerm' backend, these specify the service principal credentials to use when accessing the storage account
-# These are not required if using local backend
-ENDPOINT_AUTH_SCHEME_backend=ServicePrincipal
-ENDPOINT_DATA_backend_SUBSCRIPTIONID=my-backend-subscription-id
-ENDPOINT_AUTH_PARAMETER_backend_TENANTID=my-backend-tenant-id
-ENDPOINT_AUTH_PARAMETER_backend_SERVICEPRINCIPALID=my-backend-service-principal-app-id
-ENDPOINT_AUTH_PARAMETER_backend_SERVICEPRINCIPALKEY=my-backend-service-principal-key
 
 # These specify the service principal credentials to use when executing plan and apply commands against azure.
 ENDPOINT_AUTH_SCHEME_dev=ServicePrincipal
@@ -78,7 +66,39 @@ ENDPOINT_DATA_dev_SUBSCRIPTIONID=my-target-env-subscription-id
 ENDPOINT_AUTH_PARAMETER_dev_TENANTID=my-target-env-tenant-id
 ENDPOINT_AUTH_PARAMETER_dev_SERVICEPRINCIPALID=my-target-env-service-principal-app-id
 ENDPOINT_AUTH_PARAMETER_dev_SERVICEPRINCIPALKEY=my-target-env-service-principal-key
+
+# Indicates what type of terraform backend to use. Current valid values are 'local', 'azurerm'. 
+INPUT_BACKENDTYPE=local
+
+# If using 'azurerm' backend, this is the service name to the tfstate storage account's subscription
+# This can be left as is
+# INPUT_BACKENDSERVICEARM=backend
+
+# If using 'azurerm' backend, these indicate the resource group, storage account name, container name, and file name used to store state.
+# These are not required if using local backend
+# INPUT_BACKENDAZURERMRESOURCEGROUPNAME=my-resource-group-name-here
+# INPUT_BACKENDAZURERMSTORAGEACCOUNTNAME=my-storage-account-name
+# INPUT_BACKENDAZURERMCONTAINERNAME=my-blob-container-name
+# INPUT_BACKENDAZURERMKEY=my-blob-file-name
+
+# If using 'azurerm' backend, these specify the service principal credentials to use when accessing the storage account
+# These are not required if using local backend
+# ENDPOINT_AUTH_SCHEME_backend=ServicePrincipal
+# ENDPOINT_DATA_backend_SUBSCRIPTIONID=my-backend-subscription-id
+# ENDPOINT_AUTH_PARAMETER_backend_TENANTID=my-backend-tenant-id
+# ENDPOINT_AUTH_PARAMETER_backend_SERVICEPRINCIPALID=my-backend-service-principal-app-id
+# ENDPOINT_AUTH_PARAMETER_backend_SERVICEPRINCIPALKEY=my-backend-service-principal-key
 ```
+### Update main.tf Backend for Sample Template
+If using the sample template within TerraformTemplates and using local backend, remove the section indicating remote azurerm backend
+
+TerraformTemplates/sample/main.tf
+```tf
+# comment this out if using local
+terraform{
+    backend "azurerm"{}
+}
+``` 
 ## Compile
 The `npm run build` script will compile the typescript down to standard es6 javascript
 ```
