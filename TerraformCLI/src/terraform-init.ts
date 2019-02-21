@@ -1,8 +1,8 @@
 import { IExecOptions, ToolRunner } from "azure-pipelines-task-lib/toolrunner";
 import tasks = require("azure-pipelines-task-lib/task");
-import { IHandleCommand, TerraformCommand, TYPES, ITerraformProvider } from "./terraform";
+import { TerraformCommand, TerraformInterfaces, ITerraformProvider } from "./terraform";
+import { IHandleCommand } from "./commands";
 import { injectable, inject } from "inversify";
-import { AzureMediator, IAzureMediator } from "./azcli/mediator";
 import { AzureShell } from "./azcli/azure-shell";
 import { Login } from "./azcli/commands/login";
 import { AccountSet } from "./azcli/commands/account-set";
@@ -10,6 +10,7 @@ import { GroupCreate, GroupCreateResult } from "./azcli/commands/group-create";
 import { StorageAccountCreate } from "./azcli/commands/storage-account-create";
 import { StorageAccountKeysList, StorageAccountKeysListResult } from "./azcli/commands/storage-account-keys-list";
 import { StorageContainerCreate } from "./azcli/commands/storage-container-create";
+import { MediatorInterfaces, IMediator } from "./mediator";
 
 export enum BackendTypes{
     azurerm = "azurerm"
@@ -44,11 +45,11 @@ export class TerraformInit extends TerraformCommand{
 @injectable()
 export class TerraformInitHandler implements IHandleCommand{
     private readonly terraformProvider: ITerraformProvider;
-    private readonly mediator: IAzureMediator;
+    private readonly mediator: IMediator;
 
     constructor(
-        @inject(TYPES.ITerraformProvider) terraformProvider: ITerraformProvider,
-        @inject(AzureMediator) mediator: IAzureMediator
+        @inject(TerraformInterfaces.ITerraformProvider) terraformProvider: ITerraformProvider,
+        @inject(MediatorInterfaces.IMediator) mediator: IMediator
     ) {
         this.terraformProvider = terraformProvider;        
         this.mediator = mediator

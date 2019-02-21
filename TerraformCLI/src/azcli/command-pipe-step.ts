@@ -1,6 +1,6 @@
-import { ICommand } from "./command";
 import { Step, StepFrom } from "./step";
-import { IAzureMediator } from "./mediator";
+import { ICommand } from "../commands";
+import { IMediator } from "../mediator";
 
 export class CommandPipeFromStep<TPreviousResult, TCommand extends ICommand<TResult>, TResult> extends StepFrom<TPreviousResult, TResult>
 {
@@ -11,7 +11,7 @@ export class CommandPipeFromStep<TPreviousResult, TCommand extends ICommand<TRes
         this.commandFactory = commandFactory;
     }
 
-    execute(mediator: IAzureMediator): TResult {
+    execute(mediator: IMediator): TResult {
         let previous = this.previous.execute(mediator);
         let command = this.commandFactory(previous);
         return mediator.execute(command);
@@ -27,7 +27,7 @@ export class CommandPipeStep<TPreviousResult, TCommand extends ICommand<TResult>
         this.command = command;
     }
 
-    execute(mediator: IAzureMediator): TResult {
+    execute(mediator: IMediator): TResult {
         this.previous.execute(mediator);
         return mediator.execute(this.command);
     }

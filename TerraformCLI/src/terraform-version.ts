@@ -1,4 +1,5 @@
-import { IHandleCommand, TYPES, ITerraformProvider } from "./terraform";
+import { TerraformInterfaces, ITerraformProvider } from "./terraform";
+import { IHandleCommand } from "./commands";
 import { injectable, inject } from "inversify";
 
 @injectable()
@@ -6,7 +7,7 @@ export class TerraformVersionHandler implements IHandleCommand{
     private readonly terraformProvider: ITerraformProvider;
 
     constructor(
-        @inject(TYPES.ITerraformProvider) terraformProvider: ITerraformProvider
+        @inject(TerraformInterfaces.ITerraformProvider) terraformProvider: ITerraformProvider
     ) {
         this.terraformProvider = terraformProvider;        
     }

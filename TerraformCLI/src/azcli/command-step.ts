@@ -1,6 +1,6 @@
-import { ICommand } from "./command";
 import { Step } from "./step";
-import { IAzureMediator } from "./mediator";
+import { IMediator } from "../mediator";
+import { ICommand } from "../commands";
 
 export class CommandStep<TCommand extends ICommand<TResult>, TResult> extends Step<TResult>
 {
@@ -11,7 +11,7 @@ export class CommandStep<TCommand extends ICommand<TResult>, TResult> extends St
         this.command = command;
     }
 
-    execute(mediator: IAzureMediator): TResult {
+    execute(mediator: IMediator): TResult {
         return mediator.execute(this.command);
     }
 }

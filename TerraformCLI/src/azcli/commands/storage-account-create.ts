@@ -1,4 +1,4 @@
-import { HandleCommand, ICommand } from "../command";
+import { IHandleCommandResult, ICommand } from "../../commands";
 import { AzureCLI } from "../azure-cli";
 import { Step, StepFrom } from "../step";
 import { injectable, inject } from "inversify";
@@ -43,7 +43,7 @@ export class StorageAccountCreate implements ICommand<StorageAccountCreateResult
 }
 
 @injectable()
-export class StorageAccountCreateHandler implements HandleCommand<StorageAccountCreate, StorageAccountCreateResult>{
+export class StorageAccountCreateHandler implements IHandleCommandResult<StorageAccountCreate, StorageAccountCreateResult>{
     private readonly cli: AzureCLI;
 
     constructor(

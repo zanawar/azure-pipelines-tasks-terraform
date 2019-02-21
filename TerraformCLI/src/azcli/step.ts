@@ -1,8 +1,8 @@
-import { IAzureMediator } from "./mediator";
+import { IMediator } from "../mediator";
 
 export abstract class Step<TResult>
 {
-    abstract execute(mediator: IAzureMediator): TResult;
+    abstract execute(mediator: IMediator): TResult;
 }
 
 export abstract class StepFrom<TPreviousResult, TResult> extends Step<TResult>
