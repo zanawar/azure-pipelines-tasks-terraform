@@ -1,10 +1,10 @@
-import { IHandleCommand, ICommand } from "../../commands";
-import { AzureCLI } from "../azure-cli";
-import { Step, StepFrom } from "../step";
+import { IHandleCommand, ICommand } from "./commands";
+import { CommandRunner } from "./command-runner";
+import { Step, StepFrom } from "./step";
 import { injectable, inject } from "inversify";
-import { CommandPipeStep } from "../command-pipe-step";
+import { CommandPipeStep } from "./command-pipe-step";
 
-declare module "../step" {
+declare module "./step" {
     interface Step<TResult> {
         azGroupCreate<TPreviousResult>(this: Step<TPreviousResult>, command: AzGroupCreate): StepFrom<TPreviousResult, AzGroupCreateResult>;
     }
@@ -36,10 +36,10 @@ export class AzGroupCreate implements ICommand<AzGroupCreateResult> {
 
 @injectable()
 export class AzGroupCreateHandler implements IHandleCommand<AzGroupCreate, AzGroupCreateResult>{
-    private readonly cli: AzureCLI;
+    private readonly cli: CommandRunner;
 
     constructor(
-        @inject(AzureCLI) cli: AzureCLI) {
+        @inject(CommandRunner) cli: CommandRunner) {
         this.cli = cli;
     }
     

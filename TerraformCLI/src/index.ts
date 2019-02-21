@@ -8,13 +8,13 @@ import { TerraformValidateHandler } from "./terraform-validate";
 import { TerraformPlanHandler } from "./terraform-plan";
 import { TerraformApplyHandler } from "./terraform-apply";
 import TaskAgent from "./task-agent";
-import { AzureCLI } from "./azcli/azure-cli";
-import { AzAccountSet, AzAccountSetResult, AzAccountSetHandler } from "./azcli/commands/az-account-set";
-import { AzLoginResult, AzLogin, AzLoginHandler } from "./azcli/commands/az-login";
-import { AzGroupCreate, AzGroupCreateResult, AzGroupCreateHandler } from "./azcli/commands/az-group-create";
-import { AzStorageAccountCreate, AzStorageAccountCreateResult, AzStorageAccountCreateHandler } from "./azcli/commands/az-storage-account-create";
-import { AzStorageAccountKeysList, AzStorageAccountKeysListResult, AzStorageAccountKeysListHandler } from "./azcli/commands/az-storage-account-keys-list";
-import { AzStorageContainerCreate, AzStorageContainerCreateHandler, AzStorageContainerCreateResult } from "./azcli/commands/az-storage-container-create";
+import { CommandRunner } from "./command-runner";
+import { AzAccountSet, AzAccountSetResult, AzAccountSetHandler } from "./az-account-set";
+import { AzLoginResult, AzLogin, AzLoginHandler } from "./az-login";
+import { AzGroupCreate, AzGroupCreateResult, AzGroupCreateHandler } from "./az-group-create";
+import { AzStorageAccountCreate, AzStorageAccountCreateResult, AzStorageAccountCreateHandler } from "./az-storage-account-create";
+import { AzStorageAccountKeysList, AzStorageAccountKeysListResult, AzStorageAccountKeysListHandler } from "./az-storage-account-keys-list";
+import { AzStorageContainerCreate, AzStorageContainerCreateHandler, AzStorageContainerCreateResult } from "./az-storage-container-create";
 import { MediatorInterfaces, IMediator, Mediator } from "./mediator";
 import { IHandleCommandString, CommandInterfaces, IHandleCommand } from "./commands";
 
@@ -25,8 +25,8 @@ container.bind<Container>("container").toConstantValue(container);
 container.bind<ITerraformProvider>(TerraformInterfaces.ITerraformProvider).toDynamicValue((context: interfaces.Context) => new TerraformProvider(tasks));
 container.bind<IMediator>(MediatorInterfaces.IMediator).to(Mediator);
 container.bind<ITaskAgent>(TerraformInterfaces.ITaskAgent).to(TaskAgent);
-container.bind<AzureCLI>(AzureCLI).toDynamicValue((context: interfaces.Context) => {
-    return new AzureCLI(() => {
+container.bind<CommandRunner>(CommandRunner).toDynamicValue((context: interfaces.Context) => {
+    return new CommandRunner(() => {
         let path = tasks.which("az", true);
         return tasks.tool(path);
     })

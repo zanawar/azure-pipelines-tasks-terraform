@@ -2,7 +2,7 @@ import { ToolRunner } from "azure-pipelines-task-lib/toolrunner";
 import { injectable } from "inversify";
 
 @injectable()
-export class AzureCLI {
+export class CommandRunner {
     private readonly start: () => ToolRunner;
     constructor(start: () => ToolRunner) {
         this.start = start;

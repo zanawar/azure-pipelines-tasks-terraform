@@ -1,4 +1,4 @@
-import { IMediator } from "../mediator";
+import { IMediator } from "./mediator";
 
 export abstract class Step<TResult>
 {

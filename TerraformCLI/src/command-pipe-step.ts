@@ -1,6 +1,6 @@
 import { Step, StepFrom } from "./step";
-import { ICommand } from "../commands";
-import { IMediator } from "../mediator";
+import { ICommand } from "./commands";
+import { IMediator } from "./mediator";
 
 export class CommandPipeFromStep<TPreviousResult, TCommand extends ICommand<TResult>, TResult> extends StepFrom<TPreviousResult, TResult>
 {

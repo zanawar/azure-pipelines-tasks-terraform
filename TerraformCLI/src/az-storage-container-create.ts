@@ -1,10 +1,10 @@
-import { AzureCLI } from "../azure-cli";
-import { Step, StepFrom } from "../step";
+import { CommandRunner } from "./command-runner";
+import { Step, StepFrom } from "./step";
 import { injectable, inject } from "inversify";
-import { CommandPipeFromStep } from "../command-pipe-step";
-import { ICommand, IHandleCommand } from "../../commands";
+import { CommandPipeFromStep } from "./command-pipe-step";
+import { ICommand, IHandleCommand } from "./commands";
 
-declare module "../step" {
+declare module "./step" {
     interface Step<TResult> {
         azStorageContainerCreateFrom<TPreviousResult>(this: Step<TPreviousResult>, commandFactory: (previous: TPreviousResult) => AzStorageContainerCreate): StepFrom<TPreviousResult, AzStorageContainerCreateResult>;
     }
@@ -34,10 +34,10 @@ export class AzStorageContainerCreate implements ICommand<AzStorageContainerCrea
 
 @injectable()
 export class AzStorageContainerCreateHandler implements IHandleCommand<AzStorageContainerCreate, AzStorageContainerCreateResult>{
-    private readonly cli: AzureCLI;
+    private readonly cli: CommandRunner;
 
     constructor(
-        @inject(AzureCLI) cli: AzureCLI) {
+        @inject(CommandRunner) cli: CommandRunner) {
         this.cli = cli;
     }
     

@@ -1,18 +1,18 @@
-import { IHandleCommand, ICommand } from "../../commands";
-import { AzureCLI } from "../azure-cli";
-import { Step } from "../step";
-import { AzureShell } from "../azure-shell";
-import { CommandStep } from "../command-step";
+import { IHandleCommand, ICommand } from "./commands";
+import { CommandRunner } from "./command-runner";
+import { Step } from "./step";
+import { AzureShell } from "./azure-shell";
+import { PipelineCommand } from "./pipeline-command";
 import { injectable, inject } from "inversify";
 
-declare module '../azure-shell'{
+declare module './azure-shell'{
     interface AzureShell{
         azLogin(this: AzureShell, command: AzLogin) : Step<AzLoginResult>;
     }
 }
 
 AzureShell.prototype.azLogin = function(this: AzureShell, command: AzLogin) : Step<AzLoginResult> {
-    return new CommandStep<AzLogin, AzLoginResult>(command);
+    return new PipelineCommand<AzLogin, AzLoginResult>(command);
 }
 
 interface AzUser {
@@ -49,10 +49,10 @@ export class AzLogin implements ICommand<AzLoginResult>
 @injectable()
 export class AzLoginHandler implements IHandleCommand<AzLogin, AzLoginResult>
 {
-    private readonly cli: AzureCLI;
+    private readonly cli: CommandRunner;
 
     constructor(
-        @inject(AzureCLI) cli: AzureCLI) {
+        @inject(CommandRunner) cli: CommandRunner) {
         this.cli = cli;
     }
 

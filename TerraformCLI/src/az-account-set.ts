@@ -1,10 +1,10 @@
-import { IHandleCommand, ICommand } from "../../commands";
-import { AzureCLI } from "../azure-cli";
-import { Step, StepFrom } from "../step";
-import { CommandPipeStep } from "../command-pipe-step";
+import { IHandleCommand, ICommand } from "./commands";
+import { CommandRunner } from "./command-runner";
+import { Step, StepFrom } from "./step";
+import { CommandPipeStep } from "./command-pipe-step";
 import { injectable, inject } from "inversify";
 
-declare module "../step" {
+declare module "./step" {
     interface Step<TResult> {
         azAccountSet<TPreviousResult>(this: Step<TPreviousResult>, command: AzAccountSet): StepFrom<TPreviousResult, AzAccountSetResult>;
     }
@@ -26,10 +26,10 @@ export class AzAccountSet implements ICommand<AzAccountSetResult> {
 
 @injectable()
 export class AzAccountSetHandler implements IHandleCommand<AzAccountSet, AzAccountSetResult>{
-    private readonly cli: AzureCLI;
+    private readonly cli: CommandRunner;
 
     constructor(
-        @inject(AzureCLI) cli: AzureCLI) {
+        @inject(CommandRunner) cli: CommandRunner) {
         this.cli = cli;
     }
     

@@ -3,13 +3,13 @@ import tasks = require("azure-pipelines-task-lib/task");
 import { TerraformCommand, TerraformInterfaces, ITerraformProvider } from "./terraform";
 import { IHandleCommandString } from "./commands";
 import { injectable, inject } from "inversify";
-import { AzureShell } from "./azcli/azure-shell";
-import { AzLogin } from "./azcli/commands/az-login";
-import { AzAccountSet } from "./azcli/commands/az-account-set";
-import { AzGroupCreate, AzGroupCreateResult } from "./azcli/commands/az-group-create";
-import { AzStorageAccountCreate } from "./azcli/commands/az-storage-account-create";
-import { AzStorageAccountKeysList, AzStorageAccountKeysListResult } from "./azcli/commands/az-storage-account-keys-list";
-import { AzStorageContainerCreate } from "./azcli/commands/az-storage-container-create";
+import { AzureShell } from "./azure-shell";
+import { AzLogin } from "./az-login";
+import { AzAccountSet } from "./az-account-set";
+import { AzGroupCreate, AzGroupCreateResult } from "./az-group-create";
+import { AzStorageAccountCreate } from "./az-storage-account-create";
+import { AzStorageAccountKeysList, AzStorageAccountKeysListResult } from "./az-storage-account-keys-list";
+import { AzStorageContainerCreate } from "./az-storage-container-create";
 import { MediatorInterfaces, IMediator } from "./mediator";
 
 export enum BackendTypes{
