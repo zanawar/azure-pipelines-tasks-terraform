@@ -2,7 +2,7 @@ import tasks = require("azure-pipelines-task-lib/task");
 import { IExecOptions, ToolRunner } from "azure-pipelines-task-lib/toolrunner";
 import { TerraformCommand, TerraformInterfaces, ITerraformProvider, ITaskAgent } from "./terraform";
 import { injectable, inject } from "inversify";
-import { IHandleCommandString } from "./commands";
+import { IHandleCommandString } from "./command-handler";
 
 export class TerraformApply extends TerraformCommand{
     readonly secureVarsFile: string | undefined;

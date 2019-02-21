@@ -1,17 +1,17 @@
-import { CommandRunner } from "./command-runner";
-import { Step, StepFrom } from "./step";
+import { AzRunner } from "./az-runner";
+import { Step, StepFrom } from "./command-pipeline-step";
 import { injectable, inject } from "inversify";
-import { CommandPipeFromStep } from "./command-pipe-step";
-import { ICommand, IHandleCommand } from "./commands";
+import { ThenFrom } from "./command-pipeline-then";
+import { ICommand, IHandleCommand } from "./command-handler";
 
-declare module "./step" {
+declare module "./command-pipeline-step" {
     interface Step<TResult> {
         azStorageContainerCreateFrom<TPreviousResult>(this: Step<TPreviousResult>, commandFactory: (previous: TPreviousResult) => AzStorageContainerCreate): StepFrom<TPreviousResult, AzStorageContainerCreateResult>;
     }
 }
 
 Step.prototype.azStorageContainerCreateFrom = function<TPreviousResult>(this: Step<TPreviousResult>, commandFactory: (previous: TPreviousResult) => AzStorageContainerCreate): StepFrom<TPreviousResult, AzStorageContainerCreateResult>{
-    return new CommandPipeFromStep<TPreviousResult, AzStorageContainerCreate, AzStorageContainerCreateResult>(this, commandFactory);
+    return new ThenFrom<TPreviousResult, AzStorageContainerCreate, AzStorageContainerCreateResult>(this, commandFactory);
 }
 
 export class AzStorageContainerCreateResult {
@@ -34,10 +34,10 @@ export class AzStorageContainerCreate implements ICommand<AzStorageContainerCrea
 
 @injectable()
 export class AzStorageContainerCreateHandler implements IHandleCommand<AzStorageContainerCreate, AzStorageContainerCreateResult>{
-    private readonly cli: CommandRunner;
+    private readonly cli: AzRunner;
 
     constructor(
-        @inject(CommandRunner) cli: CommandRunner) {
+        @inject(AzRunner) cli: AzRunner) {
         this.cli = cli;
     }
     

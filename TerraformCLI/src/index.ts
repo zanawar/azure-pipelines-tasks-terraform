@@ -8,7 +8,7 @@ import { TerraformValidateHandler } from "./terraform-validate";
 import { TerraformPlanHandler } from "./terraform-plan";
 import { TerraformApplyHandler } from "./terraform-apply";
 import TaskAgent from "./task-agent";
-import { CommandRunner } from "./command-runner";
+import { AzRunner } from "./az-runner";
 import { AzAccountSet, AzAccountSetResult, AzAccountSetHandler } from "./az-account-set";
 import { AzLoginResult, AzLogin, AzLoginHandler } from "./az-login";
 import { AzGroupCreate, AzGroupCreateResult, AzGroupCreateHandler } from "./az-group-create";
@@ -16,7 +16,7 @@ import { AzStorageAccountCreate, AzStorageAccountCreateResult, AzStorageAccountC
 import { AzStorageAccountKeysList, AzStorageAccountKeysListResult, AzStorageAccountKeysListHandler } from "./az-storage-account-keys-list";
 import { AzStorageContainerCreate, AzStorageContainerCreateHandler, AzStorageContainerCreateResult } from "./az-storage-container-create";
 import { MediatorInterfaces, IMediator, Mediator } from "./mediator";
-import { IHandleCommandString, CommandInterfaces, IHandleCommand } from "./commands";
+import { IHandleCommandString, CommandInterfaces, IHandleCommand } from "./command-handler";
 
 var container = new Container();
 
@@ -25,12 +25,7 @@ container.bind<Container>("container").toConstantValue(container);
 container.bind<ITerraformProvider>(TerraformInterfaces.ITerraformProvider).toDynamicValue((context: interfaces.Context) => new TerraformProvider(tasks));
 container.bind<IMediator>(MediatorInterfaces.IMediator).to(Mediator);
 container.bind<ITaskAgent>(TerraformInterfaces.ITaskAgent).to(TaskAgent);
-container.bind<CommandRunner>(CommandRunner).toDynamicValue((context: interfaces.Context) => {
-    return new CommandRunner(() => {
-        let path = tasks.which("az", true);
-        return tasks.tool(path);
-    })
-});
+container.bind<AzRunner>(AzRunner).toDynamicValue((context: interfaces.Context) => new AzRunner(tasks));
 
 // bind handlers for each azure shell command
 container.bind<IHandleCommand<AzLogin, AzLoginResult>>(CommandInterfaces.IHandleCommand).to(AzLoginHandler).whenTargetNamed(AzLogin.name);

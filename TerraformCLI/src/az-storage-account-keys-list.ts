@@ -1,17 +1,17 @@
-import { IHandleCommand, ICommand } from "./commands";
-import { CommandRunner } from "./command-runner";
-import { Step, StepFrom } from "./step";
+import { IHandleCommand, ICommand } from "./command-handler";
+import { AzRunner } from "./az-runner";
+import { Step, StepFrom } from "./command-pipeline-step";
 import { injectable, inject } from "inversify";
-import { CommandPipeStep, CommandPipeFromStep } from "./command-pipe-step";
+import { Then, ThenFrom } from "./command-pipeline-then";
 
-declare module "./step" {
+declare module "./command-pipeline-step" {
     interface Step<TResult> {
         azStorageAccountKeysList<TPreviousResult>(this: Step<TPreviousResult>, command: AzStorageAccountKeysList): StepFrom<TPreviousResult, AzStorageAccountKeysListResult>;
     }
 }
 
 Step.prototype.azStorageAccountKeysList = function<TPreviousResult>(this: Step<TPreviousResult>, command: AzStorageAccountKeysList): StepFrom<TPreviousResult, AzStorageAccountKeysListResult>{
-    return new CommandPipeStep<TPreviousResult, AzStorageAccountKeysList, AzStorageAccountKeysListResult>(this, command);
+    return new Then<TPreviousResult, AzStorageAccountKeysList, AzStorageAccountKeysListResult>(this, command);
 }
 
 export class AzStorageAccountKey {
@@ -43,10 +43,10 @@ export class AzStorageAccountKeysList implements ICommand<AzStorageAccountKeysLi
 
 @injectable()
 export class AzStorageAccountKeysListHandler implements IHandleCommand<AzStorageAccountKeysList, AzStorageAccountKeysListResult>{
-    private readonly cli: CommandRunner;
+    private readonly cli: AzRunner;
 
     constructor(
-        @inject(CommandRunner) cli: CommandRunner) {
+        @inject(AzRunner) cli: AzRunner) {
         this.cli = cli;
     }
     

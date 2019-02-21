@@ -1,17 +1,17 @@
-import { IHandleCommand, ICommand } from "./commands";
-import { CommandRunner } from "./command-runner";
-import { Step, StepFrom } from "./step";
+import { IHandleCommand, ICommand } from "./command-handler";
+import { AzRunner } from "./az-runner";
+import { Step, StepFrom } from "./command-pipeline-step";
 import { injectable, inject } from "inversify";
-import { CommandPipeStep } from "./command-pipe-step";
+import { Then } from "./command-pipeline-then";
 
-declare module "./step" {
+declare module "./command-pipeline-step" {
     interface Step<TResult> {
         azGroupCreate<TPreviousResult>(this: Step<TPreviousResult>, command: AzGroupCreate): StepFrom<TPreviousResult, AzGroupCreateResult>;
     }
 }
 
 Step.prototype.azGroupCreate = function<TPreviousResult>(this: Step<TPreviousResult>, command: AzGroupCreate): StepFrom<TPreviousResult, AzGroupCreateResult>{
-    return new CommandPipeStep<TPreviousResult, AzGroupCreate, AzGroupCreateResult>(this, command);
+    return new Then<TPreviousResult, AzGroupCreate, AzGroupCreateResult>(this, command);
 }
 
 export class AzGroupCreateResult {
@@ -36,10 +36,10 @@ export class AzGroupCreate implements ICommand<AzGroupCreateResult> {
 
 @injectable()
 export class AzGroupCreateHandler implements IHandleCommand<AzGroupCreate, AzGroupCreateResult>{
-    private readonly cli: CommandRunner;
+    private readonly cli: AzRunner;
 
     constructor(
-        @inject(CommandRunner) cli: CommandRunner) {
+        @inject(AzRunner) cli: AzRunner) {
         this.cli = cli;
     }
     

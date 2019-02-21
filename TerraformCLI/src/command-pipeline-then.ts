@@ -1,8 +1,8 @@
-import { Step, StepFrom } from "./step";
-import { ICommand } from "./commands";
+import { Step, StepFrom } from "./command-pipeline-step";
+import { ICommand } from "./command-handler";
 import { IMediator } from "./mediator";
 
-export class CommandPipeFromStep<TPreviousResult, TCommand extends ICommand<TResult>, TResult> extends StepFrom<TPreviousResult, TResult>
+export class ThenFrom<TPreviousResult, TCommand extends ICommand<TResult>, TResult> extends StepFrom<TPreviousResult, TResult>
 {
     private readonly commandFactory: (result: TPreviousResult) => TCommand;
 
@@ -18,7 +18,7 @@ export class CommandPipeFromStep<TPreviousResult, TCommand extends ICommand<TRes
     }
 }
 
-export class CommandPipeStep<TPreviousResult, TCommand extends ICommand<TResult>, TResult> extends StepFrom<TPreviousResult, TResult>
+export class Then<TPreviousResult, TCommand extends ICommand<TResult>, TResult> extends StepFrom<TPreviousResult, TResult>
 {
     private readonly command: TCommand;
 

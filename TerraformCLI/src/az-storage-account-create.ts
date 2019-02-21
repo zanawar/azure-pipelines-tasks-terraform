@@ -1,17 +1,17 @@
-import { IHandleCommand, ICommand } from "./commands";
-import { CommandRunner } from "./command-runner";
-import { Step, StepFrom } from "./step";
+import { IHandleCommand, ICommand } from "./command-handler";
+import { AzRunner } from "./az-runner";
+import { Step, StepFrom } from "./command-pipeline-step";
 import { injectable, inject } from "inversify";
-import { CommandPipeStep } from "./command-pipe-step";
+import { Then } from "./command-pipeline-then";
 
-declare module "./step" {
+declare module "./command-pipeline-step" {
     interface Step<TResult> {
         azStorageAccountCreate<TPreviousResult>(this: Step<TPreviousResult>, command: AzStorageAccountCreate): StepFrom<TPreviousResult, AzStorageAccountCreateResult>;
     }
 }
 
 Step.prototype.azStorageAccountCreate = function<TPreviousResult>(this: Step<TPreviousResult>, command: AzStorageAccountCreate): StepFrom<TPreviousResult, AzStorageAccountCreateResult>{
-    return new CommandPipeStep<TPreviousResult, AzStorageAccountCreate, AzStorageAccountCreateResult>(this, command);
+    return new Then<TPreviousResult, AzStorageAccountCreate, AzStorageAccountCreateResult>(this, command);
 }
 
 export class AzStorageAccountCreateResult {
@@ -44,10 +44,10 @@ export class AzStorageAccountCreate implements ICommand<AzStorageAccountCreateRe
 
 @injectable()
 export class AzStorageAccountCreateHandler implements IHandleCommand<AzStorageAccountCreate, AzStorageAccountCreateResult>{
-    private readonly cli: CommandRunner;
+    private readonly cli: AzRunner;
 
     constructor(
-        @inject(CommandRunner) cli: CommandRunner) {
+        @inject(AzRunner) cli: AzRunner) {
         this.cli = cli;
     }
     

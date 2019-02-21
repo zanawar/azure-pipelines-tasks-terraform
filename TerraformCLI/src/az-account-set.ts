@@ -1,17 +1,17 @@
-import { IHandleCommand, ICommand } from "./commands";
-import { CommandRunner } from "./command-runner";
-import { Step, StepFrom } from "./step";
-import { CommandPipeStep } from "./command-pipe-step";
+import { IHandleCommand, ICommand } from "./command-handler";
+import { AzRunner } from "./az-runner";
+import { Step, StepFrom } from "./command-pipeline-step";
+import { Then } from "./command-pipeline-then";
 import { injectable, inject } from "inversify";
 
-declare module "./step" {
+declare module "./command-pipeline-step" {
     interface Step<TResult> {
         azAccountSet<TPreviousResult>(this: Step<TPreviousResult>, command: AzAccountSet): StepFrom<TPreviousResult, AzAccountSetResult>;
     }
 }
 
 Step.prototype.azAccountSet = function<TPreviousResult>(this: Step<TPreviousResult>, command: AzAccountSet): StepFrom<TPreviousResult, AzAccountSetResult>{
-    return new CommandPipeStep<TPreviousResult, AzAccountSet, AzAccountSetResult>(this, command);
+    return new Then<TPreviousResult, AzAccountSet, AzAccountSetResult>(this, command);
 }
 
 export class AzAccountSetResult {
@@ -26,10 +26,10 @@ export class AzAccountSet implements ICommand<AzAccountSetResult> {
 
 @injectable()
 export class AzAccountSetHandler implements IHandleCommand<AzAccountSet, AzAccountSetResult>{
-    private readonly cli: CommandRunner;
+    private readonly cli: AzRunner;
 
     constructor(
-        @inject(CommandRunner) cli: CommandRunner) {
+        @inject(AzRunner) cli: AzRunner) {
         this.cli = cli;
     }
     

@@ -1,9 +1,9 @@
 import { IExecOptions, ToolRunner } from "azure-pipelines-task-lib/toolrunner";
 import tasks = require("azure-pipelines-task-lib/task");
 import { TerraformCommand, TerraformInterfaces, ITerraformProvider } from "./terraform";
-import { IHandleCommandString } from "./commands";
+import { IHandleCommandString } from "./command-handler";
 import { injectable, inject } from "inversify";
-import { AzureShell } from "./azure-shell";
+import { CommandPipeline } from "./command-pipeline";
 import { AzLogin } from "./az-login";
 import { AzAccountSet } from "./az-account-set";
 import { AzGroupCreate, AzGroupCreateResult } from "./az-group-create";
@@ -106,7 +106,7 @@ export class TerraformInitHandler implements IHandleCommandString{
     }
 
     private ensureBackend(backendConfig: AzureBackendConfig, location: string, sku: string){
-        let shell = new AzureShell()
+        let shell = new CommandPipeline()
             .azLogin(new AzLogin(
                 backendConfig.arm_tenant_id,
                 backendConfig.arm_client_id,

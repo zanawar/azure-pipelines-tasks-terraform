@@ -1,5 +1,5 @@
 import { TerraformInterfaces, ITerraformProvider } from "./terraform";
-import { IHandleCommandString } from "./commands";
+import { IHandleCommandString } from "./command-handler";
 import { injectable, inject } from "inversify";
 
 @injectable()

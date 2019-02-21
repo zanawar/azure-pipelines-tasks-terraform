@@ -1,8 +1,8 @@
-import { Step } from "./step";
+import { Step } from "./command-pipeline-step";
 import { IMediator } from "./mediator";
-import { ICommand } from "./commands";
+import { ICommand } from "./command-handler";
 
-export class PipelineCommand<TCommand extends ICommand<TResult>, TResult> extends Step<TResult>
+export class Start<TCommand extends ICommand<TResult>, TResult> extends Step<TResult>
 {
     private readonly command: TCommand;
 

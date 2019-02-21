@@ -1,5 +1,5 @@
 import { injectable, Container, inject } from "inversify";
-import { IHandleCommandString, CommandInterfaces, ICommand, IHandleCommand } from "./commands";
+import { IHandleCommandString, CommandInterfaces, ICommand, IHandleCommand } from "./command-handler";
 
 export interface IMediator {
     executeRawString(command: string): Promise<number>;
