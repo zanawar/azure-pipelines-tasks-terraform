@@ -4,12 +4,12 @@ import { TerraformCommand, TerraformInterfaces, ITerraformProvider } from "./ter
 import { IHandleCommandString } from "./commands";
 import { injectable, inject } from "inversify";
 import { AzureShell } from "./azcli/azure-shell";
-import { Login } from "./azcli/commands/login";
-import { AccountSet } from "./azcli/commands/account-set";
-import { GroupCreate, GroupCreateResult } from "./azcli/commands/group-create";
-import { StorageAccountCreate } from "./azcli/commands/storage-account-create";
-import { StorageAccountKeysList, StorageAccountKeysListResult } from "./azcli/commands/storage-account-keys-list";
-import { StorageContainerCreate } from "./azcli/commands/storage-container-create";
+import { AzLogin } from "./azcli/commands/az-login";
+import { AzAccountSet } from "./azcli/commands/az-account-set";
+import { AzGroupCreate, AzGroupCreateResult } from "./azcli/commands/az-group-create";
+import { AzStorageAccountCreate } from "./azcli/commands/az-storage-account-create";
+import { AzStorageAccountKeysList, AzStorageAccountKeysListResult } from "./azcli/commands/az-storage-account-keys-list";
+import { AzStorageContainerCreate } from "./azcli/commands/az-storage-container-create";
 import { MediatorInterfaces, IMediator } from "./mediator";
 
 export enum BackendTypes{
@@ -107,28 +107,28 @@ export class TerraformInitHandler implements IHandleCommandString{
 
     private ensureBackend(backendConfig: AzureBackendConfig, location: string, sku: string){
         let shell = new AzureShell()
-            .azLogin(new Login(
+            .azLogin(new AzLogin(
                 backendConfig.arm_tenant_id,
                 backendConfig.arm_client_id,
                 backendConfig.arm_client_secret
             ))
-            .azAccountSet(new AccountSet(
+            .azAccountSet(new AzAccountSet(
                 backendConfig.arm_subscription_id
             ))
-            .azGroupCreate(new GroupCreate(
+            .azGroupCreate(new AzGroupCreate(
                 backendConfig.resource_group_name,
                 location
             ))
-            .azStorageAccountCreate(new StorageAccountCreate(
+            .azStorageAccountCreate(new AzStorageAccountCreate(
                 backendConfig.storage_account_name,
                 backendConfig.resource_group_name,
                 sku
             ))
-            .azStorageAccountKeysList(new StorageAccountKeysList(
+            .azStorageAccountKeysList(new AzStorageAccountKeysList(
                 backendConfig.storage_account_name,
                 backendConfig.resource_group_name
             ))
-            .azStorageContainerCreateFrom((result: StorageAccountKeysListResult) => new StorageContainerCreate(
+            .azStorageContainerCreateFrom((result: AzStorageAccountKeysListResult) => new AzStorageContainerCreate(
                 backendConfig.container_name,
                 backendConfig.storage_account_name,
                 result.keys[0].value

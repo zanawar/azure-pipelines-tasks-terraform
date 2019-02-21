@@ -6,15 +6,15 @@ import { CommandPipeStep } from "../command-pipe-step";
 
 declare module "../step" {
     interface Step<TResult> {
-        azStorageAccountCreate<TPreviousResult>(this: Step<TPreviousResult>, command: StorageAccountCreate): StepFrom<TPreviousResult, StorageAccountCreateResult>;
+        azStorageAccountCreate<TPreviousResult>(this: Step<TPreviousResult>, command: AzStorageAccountCreate): StepFrom<TPreviousResult, AzStorageAccountCreateResult>;
     }
 }
 
-Step.prototype.azStorageAccountCreate = function<TPreviousResult>(this: Step<TPreviousResult>, command: StorageAccountCreate): StepFrom<TPreviousResult, StorageAccountCreateResult>{
-    return new CommandPipeStep<TPreviousResult, StorageAccountCreate, StorageAccountCreateResult>(this, command);
+Step.prototype.azStorageAccountCreate = function<TPreviousResult>(this: Step<TPreviousResult>, command: AzStorageAccountCreate): StepFrom<TPreviousResult, AzStorageAccountCreateResult>{
+    return new CommandPipeStep<TPreviousResult, AzStorageAccountCreate, AzStorageAccountCreateResult>(this, command);
 }
 
-export class StorageAccountCreateResult {
+export class AzStorageAccountCreateResult {
     id: string;
     location: string;
     name: string;
@@ -25,7 +25,7 @@ export class StorageAccountCreateResult {
     }
 }
 
-export class StorageAccountCreate implements ICommand<StorageAccountCreateResult> {
+export class AzStorageAccountCreate implements ICommand<AzStorageAccountCreateResult> {
     readonly name: string;
     readonly resourceGroup: string;
     readonly sku: string;
@@ -43,7 +43,7 @@ export class StorageAccountCreate implements ICommand<StorageAccountCreateResult
 }
 
 @injectable()
-export class StorageAccountCreateHandler implements IHandleCommand<StorageAccountCreate, StorageAccountCreateResult>{
+export class AzStorageAccountCreateHandler implements IHandleCommand<AzStorageAccountCreate, AzStorageAccountCreateResult>{
     private readonly cli: AzureCLI;
 
     constructor(
@@ -51,7 +51,7 @@ export class StorageAccountCreateHandler implements IHandleCommand<StorageAccoun
         this.cli = cli;
     }
     
-    execute(command: StorageAccountCreate): StorageAccountCreateResult {
-        return this.cli.execJson<StorageAccountCreateResult>(`storage account create --name ${command.name} --resource-group ${command.resourceGroup} --sku ${command.sku} --kind ${command.kind} --encryption-services ${command.encryptionServices} --access-tier ${command.accessTier}`);
+    execute(command: AzStorageAccountCreate): AzStorageAccountCreateResult {
+        return this.cli.execJson<AzStorageAccountCreateResult>(`storage account create --name ${command.name} --resource-group ${command.resourceGroup} --sku ${command.sku} --kind ${command.kind} --encryption-services ${command.encryptionServices} --access-tier ${command.accessTier}`);
     }    
 }

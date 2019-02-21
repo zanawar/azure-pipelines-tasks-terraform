@@ -6,15 +6,15 @@ import { CommandPipeStep } from "../command-pipe-step";
 
 declare module "../step" {
     interface Step<TResult> {
-        azGroupCreate<TPreviousResult>(this: Step<TPreviousResult>, command: GroupCreate): StepFrom<TPreviousResult, GroupCreateResult>;
+        azGroupCreate<TPreviousResult>(this: Step<TPreviousResult>, command: AzGroupCreate): StepFrom<TPreviousResult, AzGroupCreateResult>;
     }
 }
 
-Step.prototype.azGroupCreate = function<TPreviousResult>(this: Step<TPreviousResult>, command: GroupCreate): StepFrom<TPreviousResult, GroupCreateResult>{
-    return new CommandPipeStep<TPreviousResult, GroupCreate, GroupCreateResult>(this, command);
+Step.prototype.azGroupCreate = function<TPreviousResult>(this: Step<TPreviousResult>, command: AzGroupCreate): StepFrom<TPreviousResult, AzGroupCreateResult>{
+    return new CommandPipeStep<TPreviousResult, AzGroupCreate, AzGroupCreateResult>(this, command);
 }
 
-export class GroupCreateResult {
+export class AzGroupCreateResult {
     id: string;
     location: string;
     name: string;
@@ -25,7 +25,7 @@ export class GroupCreateResult {
     }
 }
 
-export class GroupCreate implements ICommand<GroupCreateResult> {
+export class AzGroupCreate implements ICommand<AzGroupCreateResult> {
     readonly location: string;
     readonly name: string;
     constructor(name: string, location: string) {
@@ -35,7 +35,7 @@ export class GroupCreate implements ICommand<GroupCreateResult> {
 }
 
 @injectable()
-export class GroupCreateHandler implements IHandleCommand<GroupCreate, GroupCreateResult>{
+export class AzGroupCreateHandler implements IHandleCommand<AzGroupCreate, AzGroupCreateResult>{
     private readonly cli: AzureCLI;
 
     constructor(
@@ -43,7 +43,7 @@ export class GroupCreateHandler implements IHandleCommand<GroupCreate, GroupCrea
         this.cli = cli;
     }
     
-    execute(command: GroupCreate): GroupCreateResult {
-        return this.cli.execJson<GroupCreateResult>(`group create --name ${command.name} --location ${command.location}`);
+    execute(command: AzGroupCreate): AzGroupCreateResult {
+        return this.cli.execJson<AzGroupCreateResult>(`group create --name ${command.name} --location ${command.location}`);
     }    
 }

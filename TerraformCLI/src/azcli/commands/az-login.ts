@@ -7,34 +7,34 @@ import { injectable, inject } from "inversify";
 
 declare module '../azure-shell'{
     interface AzureShell{
-        azLogin(this: AzureShell, command: Login) : Step<LoginResult>;
+        azLogin(this: AzureShell, command: AzLogin) : Step<AzLoginResult>;
     }
 }
 
-AzureShell.prototype.azLogin = function(this: AzureShell, command: Login) : Step<LoginResult> {
-    return new CommandStep<Login, LoginResult>(command);
+AzureShell.prototype.azLogin = function(this: AzureShell, command: AzLogin) : Step<AzLoginResult> {
+    return new CommandStep<AzLogin, AzLoginResult>(command);
 }
 
-interface User {
+interface AzUser {
     name: string;
     type: string;
 }
 
-interface Subscription {
+interface AzSubscription {
     cloudName: string;
     id: string;
     isDefault: boolean;
     name: string;
     state: string;
     tenantId: string;
-    User: User;
+    User: AzUser;
 }
 
-export interface LoginResult {
-    subscriptions: Subscription[]
+export interface AzLoginResult {
+    subscriptions: AzSubscription[]
 }
 
-export class Login implements ICommand<LoginResult>
+export class AzLogin implements ICommand<AzLoginResult>
 {
     readonly clientSecret: string;
     readonly clientId: string;
@@ -47,7 +47,7 @@ export class Login implements ICommand<LoginResult>
 }
 
 @injectable()
-export class LoginHandler implements IHandleCommand<Login, LoginResult>
+export class AzLoginHandler implements IHandleCommand<AzLogin, AzLoginResult>
 {
     private readonly cli: AzureCLI;
 
@@ -56,8 +56,8 @@ export class LoginHandler implements IHandleCommand<Login, LoginResult>
         this.cli = cli;
     }
 
-    execute(command: Login): LoginResult {
-        let rvalue = this.cli.execJson<LoginResult>(`login --service-principal -t "${command.tenantId}" -u "${command.clientId}" -p "${command.clientSecret}"`);        
+    execute(command: AzLogin): AzLoginResult {
+        let rvalue = this.cli.execJson<AzLoginResult>(`login --service-principal -t "${command.tenantId}" -u "${command.clientId}" -p "${command.clientSecret}"`);        
         return rvalue;
     }    
 }

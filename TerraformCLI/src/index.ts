@@ -9,12 +9,12 @@ import { TerraformPlanHandler } from "./terraform-plan";
 import { TerraformApplyHandler } from "./terraform-apply";
 import TaskAgent from "./task-agent";
 import { AzureCLI } from "./azcli/azure-cli";
-import { AccountSet, AccountSetResult, SetAccountHandler } from "./azcli/commands/account-set";
-import { LoginResult, Login, LoginHandler } from "./azcli/commands/login";
-import { GroupCreate, GroupCreateResult, GroupCreateHandler } from "./azcli/commands/group-create";
-import { StorageAccountCreate, StorageAccountCreateResult, StorageAccountCreateHandler } from "./azcli/commands/storage-account-create";
-import { StorageAccountKeysList, StorageAccountKeysListResult, StorageAccountKeysListHandler } from "./azcli/commands/storage-account-keys-list";
-import { StorageContainerCreate, StorageContainerCreateHandler, StorageContainerCreateResult } from "./azcli/commands/storage-container-create";
+import { AzAccountSet, AzAccountSetResult, AzAccountSetHandler } from "./azcli/commands/az-account-set";
+import { AzLoginResult, AzLogin, AzLoginHandler } from "./azcli/commands/az-login";
+import { AzGroupCreate, AzGroupCreateResult, AzGroupCreateHandler } from "./azcli/commands/az-group-create";
+import { AzStorageAccountCreate, AzStorageAccountCreateResult, AzStorageAccountCreateHandler } from "./azcli/commands/az-storage-account-create";
+import { AzStorageAccountKeysList, AzStorageAccountKeysListResult, AzStorageAccountKeysListHandler } from "./azcli/commands/az-storage-account-keys-list";
+import { AzStorageContainerCreate, AzStorageContainerCreateHandler, AzStorageContainerCreateResult } from "./azcli/commands/az-storage-container-create";
 import { MediatorInterfaces, IMediator, Mediator } from "./mediator";
 import { IHandleCommandString, CommandInterfaces, IHandleCommand } from "./commands";
 
@@ -33,12 +33,12 @@ container.bind<AzureCLI>(AzureCLI).toDynamicValue((context: interfaces.Context) 
 });
 
 // bind handlers for each azure shell command
-container.bind<IHandleCommand<Login, LoginResult>>(CommandInterfaces.IHandleCommand).to(LoginHandler).whenTargetNamed(Login.name);
-container.bind<IHandleCommand<AccountSet, AccountSetResult>>(CommandInterfaces.IHandleCommand).to(SetAccountHandler).whenTargetNamed(AccountSet.name);
-container.bind<IHandleCommand<GroupCreate, GroupCreateResult>>(CommandInterfaces.IHandleCommand).to(GroupCreateHandler).whenTargetNamed(GroupCreate.name);
-container.bind<IHandleCommand<StorageAccountCreate, StorageAccountCreateResult>>(CommandInterfaces.IHandleCommand).to(StorageAccountCreateHandler).whenTargetNamed(StorageAccountCreate.name);
-container.bind<IHandleCommand<StorageAccountKeysList, StorageAccountKeysListResult>>(CommandInterfaces.IHandleCommand).to(StorageAccountKeysListHandler).whenTargetNamed(StorageAccountKeysList.name);
-container.bind<IHandleCommand<StorageContainerCreate, StorageContainerCreateResult>>(CommandInterfaces.IHandleCommand).to(StorageContainerCreateHandler).whenTargetNamed(StorageContainerCreate.name);
+container.bind<IHandleCommand<AzLogin, AzLoginResult>>(CommandInterfaces.IHandleCommand).to(AzLoginHandler).whenTargetNamed(AzLogin.name);
+container.bind<IHandleCommand<AzAccountSet, AzAccountSetResult>>(CommandInterfaces.IHandleCommand).to(AzAccountSetHandler).whenTargetNamed(AzAccountSet.name);
+container.bind<IHandleCommand<AzGroupCreate, AzGroupCreateResult>>(CommandInterfaces.IHandleCommand).to(AzGroupCreateHandler).whenTargetNamed(AzGroupCreate.name);
+container.bind<IHandleCommand<AzStorageAccountCreate, AzStorageAccountCreateResult>>(CommandInterfaces.IHandleCommand).to(AzStorageAccountCreateHandler).whenTargetNamed(AzStorageAccountCreate.name);
+container.bind<IHandleCommand<AzStorageAccountKeysList, AzStorageAccountKeysListResult>>(CommandInterfaces.IHandleCommand).to(AzStorageAccountKeysListHandler).whenTargetNamed(AzStorageAccountKeysList.name);
+container.bind<IHandleCommand<AzStorageContainerCreate, AzStorageContainerCreateResult>>(CommandInterfaces.IHandleCommand).to(AzStorageContainerCreateHandler).whenTargetNamed(AzStorageContainerCreate.name);
 
 // bind the handlers for each terraform command
 container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformInitHandler).whenTargetNamed("init");
