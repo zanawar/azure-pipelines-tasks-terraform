@@ -1,4 +1,4 @@
-import { HandleCommand } from "../command";
+import { HandleCommand, ICommand } from "../command";
 import { AzureCLI } from "../azure-cli";
 import { Step, StepFrom } from "../step";
 import { injectable, inject } from "inversify";
@@ -32,7 +32,7 @@ export class StorageAccountKeysListResult {
     }
 }
 
-export class StorageAccountKeysList {
+export class StorageAccountKeysList implements ICommand<StorageAccountKeysListResult> {
     readonly accountName: string;
     readonly resourceGroup: string;
     constructor(accountName: string, resourceGroup: string) {

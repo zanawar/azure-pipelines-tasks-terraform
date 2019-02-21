@@ -1,4 +1,4 @@
-import { HandleCommand } from "../command";
+import { HandleCommand, ICommand } from "../command";
 import { AzureCLI } from "../azure-cli";
 import { Step, StepFrom } from "../step";
 import { injectable, inject } from "inversify";
@@ -25,7 +25,7 @@ export class GroupCreateResult {
     }
 }
 
-export class GroupCreate {
+export class GroupCreate implements ICommand<GroupCreateResult> {
     readonly location: string;
     readonly name: string;
     constructor(name: string, location: string) {

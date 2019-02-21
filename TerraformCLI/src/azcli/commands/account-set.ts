@@ -1,4 +1,4 @@
-import { HandleCommand } from "../command";
+import { HandleCommand, ICommand } from "../command";
 import { AzureCLI } from "../azure-cli";
 import { Step, StepFrom } from "../step";
 import { CommandPipeStep } from "../command-pipe-step";
@@ -17,7 +17,7 @@ Step.prototype.azAccountSet = function<TPreviousResult>(this: Step<TPreviousResu
 export class AccountSetResult {
 }
 
-export class AccountSet {
+export class AccountSet implements ICommand<AccountSetResult> {
     readonly subscriptionId: string;
     constructor(subscriptionId: string) {
         this.subscriptionId = subscriptionId;

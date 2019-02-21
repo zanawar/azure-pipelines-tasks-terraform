@@ -1,8 +1,8 @@
-import { HandleCommand } from "../command";
+import { HandleCommand, ICommand } from "../command";
 import { AzureCLI } from "../azure-cli";
 import { Step, StepFrom } from "../step";
 import { injectable, inject } from "inversify";
-import { CommandPipeStep, CommandPipeFromStep } from "../command-pipe-step";
+import { CommandPipeFromStep } from "../command-pipe-step";
 
 declare module "../step" {
     interface Step<TResult> {
@@ -21,7 +21,7 @@ export class StorageContainerCreateResult {
     }
 }
 
-export class StorageContainerCreate {
+export class StorageContainerCreate implements ICommand<StorageContainerCreateResult> {
     readonly name: string;
     readonly accountName: string;
     readonly accountKey: string;
