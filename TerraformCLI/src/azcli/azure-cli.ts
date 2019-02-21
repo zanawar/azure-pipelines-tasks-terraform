@@ -13,8 +13,8 @@ export class AzureCLI {
 
         cli.line(`${line} -o json`);        
         let result = cli.execSync();
-        
-        return JSON.parse(result.stdout);
+        let rvalue: T = <T>JSON.parse(result.stdout);
+        return rvalue;
     }
 
     exec(line: string): void {    

@@ -1,19 +1,15 @@
 import { HandleCommand } from "../command";
 import { AzureCLI } from "../azure-cli";
 import { Step, StepFrom } from "../step";
-import { CommandPipeFromStep, CommandPipeStep } from "../command-pipe-step";
+import { CommandPipeStep } from "../command-pipe-step";
 import { injectable, inject } from "inversify";
 
 declare module "../step" {
     interface Step<TEvent> {
-        azAccountSetFrom<TPrevious>(this: Step<TPrevious>, commandFactory: (previous: TPrevious) => SetAccount): StepFrom<TPrevious, AccountSet>;
         azAccountSet<TPrevious>(this: Step<TPrevious>, command: SetAccount): StepFrom<TPrevious, AccountSet>;
     }
 }
 
-Step.prototype.azAccountSetFrom = function<TPrevious>(this: Step<TPrevious>, commandFactory: (previous: TPrevious) => SetAccount): StepFrom<TPrevious, AccountSet>{
-    return new CommandPipeFromStep<TPrevious, SetAccount, AccountSet>(this, commandFactory);
-}
 Step.prototype.azAccountSet = function<TPrevious>(this: Step<TPrevious>, command: SetAccount): StepFrom<TPrevious, AccountSet>{
     return new CommandPipeStep<TPrevious, SetAccount, AccountSet>(this, command);
 }

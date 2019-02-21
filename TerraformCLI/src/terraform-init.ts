@@ -6,6 +6,8 @@ import { AzureMediator, IAzureMediator } from "./azcli/mediator";
 import { AzureShell } from "./azcli/azure-shell";
 import { Login } from "./azcli/commands/login";
 import { SetAccount } from "./azcli/commands/account-set";
+import { CreateGroup, GroupCreated } from "./azcli/commands/group-create";
+import { CreateStorageAccount } from "./azcli/commands/storage-account-create";
 
 export enum BackendTypes{
     azurerm = "azurerm"
@@ -109,6 +111,15 @@ export class TerraformInitHandler implements IHandleCommand{
             ))
             .azAccountSet(new SetAccount(
                 backendConfig.arm_subscription_id
+            ))
+            .azGroupCreate(new CreateGroup(
+                backendConfig.resource_group_name,
+                location
+            ))
+            .azStorageAccountCreate(new CreateStorageAccount(
+                backendConfig.storage_account_name,
+                backendConfig.resource_group_name,
+                sku
             ))
             .execute(this.mediator);
         /*

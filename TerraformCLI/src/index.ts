@@ -13,6 +13,8 @@ import { IAzureMediator, AzureMediator } from "./azcli/mediator";
 import { SetAccount, AccountSet, SetAccountHandler } from "./azcli/commands/account-set";
 import { HandleCommand } from "./azcli/command";
 import { LoggedIn, Login, LoginHandler } from "./azcli/commands/login";
+import { CreateGroup, GroupCreated, CreateGroupHandler } from "./azcli/commands/group-create";
+import { CreateStorageAccount, StorageAccountCreated, CreateStorageAccountHandler } from "./azcli/commands/storage-account-create";
 
 var container = new Container();
 
@@ -29,8 +31,11 @@ container.bind<AzureCLI>(AzureCLI).toDynamicValue((context: interfaces.Context) 
     })
 });
 
+// bind handlers for each azure shell command
 container.bind<HandleCommand<Login, LoggedIn>>(HandleCommand).to(LoginHandler).whenTargetNamed(Login.name);
 container.bind<HandleCommand<SetAccount, AccountSet>>(HandleCommand).to(SetAccountHandler).whenTargetNamed(SetAccount.name);
+container.bind<HandleCommand<CreateGroup, GroupCreated>>(HandleCommand).to(CreateGroupHandler).whenTargetNamed(CreateGroup.name);
+container.bind<HandleCommand<CreateStorageAccount, StorageAccountCreated>>(HandleCommand).to(CreateStorageAccountHandler).whenTargetNamed(CreateStorageAccount.name);
 
 // bind the handlers for each terraform command
 container.bind<IHandleCommand>(TYPES.IHandleCommand).to(TerraformInitHandler).whenTargetNamed("init");
