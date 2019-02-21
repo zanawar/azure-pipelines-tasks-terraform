@@ -1,7 +1,7 @@
 import tasks = require("azure-pipelines-task-lib/task");
 import { IExecOptions, ToolRunner } from "azure-pipelines-task-lib/toolrunner";
 import { TerraformCommand, TerraformInterfaces, ITerraformProvider, ITaskAgent } from "./terraform";
-import { IHandleCommand } from "./commands";
+import { IHandleCommandString } from "./commands";
 import { injectable, inject } from "inversify";
 
 export class TerraformPlan extends TerraformCommand{
@@ -21,7 +21,7 @@ export class TerraformPlan extends TerraformCommand{
 }
 
 @injectable()
-export class TerraformPlanHandler implements IHandleCommand{
+export class TerraformPlanHandler implements IHandleCommandString{
     private readonly terraformProvider: ITerraformProvider;
     private readonly taskAgent: ITaskAgent;
 

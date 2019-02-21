@@ -2,7 +2,7 @@ import { AzureCLI } from "../azure-cli";
 import { Step, StepFrom } from "../step";
 import { injectable, inject } from "inversify";
 import { CommandPipeFromStep } from "../command-pipe-step";
-import { ICommand, IHandleCommandResult } from "../../commands";
+import { ICommand, IHandleCommand } from "../../commands";
 
 declare module "../step" {
     interface Step<TResult> {
@@ -33,7 +33,7 @@ export class StorageContainerCreate implements ICommand<StorageContainerCreateRe
 }
 
 @injectable()
-export class StorageContainerCreateHandler implements IHandleCommandResult<StorageContainerCreate, StorageContainerCreateResult>{
+export class StorageContainerCreateHandler implements IHandleCommand<StorageContainerCreate, StorageContainerCreateResult>{
     private readonly cli: AzureCLI;
 
     constructor(

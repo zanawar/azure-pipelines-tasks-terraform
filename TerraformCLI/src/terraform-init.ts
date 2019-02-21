@@ -1,7 +1,7 @@
 import { IExecOptions, ToolRunner } from "azure-pipelines-task-lib/toolrunner";
 import tasks = require("azure-pipelines-task-lib/task");
 import { TerraformCommand, TerraformInterfaces, ITerraformProvider } from "./terraform";
-import { IHandleCommand } from "./commands";
+import { IHandleCommandString } from "./commands";
 import { injectable, inject } from "inversify";
 import { AzureShell } from "./azcli/azure-shell";
 import { Login } from "./azcli/commands/login";
@@ -43,7 +43,7 @@ export class TerraformInit extends TerraformCommand{
 }
 
 @injectable()
-export class TerraformInitHandler implements IHandleCommand{
+export class TerraformInitHandler implements IHandleCommandString{
     private readonly terraformProvider: ITerraformProvider;
     private readonly mediator: IMediator;
 

@@ -1,4 +1,4 @@
-import { IHandleCommandResult, ICommand } from "../../commands";
+import { IHandleCommand, ICommand } from "../../commands";
 import { AzureCLI } from "../azure-cli";
 import { Step, StepFrom } from "../step";
 import { CommandPipeStep } from "../command-pipe-step";
@@ -25,7 +25,7 @@ export class AccountSet implements ICommand<AccountSetResult> {
 }
 
 @injectable()
-export class SetAccountHandler implements IHandleCommandResult<AccountSet, AccountSetResult>{
+export class SetAccountHandler implements IHandleCommand<AccountSet, AccountSetResult>{
     private readonly cli: AzureCLI;
 
     constructor(

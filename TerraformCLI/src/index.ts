@@ -16,7 +16,7 @@ import { StorageAccountCreate, StorageAccountCreateResult, StorageAccountCreateH
 import { StorageAccountKeysList, StorageAccountKeysListResult, StorageAccountKeysListHandler } from "./azcli/commands/storage-account-keys-list";
 import { StorageContainerCreate, StorageContainerCreateHandler, StorageContainerCreateResult } from "./azcli/commands/storage-container-create";
 import { MediatorInterfaces, IMediator, Mediator } from "./mediator";
-import { IHandleCommand, CommandInterfaces, IHandleCommandResult } from "./commands";
+import { IHandleCommandString, CommandInterfaces, IHandleCommand } from "./commands";
 
 var container = new Container();
 
@@ -33,19 +33,19 @@ container.bind<AzureCLI>(AzureCLI).toDynamicValue((context: interfaces.Context) 
 });
 
 // bind handlers for each azure shell command
-container.bind<IHandleCommandResult<Login, LoginResult>>(CommandInterfaces.IHandleCommandResult).to(LoginHandler).whenTargetNamed(Login.name);
-container.bind<IHandleCommandResult<AccountSet, AccountSetResult>>(CommandInterfaces.IHandleCommandResult).to(SetAccountHandler).whenTargetNamed(AccountSet.name);
-container.bind<IHandleCommandResult<GroupCreate, GroupCreateResult>>(CommandInterfaces.IHandleCommandResult).to(GroupCreateHandler).whenTargetNamed(GroupCreate.name);
-container.bind<IHandleCommandResult<StorageAccountCreate, StorageAccountCreateResult>>(CommandInterfaces.IHandleCommandResult).to(StorageAccountCreateHandler).whenTargetNamed(StorageAccountCreate.name);
-container.bind<IHandleCommandResult<StorageAccountKeysList, StorageAccountKeysListResult>>(CommandInterfaces.IHandleCommandResult).to(StorageAccountKeysListHandler).whenTargetNamed(StorageAccountKeysList.name);
-container.bind<IHandleCommandResult<StorageContainerCreate, StorageContainerCreateResult>>(CommandInterfaces.IHandleCommandResult).to(StorageContainerCreateHandler).whenTargetNamed(StorageContainerCreate.name);
+container.bind<IHandleCommand<Login, LoginResult>>(CommandInterfaces.IHandleCommand).to(LoginHandler).whenTargetNamed(Login.name);
+container.bind<IHandleCommand<AccountSet, AccountSetResult>>(CommandInterfaces.IHandleCommand).to(SetAccountHandler).whenTargetNamed(AccountSet.name);
+container.bind<IHandleCommand<GroupCreate, GroupCreateResult>>(CommandInterfaces.IHandleCommand).to(GroupCreateHandler).whenTargetNamed(GroupCreate.name);
+container.bind<IHandleCommand<StorageAccountCreate, StorageAccountCreateResult>>(CommandInterfaces.IHandleCommand).to(StorageAccountCreateHandler).whenTargetNamed(StorageAccountCreate.name);
+container.bind<IHandleCommand<StorageAccountKeysList, StorageAccountKeysListResult>>(CommandInterfaces.IHandleCommand).to(StorageAccountKeysListHandler).whenTargetNamed(StorageAccountKeysList.name);
+container.bind<IHandleCommand<StorageContainerCreate, StorageContainerCreateResult>>(CommandInterfaces.IHandleCommand).to(StorageContainerCreateHandler).whenTargetNamed(StorageContainerCreate.name);
 
 // bind the handlers for each terraform command
-container.bind<IHandleCommand>(CommandInterfaces.IHandleCommand).to(TerraformInitHandler).whenTargetNamed("init");
-container.bind<IHandleCommand>(CommandInterfaces.IHandleCommand).to(TerraformVersionHandler).whenTargetNamed("version");
-container.bind<IHandleCommand>(CommandInterfaces.IHandleCommand).to(TerraformValidateHandler).whenTargetNamed("validate");
-container.bind<IHandleCommand>(CommandInterfaces.IHandleCommand).to(TerraformPlanHandler).whenTargetNamed("plan");
-container.bind<IHandleCommand>(CommandInterfaces.IHandleCommand).to(TerraformApplyHandler).whenTargetNamed("apply");
+container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformInitHandler).whenTargetNamed("init");
+container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformVersionHandler).whenTargetNamed("version");
+container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformValidateHandler).whenTargetNamed("validate");
+container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformPlanHandler).whenTargetNamed("plan");
+container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformApplyHandler).whenTargetNamed("apply");
 
 // execute the terraform command
 let mediator = container.get<IMediator>(MediatorInterfaces.IMediator);

@@ -1,4 +1,4 @@
-import { IHandleCommandResult, ICommand } from "../../commands";
+import { IHandleCommand, ICommand } from "../../commands";
 import { AzureCLI } from "../azure-cli";
 import { Step } from "../step";
 import { AzureShell } from "../azure-shell";
@@ -47,7 +47,7 @@ export class Login implements ICommand<LoginResult>
 }
 
 @injectable()
-export class LoginHandler implements IHandleCommandResult<Login, LoginResult>
+export class LoginHandler implements IHandleCommand<Login, LoginResult>
 {
     private readonly cli: AzureCLI;
 

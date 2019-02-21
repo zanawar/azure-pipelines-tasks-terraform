@@ -1,9 +1,9 @@
 import { TerraformInterfaces, ITerraformProvider } from "./terraform";
-import { IHandleCommand } from "./commands";
+import { IHandleCommandString } from "./commands";
 import { injectable, inject } from "inversify";
 
 @injectable()
-export class TerraformVersionHandler implements IHandleCommand{
+export class TerraformVersionHandler implements IHandleCommandString{
     private readonly terraformProvider: ITerraformProvider;
 
     constructor(
