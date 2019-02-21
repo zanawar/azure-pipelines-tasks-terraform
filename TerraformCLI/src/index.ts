@@ -10,11 +10,11 @@ import { TerraformApplyHandler } from "./terraform-apply";
 import TaskAgent from "./task-agent";
 import { AzureCLI } from "./azcli/azure-cli";
 import { IAzureMediator, AzureMediator } from "./azcli/mediator";
-import { SetAccount, AccountSet, SetAccountHandler } from "./azcli/commands/account-set";
+import { AccountSet, AccountSetResult, SetAccountHandler } from "./azcli/commands/account-set";
 import { HandleCommand } from "./azcli/command";
-import { LoggedIn, Login, LoginHandler } from "./azcli/commands/login";
-import { CreateGroup, GroupCreated, CreateGroupHandler } from "./azcli/commands/group-create";
-import { CreateStorageAccount, StorageAccountCreated, CreateStorageAccountHandler } from "./azcli/commands/storage-account-create";
+import { LoginResult, Login, LoginHandler } from "./azcli/commands/login";
+import { GroupCreate, GroupCreateResult, GroupCreateHandler } from "./azcli/commands/group-create";
+import { StorageAccountCreate, StorageAccountCreateResult, StorageAccountCreateHandler } from "./azcli/commands/storage-account-create";
 
 var container = new Container();
 
@@ -32,10 +32,10 @@ container.bind<AzureCLI>(AzureCLI).toDynamicValue((context: interfaces.Context) 
 });
 
 // bind handlers for each azure shell command
-container.bind<HandleCommand<Login, LoggedIn>>(HandleCommand).to(LoginHandler).whenTargetNamed(Login.name);
-container.bind<HandleCommand<SetAccount, AccountSet>>(HandleCommand).to(SetAccountHandler).whenTargetNamed(SetAccount.name);
-container.bind<HandleCommand<CreateGroup, GroupCreated>>(HandleCommand).to(CreateGroupHandler).whenTargetNamed(CreateGroup.name);
-container.bind<HandleCommand<CreateStorageAccount, StorageAccountCreated>>(HandleCommand).to(CreateStorageAccountHandler).whenTargetNamed(CreateStorageAccount.name);
+container.bind<HandleCommand<Login, LoginResult>>(HandleCommand).to(LoginHandler).whenTargetNamed(Login.name);
+container.bind<HandleCommand<AccountSet, AccountSetResult>>(HandleCommand).to(SetAccountHandler).whenTargetNamed(AccountSet.name);
+container.bind<HandleCommand<GroupCreate, GroupCreateResult>>(HandleCommand).to(GroupCreateHandler).whenTargetNamed(GroupCreate.name);
+container.bind<HandleCommand<StorageAccountCreate, StorageAccountCreateResult>>(HandleCommand).to(StorageAccountCreateHandler).whenTargetNamed(StorageAccountCreate.name);
 
 // bind the handlers for each terraform command
 container.bind<IHandleCommand>(TYPES.IHandleCommand).to(TerraformInitHandler).whenTargetNamed("init");

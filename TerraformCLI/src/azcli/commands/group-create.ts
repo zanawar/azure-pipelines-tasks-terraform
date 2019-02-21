@@ -5,16 +5,16 @@ import { injectable, inject } from "inversify";
 import { CommandPipeStep } from "../command-pipe-step";
 
 declare module "../step" {
-    interface Step<TEvent> {
-        azGroupCreate<TPrevious>(this: Step<TPrevious>, command: CreateGroup): StepFrom<TPrevious, GroupCreated>;
+    interface Step<TResult> {
+        azGroupCreate<TPreviousResult>(this: Step<TPreviousResult>, command: GroupCreate): StepFrom<TPreviousResult, GroupCreateResult>;
     }
 }
 
-Step.prototype.azGroupCreate = function<TPrevious>(this: Step<TPrevious>, command: CreateGroup): StepFrom<TPrevious, GroupCreated>{
-    return new CommandPipeStep<TPrevious, CreateGroup, GroupCreated>(this, command);
+Step.prototype.azGroupCreate = function<TPreviousResult>(this: Step<TPreviousResult>, command: GroupCreate): StepFrom<TPreviousResult, GroupCreateResult>{
+    return new CommandPipeStep<TPreviousResult, GroupCreate, GroupCreateResult>(this, command);
 }
 
-export class GroupCreated {
+export class GroupCreateResult {
     id: string;
     location: string;
     name: string;
@@ -25,7 +25,7 @@ export class GroupCreated {
     }
 }
 
-export class CreateGroup {
+export class GroupCreate {
     readonly location: string;
     readonly name: string;
     constructor(name: string, location: string) {
@@ -35,7 +35,7 @@ export class CreateGroup {
 }
 
 @injectable()
-export class CreateGroupHandler implements HandleCommand<CreateGroup, GroupCreated>{
+export class GroupCreateHandler implements HandleCommand<GroupCreate, GroupCreateResult>{
     private readonly cli: AzureCLI;
 
     constructor(
@@ -43,7 +43,7 @@ export class CreateGroupHandler implements HandleCommand<CreateGroup, GroupCreat
         this.cli = cli;
     }
     
-    execute(command: CreateGroup): GroupCreated {
-        return this.cli.execJson<GroupCreated>(`group create --name ${command.name} --location ${command.location}`);
+    execute(command: GroupCreate): GroupCreateResult {
+        return this.cli.execJson<GroupCreateResult>(`group create --name ${command.name} --location ${command.location}`);
     }    
 }

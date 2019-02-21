@@ -2,7 +2,7 @@ import { ICommand, HandleCommand } from "./command";
 import { injectable, inject, Container } from "inversify";
 export interface IAzureMediator
 {
-    execute<TCommand extends ICommand<TEvent>, TEvent>(command: TCommand): TEvent;
+    execute<TCommand extends ICommand<TResult>, TResult>(command: TCommand): TResult;
 }
 
 @injectable()
@@ -13,8 +13,8 @@ export class AzureMediator implements IAzureMediator{
     ) {
         this.container = container;
     }
-    execute<TCommand extends ICommand<TEvent>, TEvent>(command: TCommand): TEvent {        
-        let handler = this.container.getNamed<HandleCommand<TCommand, TEvent>>(HandleCommand, command.constructor.name);
+    execute<TCommand extends ICommand<TResult>, TResult>(command: TCommand): TResult {        
+        let handler = this.container.getNamed<HandleCommand<TCommand, TResult>>(HandleCommand, command.constructor.name);
         return handler.execute(command);
     }
 }

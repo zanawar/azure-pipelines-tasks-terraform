@@ -5,9 +5,9 @@ import { injectable, inject } from "inversify";
 import { AzureMediator, IAzureMediator } from "./azcli/mediator";
 import { AzureShell } from "./azcli/azure-shell";
 import { Login } from "./azcli/commands/login";
-import { SetAccount } from "./azcli/commands/account-set";
-import { CreateGroup, GroupCreated } from "./azcli/commands/group-create";
-import { CreateStorageAccount } from "./azcli/commands/storage-account-create";
+import { AccountSet } from "./azcli/commands/account-set";
+import { GroupCreate, GroupCreateResult } from "./azcli/commands/group-create";
+import { StorageAccountCreate } from "./azcli/commands/storage-account-create";
 
 export enum BackendTypes{
     azurerm = "azurerm"
@@ -109,14 +109,14 @@ export class TerraformInitHandler implements IHandleCommand{
                 backendConfig.arm_client_id,
                 backendConfig.arm_client_secret
             ))
-            .azAccountSet(new SetAccount(
+            .azAccountSet(new AccountSet(
                 backendConfig.arm_subscription_id
             ))
-            .azGroupCreate(new CreateGroup(
+            .azGroupCreate(new GroupCreate(
                 backendConfig.resource_group_name,
                 location
             ))
-            .azStorageAccountCreate(new CreateStorageAccount(
+            .azStorageAccountCreate(new StorageAccountCreate(
                 backendConfig.storage_account_name,
                 backendConfig.resource_group_name,
                 sku

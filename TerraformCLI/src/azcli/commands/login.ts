@@ -7,12 +7,12 @@ import { injectable, inject } from "inversify";
 
 declare module '../azure-shell'{
     interface AzureShell{
-        azLogin(this: AzureShell, command: Login) : Step<LoggedIn>;
+        azLogin(this: AzureShell, command: Login) : Step<LoginResult>;
     }
 }
 
-AzureShell.prototype.azLogin = function(this: AzureShell, command: Login) : Step<LoggedIn> {
-    return new CommandStep<Login, LoggedIn>(command);
+AzureShell.prototype.azLogin = function(this: AzureShell, command: Login) : Step<LoginResult> {
+    return new CommandStep<Login, LoginResult>(command);
 }
 
 interface User {
@@ -30,11 +30,11 @@ interface Subscription {
     User: User;
 }
 
-export interface LoggedIn {
+export interface LoginResult {
     subscriptions: Subscription[]
 }
 
-export class Login implements ICommand<LoggedIn>
+export class Login implements ICommand<LoginResult>
 {
     readonly clientSecret: string;
     readonly clientId: string;
@@ -47,7 +47,7 @@ export class Login implements ICommand<LoggedIn>
 }
 
 @injectable()
-export class LoginHandler implements HandleCommand<Login, LoggedIn>
+export class LoginHandler implements HandleCommand<Login, LoginResult>
 {
     private readonly cli: AzureCLI;
 
@@ -56,8 +56,8 @@ export class LoginHandler implements HandleCommand<Login, LoggedIn>
         this.cli = cli;
     }
 
-    execute(command: Login): LoggedIn {
-        let rvalue = this.cli.execJson<LoggedIn>(`login --service-principal -t "${command.tenantId}" -u "${command.clientId}" -p "${command.clientSecret}"`);        
+    execute(command: Login): LoginResult {
+        let rvalue = this.cli.execJson<LoginResult>(`login --service-principal -t "${command.tenantId}" -u "${command.clientId}" -p "${command.clientSecret}"`);        
         return rvalue;
     }    
 }

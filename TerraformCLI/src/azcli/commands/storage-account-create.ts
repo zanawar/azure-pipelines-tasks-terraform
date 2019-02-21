@@ -5,16 +5,16 @@ import { injectable, inject } from "inversify";
 import { CommandPipeStep, CommandPipeFromStep } from "../command-pipe-step";
 
 declare module "../step" {
-    interface Step<TEvent> {
-        azStorageAccountCreate<TPrevious>(this: Step<TPrevious>, command: CreateStorageAccount): StepFrom<TPrevious, StorageAccountCreated>;
+    interface Step<TResult> {
+        azStorageAccountCreate<TPreviousResult>(this: Step<TPreviousResult>, command: StorageAccountCreate): StepFrom<TPreviousResult, StorageAccountCreateResult>;
     }
 }
 
-Step.prototype.azStorageAccountCreate = function<TPrevious>(this: Step<TPrevious>, command: CreateStorageAccount): StepFrom<TPrevious, StorageAccountCreated>{
-    return new CommandPipeStep<TPrevious, CreateStorageAccount, StorageAccountCreated>(this, command);
+Step.prototype.azStorageAccountCreate = function<TPreviousResult>(this: Step<TPreviousResult>, command: StorageAccountCreate): StepFrom<TPreviousResult, StorageAccountCreateResult>{
+    return new CommandPipeStep<TPreviousResult, StorageAccountCreate, StorageAccountCreateResult>(this, command);
 }
 
-export class StorageAccountCreated {
+export class StorageAccountCreateResult {
     id: string;
     location: string;
     name: string;
@@ -25,7 +25,7 @@ export class StorageAccountCreated {
     }
 }
 
-export class CreateStorageAccount {
+export class StorageAccountCreate {
     readonly name: string;
     readonly resourceGroup: string;
     readonly sku: string;
@@ -43,7 +43,7 @@ export class CreateStorageAccount {
 }
 
 @injectable()
-export class CreateStorageAccountHandler implements HandleCommand<CreateStorageAccount, StorageAccountCreated>{
+export class StorageAccountCreateHandler implements HandleCommand<StorageAccountCreate, StorageAccountCreateResult>{
     private readonly cli: AzureCLI;
 
     constructor(
@@ -51,7 +51,7 @@ export class CreateStorageAccountHandler implements HandleCommand<CreateStorageA
         this.cli = cli;
     }
     
-    execute(command: CreateStorageAccount): StorageAccountCreated {
-        return this.cli.execJson<StorageAccountCreated>(`storage account create --name ${command.name} --resource-group ${command.resourceGroup} --sku ${command.sku} --kind ${command.kind} --encryption-services ${command.encryptionServices} --access-tier ${command.accessTier}`);
+    execute(command: StorageAccountCreate): StorageAccountCreateResult {
+        return this.cli.execJson<StorageAccountCreateResult>(`storage account create --name ${command.name} --resource-group ${command.resourceGroup} --sku ${command.sku} --kind ${command.kind} --encryption-services ${command.encryptionServices} --access-tier ${command.accessTier}`);
     }    
 }

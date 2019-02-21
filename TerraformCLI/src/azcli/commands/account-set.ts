@@ -5,19 +5,19 @@ import { CommandPipeStep } from "../command-pipe-step";
 import { injectable, inject } from "inversify";
 
 declare module "../step" {
-    interface Step<TEvent> {
-        azAccountSet<TPrevious>(this: Step<TPrevious>, command: SetAccount): StepFrom<TPrevious, AccountSet>;
+    interface Step<TResult> {
+        azAccountSet<TPreviousResult>(this: Step<TPreviousResult>, command: AccountSet): StepFrom<TPreviousResult, AccountSetResult>;
     }
 }
 
-Step.prototype.azAccountSet = function<TPrevious>(this: Step<TPrevious>, command: SetAccount): StepFrom<TPrevious, AccountSet>{
-    return new CommandPipeStep<TPrevious, SetAccount, AccountSet>(this, command);
+Step.prototype.azAccountSet = function<TPreviousResult>(this: Step<TPreviousResult>, command: AccountSet): StepFrom<TPreviousResult, AccountSetResult>{
+    return new CommandPipeStep<TPreviousResult, AccountSet, AccountSetResult>(this, command);
+}
+
+export class AccountSetResult {
 }
 
 export class AccountSet {
-}
-
-export class SetAccount {
     readonly subscriptionId: string;
     constructor(subscriptionId: string) {
         this.subscriptionId = subscriptionId;
@@ -25,7 +25,7 @@ export class SetAccount {
 }
 
 @injectable()
-export class SetAccountHandler implements HandleCommand<SetAccount, AccountSet>{
+export class SetAccountHandler implements HandleCommand<AccountSet, AccountSetResult>{
     private readonly cli: AzureCLI;
 
     constructor(
@@ -33,8 +33,8 @@ export class SetAccountHandler implements HandleCommand<SetAccount, AccountSet>{
         this.cli = cli;
     }
     
-    execute(command: SetAccount): AccountSet {
+    execute(command: AccountSet): AccountSetResult {
         this.cli.exec(`account set -s "${command.subscriptionId}"`);
-        return new AccountSet();
+        return new AccountSetResult();
     }    
 }

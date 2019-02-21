@@ -2,32 +2,32 @@ import { ICommand } from "./command";
 import { Step, StepFrom } from "./step";
 import { IAzureMediator } from "./mediator";
 
-export class CommandPipeFromStep<TPrevious, TCommand extends ICommand<TEvent>, TEvent> extends StepFrom<TPrevious, TEvent>
+export class CommandPipeFromStep<TPreviousResult, TCommand extends ICommand<TResult>, TResult> extends StepFrom<TPreviousResult, TResult>
 {
-    private readonly commandFactory: (event: TPrevious) => TCommand;
+    private readonly commandFactory: (result: TPreviousResult) => TCommand;
 
-    constructor(previous: Step<TPrevious>, commandFactory: (event: TPrevious) => TCommand) {
+    constructor(previous: Step<TPreviousResult>, commandFactory: (event: TPreviousResult) => TCommand) {
         super(previous);
         this.commandFactory = commandFactory;
     }
 
-    execute(mediator: IAzureMediator): TEvent {
+    execute(mediator: IAzureMediator): TResult {
         let previous = this.previous.execute(mediator);
         let command = this.commandFactory(previous);
         return mediator.execute(command);
     }
 }
 
-export class CommandPipeStep<TPrevious, TCommand extends ICommand<TEvent>, TEvent> extends StepFrom<TPrevious, TEvent>
+export class CommandPipeStep<TPreviousResult, TCommand extends ICommand<TResult>, TResult> extends StepFrom<TPreviousResult, TResult>
 {
     private readonly command: TCommand;
 
-    constructor(previous: Step<TPrevious>, command: TCommand) {
+    constructor(previous: Step<TPreviousResult>, command: TCommand) {
         super(previous);
         this.command = command;
     }
 
-    execute(mediator: IAzureMediator): TEvent {
+    execute(mediator: IAzureMediator): TResult {
         this.previous.execute(mediator);
         return mediator.execute(this.command);
     }

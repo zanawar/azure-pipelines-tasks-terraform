@@ -1,5 +1,5 @@
-export interface ICommand<TEvent> { }
+export interface ICommand<TResult> { }
 
-export abstract class HandleCommand<TCommand extends ICommand<TEvent>, TEvent> {
-    public abstract execute(command: TCommand) : TEvent;
+export abstract class HandleCommand<TCommand extends ICommand<TResult>, TResult> {
+    public abstract execute(command: TCommand) : TResult;
 }

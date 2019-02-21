@@ -1,15 +1,15 @@
 import { IAzureMediator } from "./mediator";
 
-export abstract class Step<TEvent>
+export abstract class Step<TResult>
 {
-    abstract execute(mediator: IAzureMediator): TEvent;
+    abstract execute(mediator: IAzureMediator): TResult;
 }
 
-export abstract class StepFrom<TPrevious, TEvent> extends Step<TEvent>
+export abstract class StepFrom<TPreviousResult, TResult> extends Step<TResult>
 {
-    protected readonly previous: Step<TPrevious>;
+    protected readonly previous: Step<TPreviousResult>;
 
-    constructor(previous: Step<TPrevious>) {
+    constructor(previous: Step<TPreviousResult>) {
         super();
         this.previous = previous;
     }
