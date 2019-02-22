@@ -16,7 +16,7 @@ export class AzRunner {
     execJson<T>(line: string): T {
         let cli = this.start()
 
-        cli.line(`${line} -o json`);
+        cli.line(line);
         let result = cli.execSync();
         let rvalue: T = <T>JSON.parse(result.stdout);
         return rvalue;

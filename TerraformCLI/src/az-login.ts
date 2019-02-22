@@ -15,23 +15,39 @@ CommandPipeline.prototype.azLogin = function(this: CommandPipeline, command: AzL
     return new Start<AzLogin, AzLoginResult>(command);
 }
 
-interface AzUser {
-    name: string;
-    type: string;
+export class AzUser {
+    constructor(name: string, type: string){
+        this.name = name;
+        this.type = type;
+    }
+    readonly name: string;
+    readonly type: string;
 }
 
-interface AzSubscription {
-    cloudName: string;
-    id: string;
-    isDefault: boolean;
-    name: string;
-    state: string;
-    tenantId: string;
-    User: AzUser;
+export class AzSubscription {
+    readonly cloudName: string;
+    readonly id: string;
+    readonly isDefault: boolean;
+    readonly name: string;
+    readonly state: string;
+    readonly tenantId: string;
+    readonly User: AzUser;
+    constructor(cloudName: string, id: string, isDefault: boolean, name: string, state: string, tenantId: string, User: AzUser){
+        this.cloudName = cloudName;
+        this.id = id;
+        this.isDefault = isDefault;
+        this.name = name;
+        this.state = state;
+        this.tenantId = tenantId;
+        this.User = User;
+    }
 }
 
-export interface AzLoginResult {
-    subscriptions: AzSubscription[]
+export class AzLoginResult {
+    readonly subscriptions: AzSubscription[]
+    constructor(...subscriptions: AzSubscription[]) {
+        this.subscriptions = subscriptions;
+    }    
 }
 
 export class AzLogin implements ICommand<AzLoginResult>
@@ -43,6 +59,9 @@ export class AzLogin implements ICommand<AzLoginResult>
         this.tenantId = tenantId;
         this.clientId = clientId;
         this.clientSecret = clientSecret;
+    }
+    toString(): string {
+        return `login --service-principal -t ${this.tenantId} -u ${this.clientId} -p ${this.clientSecret}`;
     }
 }
 
@@ -57,7 +76,7 @@ export class AzLoginHandler implements IHandleCommand<AzLogin, AzLoginResult>
     }
 
     execute(command: AzLogin): AzLoginResult {
-        let rvalue = this.cli.execJson<AzLoginResult>(`login --service-principal -t "${command.tenantId}" -u "${command.clientId}" -p "${command.clientSecret}"`);        
+        let rvalue = this.cli.execJson<AzLoginResult>(command.toString());        
         return rvalue;
     }    
 }

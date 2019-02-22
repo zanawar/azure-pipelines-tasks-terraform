@@ -32,6 +32,9 @@ export class AzGroupCreate implements ICommand<AzGroupCreateResult> {
         this.name = name;
         this.location = location;
     }
+    toString() : string { 
+        return `group create --name ${this.name} --location ${this.location}`; 
+    }
 }
 
 @injectable()
@@ -44,6 +47,6 @@ export class AzGroupCreateHandler implements IHandleCommand<AzGroupCreate, AzGro
     }
     
     execute(command: AzGroupCreate): AzGroupCreateResult {
-        return this.cli.execJson<AzGroupCreateResult>(`group create --name ${command.name} --location ${command.location}`);
+        return this.cli.execJson<AzGroupCreateResult>(command.toString());
     }    
 }

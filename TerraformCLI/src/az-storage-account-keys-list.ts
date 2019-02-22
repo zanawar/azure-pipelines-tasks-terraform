@@ -26,7 +26,7 @@ export class AzStorageAccountKey {
 }
 
 export class AzStorageAccountKeysListResult {
-    readonly keys: AzStorageAccountKey[];    
+    readonly keys: AzStorageAccountKey[];   
     constructor(keys: AzStorageAccountKey[]) {
         this.keys = keys;        
     }
@@ -38,6 +38,9 @@ export class AzStorageAccountKeysList implements ICommand<AzStorageAccountKeysLi
     constructor(accountName: string, resourceGroup: string) {
         this.accountName = accountName;
         this.resourceGroup = resourceGroup;
+    }
+    toString() : string {
+        return `storage account keys list --account-name ${this.accountName} --resource-group ${this.resourceGroup}`
     }
 }
 
@@ -51,7 +54,7 @@ export class AzStorageAccountKeysListHandler implements IHandleCommand<AzStorage
     }
     
     execute(command: AzStorageAccountKeysList): AzStorageAccountKeysListResult {
-        let keys: AzStorageAccountKey[] = this.cli.execJson<AzStorageAccountKey[]>(`storage account keys list --account-name ${command.accountName} --resource-group ${command.resourceGroup}`);
+        let keys: AzStorageAccountKey[] = this.cli.execJson<AzStorageAccountKey[]>(command.toString());
         return new AzStorageAccountKeysListResult(keys);
     }    
 }

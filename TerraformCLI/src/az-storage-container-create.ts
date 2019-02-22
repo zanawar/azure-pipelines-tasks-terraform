@@ -30,6 +30,10 @@ export class AzStorageContainerCreate implements ICommand<AzStorageContainerCrea
         this.accountName = accountName;
         this.accountKey = accountKey;
     }
+
+    toString() : string {
+        return `storage container create --name ${this.name} --account-name ${this.accountName} --account-key ${this.accountKey}`;
+    }
 }
 
 @injectable()
@@ -42,6 +46,6 @@ export class AzStorageContainerCreateHandler implements IHandleCommand<AzStorage
     }
     
     execute(command: AzStorageContainerCreate): AzStorageContainerCreateResult {
-        return this.cli.execJson<AzStorageContainerCreateResult>(`storage container create --name ${command.name} --account-name ${command.accountName} --account-key ${command.accountKey}`);
+        return this.cli.execJson<AzStorageContainerCreateResult>(command.toString());
     }    
 }

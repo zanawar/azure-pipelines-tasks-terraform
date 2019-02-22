@@ -40,6 +40,10 @@ export class AzStorageAccountCreate implements ICommand<AzStorageAccountCreateRe
         this.encryptionServices = encryptionServices;
         this.accessTier = accessTier;
     }
+
+    toString() : string {
+        return `storage account create --name ${this.name} --resource-group ${this.resourceGroup} --sku ${this.sku} --kind ${this.kind} --encryption-services ${this.encryptionServices} --access-tier ${this.accessTier}`
+    }
 }
 
 @injectable()
@@ -52,6 +56,6 @@ export class AzStorageAccountCreateHandler implements IHandleCommand<AzStorageAc
     }
     
     execute(command: AzStorageAccountCreate): AzStorageAccountCreateResult {
-        return this.cli.execJson<AzStorageAccountCreateResult>(`storage account create --name ${command.name} --resource-group ${command.resourceGroup} --sku ${command.sku} --kind ${command.kind} --encryption-services ${command.encryptionServices} --access-tier ${command.accessTier}`);
+        return this.cli.execJson<AzStorageAccountCreateResult>(command.toString());
     }    
 }

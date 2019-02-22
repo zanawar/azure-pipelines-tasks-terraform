@@ -18,9 +18,13 @@ export class AzAccountSetResult {
 }
 
 export class AzAccountSet implements ICommand<AzAccountSetResult> {
+    
     readonly subscriptionId: string;
     constructor(subscriptionId: string) {
         this.subscriptionId = subscriptionId;
+    }
+    toString(): string {
+        return `account set -s ${this.subscriptionId}`
     }
 }
 
@@ -34,7 +38,7 @@ export class AzAccountSetHandler implements IHandleCommand<AzAccountSet, AzAccou
     }
     
     execute(command: AzAccountSet): AzAccountSetResult {
-        this.cli.exec(`account set -s "${command.subscriptionId}"`);
+        this.cli.exec(command.toString());
         return new AzAccountSetResult();
     }    
 }
