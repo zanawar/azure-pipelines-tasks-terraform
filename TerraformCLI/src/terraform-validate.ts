@@ -1,6 +1,7 @@
 import tasks = require("azure-pipelines-task-lib/task");
 import { IExecOptions, ToolRunner } from "azure-pipelines-task-lib/toolrunner";
-import { IHandleCommand, TerraformCommand, TYPES, ITerraformProvider, ITaskAgent } from "./terraform";
+import { TerraformCommand, TerraformInterfaces, ITerraformProvider, ITaskAgent } from "./terraform";
+import { IHandleCommandString } from "./command-handler";
 import { injectable, inject } from "inversify";
 
 export class TerraformValidate extends TerraformCommand{
@@ -17,13 +18,13 @@ export class TerraformValidate extends TerraformCommand{
 }
 
 @injectable()
-export class TerraformValidateHandler implements IHandleCommand{
+export class TerraformValidateHandler implements IHandleCommandString{
     private readonly terraformProvider: ITerraformProvider;
     private readonly taskAgent: ITaskAgent;
 
     constructor(
-        @inject(TYPES.ITerraformProvider) terraformProvider: ITerraformProvider,
-        @inject(TYPES.ITaskAgent) taskAgent: ITaskAgent,
+        @inject(TerraformInterfaces.ITerraformProvider) terraformProvider: ITerraformProvider,
+        @inject(TerraformInterfaces.ITaskAgent) taskAgent: ITaskAgent,
     ) {
         this.terraformProvider = terraformProvider;   
         this.taskAgent = taskAgent;

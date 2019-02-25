@@ -42,8 +42,8 @@
   "dependencies": {
     "azure-devops-node-api": "^7.0.0",
     "azure-pipelines-task-lib": "^2.7.1",
+    "dotenv": "^6.1.0",
     "inversify": "^5.0.1",
-    "reflect-metadata": "^0.1.12",
-    "dotenv": "^6.1.0"
+    "reflect-metadata": "^0.1.12"
   }
 }
