@@ -1,7 +1,8 @@
 import tasks = require("azure-pipelines-task-lib/task");
 import { IExecOptions, ToolRunner } from "azure-pipelines-task-lib/toolrunner";
-import { IHandleCommand, TerraformCommand, TYPES, ITerraformProvider, ITaskAgent } from "./terraform";
+import { TerraformCommand, ITerraformProvider, ITaskAgent, TerraformInterfaces } from "./terraform";
 import { injectable, inject } from "inversify";
+import { IHandleCommandString } from "./command-handler";
 
 export class TerraformDestroy extends TerraformCommand{
     readonly secureVarsFile: string | undefined;
@@ -20,13 +21,13 @@ export class TerraformDestroy extends TerraformCommand{
 }
 
 @injectable()
-export class TerraformDestroyHandler implements IHandleCommand{
+export class TerraformDestroyHandler implements IHandleCommandString{
     private readonly terraformProvider: ITerraformProvider;
     private readonly taskAgent: ITaskAgent;
 
     constructor(
-        @inject(TYPES.ITerraformProvider) terraformProvider: ITerraformProvider,
-        @inject(TYPES.ITaskAgent) taskAgent: ITaskAgent
+        @inject(TerraformInterfaces.ITerraformProvider) terraformProvider: ITerraformProvider,
+        @inject(TerraformInterfaces.ITaskAgent) taskAgent: ITaskAgent
     ) {
         this.terraformProvider = terraformProvider;           
         this.taskAgent = taskAgent;     
