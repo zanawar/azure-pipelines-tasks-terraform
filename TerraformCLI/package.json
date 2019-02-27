@@ -9,8 +9,8 @@
     "delete": "./node_modules/.bin/tfx build tasks delete --task-id 721c3f90-d938-11e8-9d92-09d7594721b5",
     "upload": "./node_modules/.bin/tfx build tasks upload --task-path .dist",
     "start": "node --require dotenv/config .bin/index.js",
-    "test": "\"./node_modules/.bin/nyc\" -r cobertura -r html \"./node_modules/.bin/mocha\" \".bin/tests/**/*_spec.js\" --reporter mocha-junit-reporter --reporter-options \"mochaFile=./.test-output/terraform-cli.xml\"",
-    "test:noreport": "\"./node_modules/.bin/nyc\" \"./node_modules/.bin/mocha\" \".bin/tests/**/*_spec.js\"",
+    "test": "./node_modules/.bin/nyc -r cobertura -r html \"./node_modules/.bin/mocha\" \".bin/tests/**/*_spec.js\" --reporter mocha-junit-reporter --reporter-options \"mochaFile=./.test-output/terraform-cli.xml\"",
+    "test:noreport": "./node_modules/.bin/nyc \"./node_modules/.bin/mocha\" \".bin/tests/**/*_spec.js\"",
     "test:local": "./node_modules/.bin/mocha \".bin/tests/**/*_spec.js\""
   },
   "repository": {
