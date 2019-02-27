@@ -1,7 +1,7 @@
 import tasks = require("azure-pipelines-task-lib/task");
 import { Container, interfaces } from 'inversify';
 import "reflect-metadata";
-import { IMediator, TYPES, Mediator, IHandleCommand, TerraformProvider, ITerraformProvider, ITaskAgent } from "./terraform";
+import { TerraformInterfaces, TerraformProvider, ITerraformProvider, ITaskAgent } from "./terraform";
 import { TerraformInitHandler } from "./terraform-init";
 import { TerraformVersionHandler } from "./terraform-version";
 import { TerraformValidateHandler } from "./terraform-validate";
@@ -9,28 +9,46 @@ import { TerraformPlanHandler } from "./terraform-plan";
 import { TerraformApplyHandler } from "./terraform-apply";
 import { TerraformDestroyHandler } from "./terraform-destroy";
 import TaskAgent from "./task-agent";
+import { AzRunner } from "./az-runner";
+import { AzAccountSet, AzAccountSetResult, AzAccountSetHandler } from "./az-account-set";
+import { AzLoginResult, AzLogin, AzLoginHandler } from "./az-login";
+import { AzGroupCreate, AzGroupCreateResult, AzGroupCreateHandler } from "./az-group-create";
+import { AzStorageAccountCreate, AzStorageAccountCreateResult, AzStorageAccountCreateHandler } from "./az-storage-account-create";
+import { AzStorageAccountKeysList, AzStorageAccountKeysListResult, AzStorageAccountKeysListHandler } from "./az-storage-account-keys-list";
+import { AzStorageContainerCreate, AzStorageContainerCreateHandler, AzStorageContainerCreateResult } from "./az-storage-container-create";
+import { MediatorInterfaces, IMediator, Mediator } from "./mediator";
+import { IHandleCommandString, CommandInterfaces, IHandleCommand } from "./command-handler";
 
 var container = new Container();
 
 // bind infrastructure components
 container.bind<Container>("container").toConstantValue(container);
-container.bind<ITerraformProvider>(TYPES.ITerraformProvider).toDynamicValue((context: interfaces.Context) => new TerraformProvider(tasks));
-container.bind<IMediator>(TYPES.IMediator).to(Mediator);
-container.bind<ITaskAgent>(TYPES.ITaskAgent).to(TaskAgent);
+container.bind<ITerraformProvider>(TerraformInterfaces.ITerraformProvider).toDynamicValue((context: interfaces.Context) => new TerraformProvider(tasks));
+container.bind<IMediator>(MediatorInterfaces.IMediator).to(Mediator);
+container.bind<ITaskAgent>(TerraformInterfaces.ITaskAgent).to(TaskAgent);
+container.bind<AzRunner>(AzRunner).toDynamicValue((context: interfaces.Context) => new AzRunner(tasks));
+
+// bind handlers for each azure shell command
+container.bind<IHandleCommand<AzLogin, AzLoginResult>>(CommandInterfaces.IHandleCommand).to(AzLoginHandler).whenTargetNamed(AzLogin.name);
+container.bind<IHandleCommand<AzAccountSet, AzAccountSetResult>>(CommandInterfaces.IHandleCommand).to(AzAccountSetHandler).whenTargetNamed(AzAccountSet.name);
+container.bind<IHandleCommand<AzGroupCreate, AzGroupCreateResult>>(CommandInterfaces.IHandleCommand).to(AzGroupCreateHandler).whenTargetNamed(AzGroupCreate.name);
+container.bind<IHandleCommand<AzStorageAccountCreate, AzStorageAccountCreateResult>>(CommandInterfaces.IHandleCommand).to(AzStorageAccountCreateHandler).whenTargetNamed(AzStorageAccountCreate.name);
+container.bind<IHandleCommand<AzStorageAccountKeysList, AzStorageAccountKeysListResult>>(CommandInterfaces.IHandleCommand).to(AzStorageAccountKeysListHandler).whenTargetNamed(AzStorageAccountKeysList.name);
+container.bind<IHandleCommand<AzStorageContainerCreate, AzStorageContainerCreateResult>>(CommandInterfaces.IHandleCommand).to(AzStorageContainerCreateHandler).whenTargetNamed(AzStorageContainerCreate.name);
 
 // bind the handlers for each terraform command
-container.bind<IHandleCommand>(TYPES.IHandleCommand).to(TerraformInitHandler).whenTargetNamed("init");
-container.bind<IHandleCommand>(TYPES.IHandleCommand).to(TerraformVersionHandler).whenTargetNamed("version");
-container.bind<IHandleCommand>(TYPES.IHandleCommand).to(TerraformValidateHandler).whenTargetNamed("validate");
-container.bind<IHandleCommand>(TYPES.IHandleCommand).to(TerraformPlanHandler).whenTargetNamed("plan");
-container.bind<IHandleCommand>(TYPES.IHandleCommand).to(TerraformApplyHandler).whenTargetNamed("apply");
-container.bind<IHandleCommand>(TYPES.IHandleCommand).to(TerraformDestroyHandler).whenTargetNamed("destroy");
+container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformInitHandler).whenTargetNamed("init");
+container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformVersionHandler).whenTargetNamed("version");
+container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformValidateHandler).whenTargetNamed("validate");
+container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformPlanHandler).whenTargetNamed("plan");
+container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformApplyHandler).whenTargetNamed("apply");
+container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformDestroyHandler).whenTargetNamed("destroy");
 
 // execute the terraform command
-let mediator = container.get<IMediator>(TYPES.IMediator);
-mediator.execute("version")
+let mediator = container.get<IMediator>(MediatorInterfaces.IMediator);
+mediator.executeRawString("version")
     // what should be used when executed by az dev ops
-    .then(() => mediator.execute(tasks.getInput("command")))
+    .then(() => mediator.executeRawString(tasks.getInput("command")))
 
     // for testing only
     // .then(() => mediator.execute("init"))
