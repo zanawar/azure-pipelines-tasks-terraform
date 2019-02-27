@@ -124,14 +124,9 @@ export class TerraformInitHandler implements IHandleCommandString{
                 backendConfig.resource_group_name,
                 sku
             ))
-            .azStorageAccountKeysList(new AzStorageAccountKeysList(
-                backendConfig.storage_account_name,
-                backendConfig.resource_group_name
-            ))
-            .azStorageContainerCreateFrom((result: AzStorageAccountKeysListResult) => new AzStorageContainerCreate(
+            .azStorageContainerCreate(new AzStorageContainerCreate(
                 backendConfig.container_name,
-                backendConfig.storage_account_name,
-                result.keys[0].value
+                backendConfig.storage_account_name
             ))
             .execute(this.mediator);
     }
