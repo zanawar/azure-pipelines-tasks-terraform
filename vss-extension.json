@@ -36,6 +36,12 @@
         },
         {
             "path": "screenshots/overview-tfinstall-task-fields.jpg"
+        },
+        {
+            "path": "screenshots/overview-tfcli-secure-vars.jpg"
+        },
+        {
+            "path": "screenshots/overview-tfcli-ensure-backend.jpg"
         }
     ],
     "links": {

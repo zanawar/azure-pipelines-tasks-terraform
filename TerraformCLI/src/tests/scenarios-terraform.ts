@@ -2,15 +2,22 @@ import path from 'path';
 import { TaskScenario, TaskInputBuilder, TaskInputsAre, TaskAnswerDecorator, TaskAnswerBuilder } from "./scenarios";
 import { TaskLibAnswers, TaskLibAnswerExecResult } from 'azure-pipelines-task-lib/mock-answer';
 import { getSecureFileName } from 'azure-pipelines-task-lib';
+import { TaskCompletedEvent, TaskAgentSession } from 'azure-devops-node-api/interfaces/TaskAgentInterfaces';
+import { AzLogin, AzLoginResult, AzSubscription, AzUser } from '../az-login';
+import { ICommand } from '../command-handler';
 
 declare module "./scenarios"{
     interface TaskScenario<TInputs>{
         inputTerraformCommand(this: TaskScenario<TerraformInputs>, command: string, options?: string, workingDirectory?: string): TaskScenario<TerraformInputs>;
         inputTerraformSecureVarsFile(this: TaskScenario<TerraformInputs>, secureVarsFile: string) : TaskScenario<TerraformInputs>;
         inputAzureRmBackend(this: TaskScenario<TerraformInputs>, serviceName: string, storageAccountName: string, containerName: string, key: string, resourceGroupName: string): TaskScenario<TerraformInputs>;
+        inputAzureRmEnsureBackend(this: TaskScenario<TerraformInputs>, resourceGroupLocation?: string, storageAccountSku?: string): TaskScenario<TerraformInputs>;
         answerTerraformExists(this: TaskScenario<TerraformInputs>, terraformExists?: boolean): TaskScenario<TerraformInputs>;
         answerTerraformCommandIsSuccessful(this: TaskScenario<TerraformInputs>, args?: string): TaskScenario<TerraformInputs>;
         answerTerraformCommandWithVarsFileAsWorkingDirFails(this: TaskScenario<TerraformInputs>): TaskScenario<TerraformInputs>;
+        answerAzExists(this: TaskScenario<TerraformInputs>, azExists?: boolean): TaskScenario<TerraformInputs>;
+        answerAzCommandIsSuccessfulWithResultRaw<TCommand extends ICommand<TResult>, TResult>(this: TaskScenario<TerraformInputs>, command: TCommand, result: string): TaskScenario<TerraformInputs>;
+        answerAzCommandIsSuccessfulWithResult<TCommand extends ICommand<TResult>, TResult>(this: TaskScenario<TerraformInputs>, command: TCommand, result: TResult): TaskScenario<TerraformInputs>;
     }
 }
 
@@ -21,12 +28,29 @@ export interface TerraformInputs {
     varsFile: string;
     secureVarsFile: string;
     backendType: string;
+    ensureBackend?: boolean;
     backendServiceArm?: string;
     backendAzureRmResourceGroupName?: string;
+    backendAzureRmResourceGroupLocation?: string;
     backendAzureRmStorageAccountName?: string;
+    backendAzureRmStorageAccountSku?: string;
     backendAzureRmContainerName?: string;
     backendAzureRmKey?: string;
     environmentServiceName?: string;
+}
+
+export class TerraformAzureRmEnsureBackend extends TaskInputsAre<TerraformInputs>{
+    constructor(builder: TaskInputBuilder<TerraformInputs>, resourceGroupLocation: string = "eastus", storageAccountSku: string = "Standard_RAGRS") {
+        super(builder, {
+            ensureBackend: true,
+            backendAzureRmResourceGroupLocation: resourceGroupLocation,
+            backendAzureRmStorageAccountSku: storageAccountSku
+        });
+    }
+}
+TaskScenario.prototype.inputAzureRmEnsureBackend = function(this: TaskScenario<TerraformInputs>, resourceGroupLocation?: string, storageAccountSku?: string): TaskScenario<TerraformInputs>{
+    this.inputFactory((builder) => new TerraformAzureRmEnsureBackend(builder, resourceGroupLocation, storageAccountSku));
+    return this;
 }
 
 export class TerraformCommandAndWorkingDirectory extends TaskInputsAre<TerraformInputs>{
@@ -152,6 +176,68 @@ TaskScenario.prototype.answerTerraformExists = function(this: TaskScenario<Terra
     this.answerFactory((builder) => new TerraformExists(builder, terraformExists));
     return this;
 }
+
+export class AzExists extends TaskAnswerDecorator<TerraformInputs>{
+    private readonly azExists: boolean;
+    constructor(builder: TaskAnswerBuilder<TerraformInputs>, azExists: boolean = true) {
+        super(builder);
+        this.azExists = azExists;
+    }
+    build(inputs: TerraformInputs): TaskLibAnswers {
+        let a = this.builder.build(inputs);
+        a.which = a.which || {};
+        a.which["az"] = "az";
+        a.checkPath = a.checkPath || {};
+        a.checkPath["az"] = this.azExists;
+        if(this.azExists){
+            a.exec = a.exec || {};
+            a.exec[`az --version`] = <TaskLibAnswerExecResult>{
+                code : 0,
+                stdout : `version successful`
+            }
+        }
+
+        return a
+    }
+}
+TaskScenario.prototype.answerAzExists = function(this: TaskScenario<TerraformInputs>, azExists?: boolean): TaskScenario<TerraformInputs>{
+    this.answerFactory((builder) => new AzExists(builder, azExists));
+    return this;
+}
+
+export class AzCommandIsSuccessfulWithResultRaw<TCommand extends ICommand<TResult>, TResult> extends TaskAnswerDecorator<TerraformInputs>{
+    private readonly command: TCommand;
+    private readonly result: string;
+    constructor(builder: TaskAnswerBuilder<TerraformInputs>, command: TCommand, result: string) {
+        super(builder);
+        this.command = command;
+        this.result = result;
+    }
+    build(inputs: TerraformInputs): TaskLibAnswers {
+        let a = this.builder.build(inputs);        
+        a.exec = a.exec || {};
+        let command = `az ${this.command.toString()}`;
+        a.exec[command] =  <TaskLibAnswerExecResult>{
+            code: 0,
+            stdout: this.result
+        }
+        return a;
+    }
+}
+TaskScenario.prototype.answerAzCommandIsSuccessfulWithResultRaw = function<TCommand extends ICommand<TResult>, TResult>(this: TaskScenario<TerraformInputs>, command: TCommand, result: string): TaskScenario<TerraformInputs>{    
+    return this.answerFactory((builder) => new AzCommandIsSuccessfulWithResultRaw<TCommand, TResult>(builder, command, result));
+}
+
+export class AzCommandIsSuccessfulWithResult<TCommand extends ICommand<TResult>, TResult> extends AzCommandIsSuccessfulWithResultRaw<TCommand, TResult>{
+    constructor(builder: TaskAnswerBuilder<TerraformInputs>, command: TCommand, result: TResult) {
+        super(builder, (command), JSON.stringify(result));
+    }
+}
+TaskScenario.prototype.answerAzCommandIsSuccessfulWithResult = function<TCommand extends ICommand<TResult>, TResult>(this: TaskScenario<TerraformInputs>, command: TCommand, result: TResult): TaskScenario<TerraformInputs>{
+    return this.answerFactory((builder) => new AzCommandIsSuccessfulWithResult<TCommand, TResult>(builder, command, result));
+}
+
+
 
 
 
