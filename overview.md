@@ -7,7 +7,7 @@ The tasks in this extension allow for running terraform cli commands from both t
 The Terraform CLI task supports executing the following commands
 
 - version
-- init
+- init (NEW automated backend creation)
 - validate
 - plan
 - apply
@@ -43,6 +43,12 @@ The task currently supports two backend configurations
 The backend configuration will be prompted when relevant for the selected command. If azurerm selected, the task will prompt for a service connection and storage account details to use for the backend.
 
 ![Terraform AzureRM Backend Configuration](https://raw.githubusercontent.com/charleszipp/azure-pipelines-tasks-terraform/master/screenshots/overview-tfcli-backend-azurerm.jpg)
+
+### (NEW) Automated Remote Backend Creation
+
+The task supports automatically creating the resource group, storage account, and container for remote azurerm backend. To enable this, select the task for the terraform init command. Check the checkbox labled "Create Backend (If not exists)" underneath the backend type drop down. Once selected, the resource group location and storage account sku can be provided. The defaults are 'eastus' and 'Standard_RAGRS' respectively. The task will utilize AzureCLI to create the resource group, storage account, and container as specified in the backend configuration.
+
+![Terraform AzureRM Create Backend](https://raw.githubusercontent.com/charleszipp/azure-pipelines-tasks-terraform/master/screenshots/overview-tfcli-ensure-backend.jpg)
 
 ## Secure Variable Secrets
 
