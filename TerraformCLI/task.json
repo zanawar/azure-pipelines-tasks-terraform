@@ -101,20 +101,20 @@
             "visibleRule": "command = init"
         },
         {
-          "name": "ensureBackend",
-          "type": "boolean",
-          "label": "Create Backend (If not exists)",
-          "defaultValue": "false",
-          "required": false,
-          "helpMarkDown": "If checked, a backend will be created according to the configuration provided for the selected backend if it does not exist",
-          "visibleRule" : "backendType = azurerm"
-        },
-        {
             "name": "backendServiceArm",
             "type": "connectedService:AzureRM",
             "label": "Backend Azure Subscription",
             "required": false,
             "helpMarkDown": "Select an Azure resource manager subscription for the terraform backend configuration",
+            "groupName": "backendAzureRm"
+        },
+        {
+            "name": "ensureBackend",
+            "type": "boolean",
+            "label": "Create Backend (If not exists)",
+            "defaultValue": "false",
+            "required": false,
+            "helpMarkDown": "If checked, a backend will be created according to the configuration provided for the selected backend if it does not exist",
             "groupName": "backendAzureRm"
         },
         {
