@@ -101,6 +101,15 @@
             "visibleRule": "command = init"
         },
         {
+          "name": "ensureBackend",
+          "type": "boolean",
+          "label": "Create Backend (If not exists)",
+          "defaultValue": "false",
+          "required": false,
+          "helpMarkDown": "If checked, a backend will be created according to the configuration provided for the selected backend if it does not exist",
+          "visibleRule" : "backendType = azurerm"
+        },
+        {
             "name": "backendServiceArm",
             "type": "connectedService:AzureRM",
             "label": "Backend Azure Subscription",
@@ -117,12 +126,31 @@
             "groupName": "backendAzureRm"
         },
         {
+          "name" : "backendAzureRmResourceGroupLocation",
+          "type" : "string",
+          "label" : "Resource Group Location",
+          "required" : false,
+          "helpMarkDown" : "The name of the location into which the resource group will be provisioned (i.e. 'eastus')",
+          "groupName": "backendAzureRm",
+          "visibleRule" : "ensureBackend = true"
+        },
+        {
             "name": "backendAzureRmStorageAccountName",
             "type": "string",
             "label": "Storage Account Name",
             "required": false,
             "helpMarkDown": "The name of the storage account.",
             "groupName": "backendAzureRm"
+        },
+        {
+          "name" : "backendAzureRmStorageAccountSku",
+          "type" : "string",
+          "label" : "Storage Account SKU",
+          "required" : false,
+          "helpMarkDown" : "The storage account SKU. Defaults to Standard_RAGRS.",
+          "defaultValue" : "Standard_RAGRS",
+          "groupName": "backendAzureRm",
+          "visibleRule" : "ensureBackend = true"
         },
         {
             "name": "backendAzureRmContainerName",

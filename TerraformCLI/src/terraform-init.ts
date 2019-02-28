@@ -1,10 +1,30 @@
 import { IExecOptions, ToolRunner } from "azure-pipelines-task-lib/toolrunner";
 import tasks = require("azure-pipelines-task-lib/task");
-import { IHandleCommand, TerraformCommand, TYPES, ITerraformProvider } from "./terraform";
+import { TerraformCommand, TerraformInterfaces, ITerraformProvider } from "./terraform";
+import { IHandleCommandString } from "./command-handler";
 import { injectable, inject } from "inversify";
+import { CommandPipeline } from "./command-pipeline";
+import { AzLogin } from "./az-login";
+import { AzAccountSet } from "./az-account-set";
+import { AzGroupCreate, AzGroupCreateResult } from "./az-group-create";
+import { AzStorageAccountCreate } from "./az-storage-account-create";
+import { AzStorageAccountKeysList, AzStorageAccountKeysListResult } from "./az-storage-account-keys-list";
+import { AzStorageContainerCreate } from "./az-storage-container-create";
+import { MediatorInterfaces, IMediator } from "./mediator";
 
 export enum BackendTypes{
     azurerm = "azurerm"
+}
+
+export interface AzureBackendConfig {
+    storage_account_name    : string,
+    container_name          : string,
+    key                     : string,
+    resource_group_name     : string,
+    arm_subscription_id     : string,
+    arm_tenant_id           : string,
+    arm_client_id           : string,
+    arm_client_secret       : string    
 }
 
 export class TerraformInit extends TerraformCommand{
@@ -23,13 +43,16 @@ export class TerraformInit extends TerraformCommand{
 }
 
 @injectable()
-export class TerraformInitHandler implements IHandleCommand{
+export class TerraformInitHandler implements IHandleCommandString{
     private readonly terraformProvider: ITerraformProvider;
+    private readonly mediator: IMediator;
 
     constructor(
-        @inject(TYPES.ITerraformProvider) terraformProvider: ITerraformProvider
+        @inject(TerraformInterfaces.ITerraformProvider) terraformProvider: ITerraformProvider,
+        @inject(MediatorInterfaces.IMediator) mediator: IMediator
     ) {
         this.terraformProvider = terraformProvider;        
+        this.mediator = mediator
     }
 
     public async execute(command: string): Promise<number> {
@@ -58,7 +81,7 @@ export class TerraformInitHandler implements IHandleCommand{
                 throw "Terraform backend initialization for AzureRM only support service principal authorization";
             }
 
-            let backendConfig: any = {
+            let backendConfig: AzureBackendConfig | any = {
                 storage_account_name    : tasks.getInput("backendAzureRmStorageAccountName", true),
                 container_name          : tasks.getInput("backendAzureRmContainerName", true),
                 key                     : tasks.getInput("backendAzureRmKey", true),
@@ -72,6 +95,39 @@ export class TerraformInitHandler implements IHandleCommand{
             for(var config in backendConfig){
                 terraform.arg(`-backend-config=${config}=${backendConfig[config]}`);
             }
+
+            let ensureBackendChecked: boolean = tasks.getBoolInput("ensureBackend");
+            if(ensureBackendChecked === true){
+                let location = tasks.getInput("backendAzureRmResourceGroupLocation", true);
+                let sku = tasks.getInput("backendAzureRmStorageAccountSku", true);
+                this.ensureBackend(backendConfig, location, sku);
+            }
         }
+    }
+
+    private ensureBackend(backendConfig: AzureBackendConfig, location: string, sku: string){
+        let shell = new CommandPipeline()
+            .azLogin(new AzLogin(
+                backendConfig.arm_tenant_id,
+                backendConfig.arm_client_id,
+                backendConfig.arm_client_secret
+            ))
+            .azAccountSet(new AzAccountSet(
+                backendConfig.arm_subscription_id
+            ))
+            .azGroupCreate(new AzGroupCreate(
+                backendConfig.resource_group_name,
+                location
+            ))
+            .azStorageAccountCreate(new AzStorageAccountCreate(
+                backendConfig.storage_account_name,
+                backendConfig.resource_group_name,
+                sku
+            ))
+            .azStorageContainerCreate(new AzStorageContainerCreate(
+                backendConfig.container_name,
+                backendConfig.storage_account_name
+            ))
+            .execute(this.mediator);
     }
 }
