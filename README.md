@@ -11,6 +11,35 @@ This repo provides two tasks
 See readme for each of the tasks for development setup for each.
 
 ## Release Notes
+
+### 0.4.1
+
+#### Fix VSIX Validation Error
+
+Fixed validation error reported during marketplace upload documented with issue #35.
+
+### 0.4.0
+
+#### Automated azurerm backend creation
+
+#19 Create/Ensure AzureRM Backend Storage Account
+
+The task supports automatically creating the resource group, storage account, and container for remote azurerm backend. To enable this, select the task for the terraform init command. Check the checkbox labled "Create Backend (If not exists)" underneath the backend type drop down. Once selected, the resource group location and storage account sku can be provided. The defaults are 'eastus' and 'Standard_RAGRS' respectively. The task will utilize AzureCLI to create the resource group, storage account, and container as specified in the backend configuration.
+
+### 0.3.4
+
+#### Doc Updates
+
+- #22 Updated the overview docs to include references to destroy command support
+- #32 Updated the default version of the installer to be the latest version of terraform
+
+### 0.3.3
+
+#### Destroy Command Support
+
+- Added support for terraform destroy command #22 and PR #31
+- Updated readme and sample env #23 and PR #24
+
 ### 0.3.1
 
 #### Bug Fixes
