@@ -15,14 +15,18 @@ let expectedEnv: { [key: string]: string } = {
 
 const terraformCommand: string = "apply";
 const plan: string = "terraform.tfplan"
-const commandOptions: string = `-auto-approve ${plan}`;
-const expectedCommand: string = `${terraformCommand} ${commandOptions}`
+const secureVarsFile: string = 'foo.vars';
+const commandOptions: string = `${plan}`;
+const expectedOptions: string = `-var-file=${secureVarsFile} -auto-approve ${plan}`;
+const expectedCommand: string = `${terraformCommand} ${expectedOptions}`
 
 export let env: any = {
     taskScenarioPath:           require.resolve('./apply-azurerm-with-plan'),
     terraformCommand:           terraformCommand,
     commandOptions:             commandOptions,
     plan:                       plan,
+    secureVarsFile:             secureVarsFile,
+    expectedOptions:            expectedOptions,
     expectedCommand:            expectedCommand,
     environmentServiceName:     environmentServiceName,
     subscriptionId:             subscriptionId,

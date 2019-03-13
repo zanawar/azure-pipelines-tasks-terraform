@@ -13,7 +13,7 @@ let expectedEnv: { [key: string]: string } = {
 
 let terraformCommand: string = 'apply';
 let secureVarsFile: string = 'foo.vars';
-let commandArgs: string = `-auto-approve -var-file=${secureVarsFile}`;
+let commandArgs: string = `-var-file=${secureVarsFile} -auto-approve`;
 let expectedCommand: string = `${terraformCommand} ${commandArgs}`
 
 export let env: any = {

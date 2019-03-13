@@ -39,12 +39,17 @@ export class TerraformApplyHandler implements IHandleCommandString{
         if(commandOptions.includes(autoApprove) === false){
             commandOptions = `${autoApprove} ${commandOptions}`;
         }
+        let secureVarsFile: string = tasks.getInput("secureVarsFile");
+        if(secureVarsFile){
+            let secureVarsFilePath: string = await this.getSecureVarsFilePath(secureVarsFile);
+            commandOptions = `-var-file=${secureVarsFilePath} ${commandOptions}`;
+        }
 
         let init = new TerraformApply(
             command,
             tasks.getInput("workingDirectory"),
             tasks.getInput("environmentServiceName", true),
-            tasks.getInput("secureVarsFile"),
+            secureVarsFile,
             commandOptions
         );
         return this.onExecute(init);
@@ -53,17 +58,13 @@ export class TerraformApplyHandler implements IHandleCommandString{
     private async onExecute(command: TerraformApply): Promise<number> {
         let terraform: ToolRunner = this.terraformProvider.create(command);
         this.setupAzureRmProvider(command, terraform);
-        await this.setupVars(command, terraform);
         return terraform.exec(<IExecOptions>{
             cwd: command.workingDirectory
         });
     }
 
-    private async setupVars(command: TerraformApply, terraform: ToolRunner){
-        if(command.secureVarsFile){
-            const secureFilePath = await this.taskAgent.downloadSecureFile(command.secureVarsFile);
-            terraform.arg(`-var-file=${secureFilePath}`);
-        }
+    private getSecureVarsFilePath(secureVarsFile: string): Promise<string>{
+        return this.taskAgent.downloadSecureFile(secureVarsFile);
     }
 
     private setupAzureRmProvider(command: TerraformApply, terraform: ToolRunner){
