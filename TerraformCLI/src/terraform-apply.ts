@@ -34,23 +34,26 @@ export class TerraformApplyHandler implements IHandleCommandString{
     }
 
     public async execute(command: string): Promise<number> {
+        let autoApprove: string = '-auto-approve';
+        let commandOptions: string = tasks.getInput("commandOptions") || autoApprove;
+        if(commandOptions.includes(autoApprove) === false){
+            commandOptions = `${autoApprove} ${commandOptions}`;
+        }
+
         let init = new TerraformApply(
             command,
             tasks.getInput("workingDirectory"),
             tasks.getInput("environmentServiceName", true),
             tasks.getInput("secureVarsFile"),
-            tasks.getInput("commandOptions")
+            commandOptions
         );
         return this.onExecute(init);
     }
 
     private async onExecute(command: TerraformApply): Promise<number> {
         let terraform: ToolRunner = this.terraformProvider.create(command);
-        if((<any>terraform).args.indexOf("-auto-approve") < 0)
-            terraform.arg("-auto-approve");
         this.setupAzureRmProvider(command, terraform);
         await this.setupVars(command, terraform);
-
         return terraform.exec(<IExecOptions>{
             cwd: command.workingDirectory
         });
