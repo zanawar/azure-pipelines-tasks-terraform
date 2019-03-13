@@ -26,7 +26,8 @@ export class TaskExecutionSucceeded extends TestAssertionDecorator{
     constructor(builder: TestAssertionBuilder) {
         super(builder);        
     }
-    run(context: TestContext): void {
+    run(context: TestContext): void {        
+        this.builder.run(context);
         assert.equal(context.testRunner.succeeded, true, 'should have succeeded');
         assert.equal(context.testRunner.errorIssues.length, 0, "should have no errors");
     }
