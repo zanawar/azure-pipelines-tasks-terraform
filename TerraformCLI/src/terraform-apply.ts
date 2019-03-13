@@ -34,33 +34,37 @@ export class TerraformApplyHandler implements IHandleCommandString{
     }
 
     public async execute(command: string): Promise<number> {
+        let autoApprove: string = '-auto-approve';
+        let commandOptions: string = tasks.getInput("commandOptions") || autoApprove;
+        if(commandOptions.includes(autoApprove) === false){
+            commandOptions = `${autoApprove} ${commandOptions}`;
+        }
+        let secureVarsFile: string = tasks.getInput("secureVarsFile");
+        if(secureVarsFile){
+            let secureVarsFilePath: string = await this.getSecureVarsFilePath(secureVarsFile);
+            commandOptions = `-var-file=${secureVarsFilePath} ${commandOptions}`;
+        }
+
         let init = new TerraformApply(
             command,
             tasks.getInput("workingDirectory"),
             tasks.getInput("environmentServiceName", true),
-            tasks.getInput("secureVarsFile"),
-            tasks.getInput("commandOptions")
+            secureVarsFile,
+            commandOptions
         );
         return this.onExecute(init);
     }
 
     private async onExecute(command: TerraformApply): Promise<number> {
         let terraform: ToolRunner = this.terraformProvider.create(command);
-        if((<any>terraform).args.indexOf("-auto-approve") < 0)
-            terraform.arg("-auto-approve");
         this.setupAzureRmProvider(command, terraform);
-        await this.setupVars(command, terraform);
-
         return terraform.exec(<IExecOptions>{
             cwd: command.workingDirectory
         });
     }
 
-    private async setupVars(command: TerraformApply, terraform: ToolRunner){
-        if(command.secureVarsFile){
-            const secureFilePath = await this.taskAgent.downloadSecureFile(command.secureVarsFile);
-            terraform.arg(`-var-file=${secureFilePath}`);
-        }
+    private getSecureVarsFilePath(secureVarsFile: string): Promise<string>{
+        return this.taskAgent.downloadSecureFile(secureVarsFile);
     }
 
     private setupAzureRmProvider(command: TerraformApply, terraform: ToolRunner){

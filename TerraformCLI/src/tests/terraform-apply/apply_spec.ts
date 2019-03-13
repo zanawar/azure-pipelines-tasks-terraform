@@ -21,12 +21,21 @@ describe('terraform apply', function(){
             .run();
             
     });
+    it('azurerm with command plan', function(){        
+        let env = require('./apply-azurerm-with-plan.env').env
+        new TestScenario(env.taskScenarioPath)            
+            .assertExecutedTerraformCommand(env.expectedCommand)
+            .assertExecutedTerraformVersion()
+            .assertExecutionSucceeded()            
+            .run();
+            
+    });
     it('azurerm with secure var file', function(){        
         let env = require('./apply-azurerm-with-secure-var-file.env').env;
         new TestScenario(env.taskScenarioPath)
-            .assertExecutionSucceeded()   
-            .assertExecutedTerraformCommand(env.expectedCommand)
+            .assertExecutedTerraformCommand(env.expectedCommand)    
             .assertExecutedTerraformVersion()
+            .assertExecutionSucceeded()   
             // test runner does not expose env vars set within the task so cannot use this yet
             //.andAssert((assertions) => new TaskExecutedWithEnvironmentVariables(assertions, expectedEnv));
             .run();
