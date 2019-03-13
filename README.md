@@ -12,6 +12,12 @@ See readme for each of the tasks for development setup for each.
 
 ## Release Notes
 
+### 0.4.3
+
+#### Fix command options sequence error
+
+Fixed issue where automatically injected `apply` command options `-auto-approve` and `-var-file` were being placed after output plan file path. Output file plan path was being provided in the Commmand Options input field. The auto injected options would be appended after the user provided options. The auto injected options will now be inserted ahead of user provided options. This will allow users to provide a plan path at the end of their provided options to ensure all options are ordered as terraform expects.
+
 ### 0.4.1
 
 #### Fix VSIX Validation Error
