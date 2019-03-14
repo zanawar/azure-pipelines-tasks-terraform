@@ -3,6 +3,7 @@ import { AzRunner } from "./az-runner";
 import { Step, StepFrom } from "./command-pipeline-step";
 import { injectable, inject } from "inversify";
 import { Then } from "./command-pipeline-then";
+import { Logger } from "./logger";
 
 declare module "./command-pipeline-step" {
     interface Step<TResult> {
@@ -46,16 +47,62 @@ export class AzStorageAccountCreate implements ICommand<AzStorageAccountCreateRe
     }
 }
 
+export class AzStorageAccountShowResult {
+    id: string;
+    location: string;
+    name: string;
+    constructor(id: string, location: string, name: string) {
+        this.id = id;
+        this.location = location;
+        this.name = name;        
+    }
+}
+
+export class AzStorageAccountShow implements ICommand<AzStorageAccountShowResult> {
+    readonly name: string;
+    readonly resourceGroup: string;
+    constructor(name: string, resourceGroup: string) {
+        this.name = name;
+        this.resourceGroup = resourceGroup;
+    }
+
+    toString() : string {
+        return `storage account show --name ${this.name} --resource-group ${this.resourceGroup}`
+    }
+}
+
 @injectable()
 export class AzStorageAccountCreateHandler implements IHandleCommand<AzStorageAccountCreate, AzStorageAccountCreateResult>{
     private readonly cli: AzRunner;
+    private readonly log: Logger;
 
     constructor(
-        @inject(AzRunner) cli: AzRunner) {
+        @inject(AzRunner) cli: AzRunner,
+        @inject(Logger) log: Logger) {
         this.cli = cli;
+        this.log = log;
     }
     
-    execute(command: AzStorageAccountCreate): AzStorageAccountCreateResult {
-        return this.cli.execJson<AzStorageAccountCreateResult>(command.toString());
+    execute(command: AzStorageAccountCreate): AzStorageAccountCreateResult {        
+        let azStorageAccountShow: AzStorageAccountShow = new AzStorageAccountShow(command.name, command.resourceGroup)
+        let result: AzStorageAccountShowResult | undefined = undefined;
+        try{
+            result = this.cli.execJson<AzStorageAccountShowResult>(azStorageAccountShow.toString());
+        }
+        catch(e){
+            let expectedError: string = `The Resource 'Microsoft.Storage/storageAccounts/${command.name}' under resource group '${command.resourceGroup}' was not found`;
+            if(e.message.includes(expectedError)){
+                this.log.debug("az storage account create: storage account not found, creating...");    
+            }
+            else
+                throw e;
+        }
+        
+        if(result){
+            this.log.debug("az storage account create: storage account already exists");
+            return new AzStorageAccountCreateResult(result.id, result.location, result.name);
+        }            
+        else            
+            return this.cli.execJson<AzStorageAccountCreateResult>(command.toString());
     }    
 }
