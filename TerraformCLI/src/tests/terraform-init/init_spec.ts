@@ -46,4 +46,12 @@ describe('terraform init', function(){
             .assertExecutedTerraformVersion()
             .run();
     })
+    it('azurerm backend with ensure existing backend', function(){
+        let env = require('./init-with-backend-azurerm-with-ensure-existing-backend.env').env;
+        new TestScenario(env.taskScenarioPath)
+            .assertExecutedTerraformCommand(env.expectedCommand)    
+            .assertExecutedTerraformVersion()
+            .assertExecutionSucceeded()      
+            .run();
+    });
 });

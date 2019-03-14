@@ -18,6 +18,10 @@ export class AzRunner {
 
         cli.line(line);
         let result = cli.execSync();
+        
+        if(result.stderr)
+            throw new Error(result.stderr);
+
         let rvalue: T = <T>JSON.parse(result.stdout);
         return rvalue;
     }
