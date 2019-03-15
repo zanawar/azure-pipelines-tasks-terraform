@@ -18,6 +18,7 @@ import { AzStorageAccountKeysList, AzStorageAccountKeysListResult, AzStorageAcco
 import { AzStorageContainerCreate, AzStorageContainerCreateHandler, AzStorageContainerCreateResult } from "./az-storage-container-create";
 import { MediatorInterfaces, IMediator, Mediator } from "./mediator";
 import { IHandleCommandString, CommandInterfaces, IHandleCommand } from "./command-handler";
+import { Logger } from "./logger";
 
 var container = new Container();
 
@@ -27,6 +28,7 @@ container.bind<ITerraformProvider>(TerraformInterfaces.ITerraformProvider).toDyn
 container.bind<IMediator>(MediatorInterfaces.IMediator).to(Mediator);
 container.bind<ITaskAgent>(TerraformInterfaces.ITaskAgent).to(TaskAgent);
 container.bind<AzRunner>(AzRunner).toDynamicValue((context: interfaces.Context) => new AzRunner(tasks));
+container.bind<Logger>(Logger).toDynamicValue((context: interfaces.Context) => new Logger(tasks));
 
 // bind handlers for each azure shell command
 container.bind<IHandleCommand<AzLogin, AzLoginResult>>(CommandInterfaces.IHandleCommand).to(AzLoginHandler).whenTargetNamed(AzLogin.name);

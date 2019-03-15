@@ -12,6 +12,14 @@ See readme for each of the tasks for development setup for each.
 
 ## Release Notes
 
+### 0.4.4
+
+#### Fixed issue that occured for existing azure storage accounts of kind "StorageV2"
+
+Fixed issue where errors where occurring for storage accounts that were not of kind "BlobStorage". The underlying azure cli storage account create command was being executed regardless of the storage account's existance. If the storage account existed prior to executing the command, the command would attempt to set the storage account to kind "BlobStorage" access tier "hot" and configured sku. This would result in an error when updating storage account to this configuration was not supported. Example would be updating existing storage accounts that are kind "StorageV2" to "BlobStorage". This update is not permitted.
+
+With this change, no attempt will be made to update existing storage accounts.
+
 ### 0.4.3
 
 #### Fix command options sequence error

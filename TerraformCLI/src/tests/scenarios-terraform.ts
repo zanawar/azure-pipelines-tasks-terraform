@@ -18,6 +18,7 @@ declare module "./scenarios"{
         answerAzExists(this: TaskScenario<TerraformInputs>, azExists?: boolean): TaskScenario<TerraformInputs>;
         answerAzCommandIsSuccessfulWithResultRaw<TCommand extends ICommand<TResult>, TResult>(this: TaskScenario<TerraformInputs>, command: TCommand, result: string): TaskScenario<TerraformInputs>;
         answerAzCommandIsSuccessfulWithResult<TCommand extends ICommand<TResult>, TResult>(this: TaskScenario<TerraformInputs>, command: TCommand, result: TResult): TaskScenario<TerraformInputs>;
+        answerAzCommandFailsWithErrorRaw<TCommand extends ICommand<TResult>, TResult>(this: TaskScenario<TerraformInputs>, command: TCommand, error: string): TaskScenario<TerraformInputs>;
     }
 }
 
@@ -237,8 +238,29 @@ TaskScenario.prototype.answerAzCommandIsSuccessfulWithResult = function<TCommand
     return this.answerFactory((builder) => new AzCommandIsSuccessfulWithResult<TCommand, TResult>(builder, command, result));
 }
 
-
-
+export class AzCommandFailsWithErrorRaw<TCommand extends ICommand<TResult>, TResult> extends TaskAnswerDecorator<TerraformInputs>{
+    private readonly command: TCommand;
+    private readonly error: string;
+    constructor(builder: TaskAnswerBuilder<TerraformInputs>, command: TCommand, error: string) {
+        super(builder);
+        this.command = command;
+        this.error = error;
+    }
+    build(inputs: TerraformInputs): TaskLibAnswers {
+        let a = this.builder.build(inputs);        
+        a.exec = a.exec || {};
+        let command = `az ${this.command.toString()}`;
+        a.exec[command] =  <TaskLibAnswerExecResult>{
+            code: 1,
+            stdout: this.error,
+            stderr: this.error
+        }
+        return a;
+    }
+}
+TaskScenario.prototype.answerAzCommandFailsWithErrorRaw = function<TCommand extends ICommand<TResult>, TResult>(this: TaskScenario<TerraformInputs>, command: TCommand, error: string): TaskScenario<TerraformInputs>{    
+    return this.answerFactory((builder) => new AzCommandFailsWithErrorRaw<TCommand, TResult>(builder, command, error));
+}
 
 
 
