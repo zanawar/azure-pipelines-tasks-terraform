@@ -20,6 +20,18 @@ import { MediatorInterfaces, IMediator, Mediator } from "./mediator";
 import { IHandleCommandString, CommandInterfaces, IHandleCommand } from "./command-handler";
 import { Logger } from "./logger";
 
+import ai = require('applicationinsights');
+import { TelemetryClient } from "applicationinsights";
+import FlushOptions = require("applicationinsights/out/Library/FlushOptions");
+import { CorrelationContext } from "applicationinsights/out/AutoCollection/CorrelationContextManager";
+ai.setup("fe2e6d1f-86dd-44d1-ab2d-f6bc5a425699")
+    .setAutoCollectConsole(true, true)
+    .setAutoCollectExceptions(true)
+    .setAutoCollectDependencies(true)
+    .setAutoDependencyCorrelation(true)
+    .start();
+let correlation: CorrelationContext = ai.getCorrelationContext();
+
 var container = new Container();
 
 // bind infrastructure components
@@ -28,7 +40,8 @@ container.bind<ITerraformProvider>(TerraformInterfaces.ITerraformProvider).toDyn
 container.bind<IMediator>(MediatorInterfaces.IMediator).to(Mediator);
 container.bind<ITaskAgent>(TerraformInterfaces.ITaskAgent).to(TaskAgent);
 container.bind<AzRunner>(AzRunner).toDynamicValue((context: interfaces.Context) => new AzRunner(tasks));
-container.bind<Logger>(Logger).toDynamicValue((context: interfaces.Context) => new Logger(tasks));
+container.bind<Logger>(Logger).toDynamicValue((context: interfaces.Context) => new Logger(tasks, ai.defaultClient, correlation));
+container.bind<TelemetryClient>(TelemetryClient).toConstantValue(ai.defaultClient);
 
 // bind handlers for each azure shell command
 container.bind<IHandleCommand<AzLogin, AzLoginResult>>(CommandInterfaces.IHandleCommand).to(AzLoginHandler).whenTargetNamed(AzLogin.name);
@@ -48,6 +61,7 @@ container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(
 
 // execute the terraform command
 let mediator = container.get<IMediator>(MediatorInterfaces.IMediator);
+let foo = process.env;
 mediator.executeRawString("version")
     // what should be used when executed by az dev ops
     .then(() => mediator.executeRawString(tasks.getInput("command")))
@@ -64,5 +78,12 @@ mediator.executeRawString("version")
     })
     .catch((error) => {
         tasks.setResult(tasks.TaskResult.Failed, error)
+    })
+    .finally(() => {        
+        ai.defaultClient.flush(<FlushOptions>{ 
+            callback: (response: string) => {
+                console.debug("telemetry client flush:", response);
+            }
+        });
     });
 

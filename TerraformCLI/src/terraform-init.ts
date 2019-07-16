@@ -11,6 +11,10 @@ import { AzStorageAccountCreate } from "./az-storage-account-create";
 import { AzStorageAccountKeysList, AzStorageAccountKeysListResult } from "./az-storage-account-keys-list";
 import { AzStorageContainerCreate } from "./az-storage-container-create";
 import { MediatorInterfaces, IMediator } from "./mediator";
+import { TelemetryClient } from "applicationinsights";
+import { RequestTelemetry } from "applicationinsights/out/Declarations/Contracts";
+import FlushOptions = require("applicationinsights/out/Library/FlushOptions");
+import { Logger } from "./logger";
 
 export enum BackendTypes{
     azurerm = "azurerm"
@@ -46,13 +50,16 @@ export class TerraformInit extends TerraformCommand{
 export class TerraformInitHandler implements IHandleCommandString{
     private readonly terraformProvider: ITerraformProvider;
     private readonly mediator: IMediator;
+    private readonly log: Logger;
 
     constructor(
         @inject(TerraformInterfaces.ITerraformProvider) terraformProvider: ITerraformProvider,
-        @inject(MediatorInterfaces.IMediator) mediator: IMediator
+        @inject(MediatorInterfaces.IMediator) mediator: IMediator,
+        @inject(Logger) log: Logger
     ) {
         this.terraformProvider = terraformProvider;        
         this.mediator = mediator
+        this.log = log;
     }
 
     public async execute(command: string): Promise<number> {
@@ -62,12 +69,13 @@ export class TerraformInitHandler implements IHandleCommandString{
             tasks.getInput("backendType"),
             tasks.getInput("commandOptions"),
         );
-        return this.onExecute(init);
+        return this.log.command(init, (command: TerraformInit) => this.onExecute(command));
     }
 
-    private async onExecute(command: TerraformInit): Promise<number> {
+    public async onExecute(command: TerraformInit): Promise<number> {
         var terraform = this.terraformProvider.create(command);
         this.setupBackendConfig(command, terraform);
+        throw new Error("Test exception during init!!");
         return terraform.exec(<IExecOptions>{
             cwd: command.workingDirectory
         });
