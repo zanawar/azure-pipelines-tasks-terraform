@@ -2,28 +2,21 @@ import { injectable } from "inversify";
 import { TerraformCommand } from "./terraform";
 import { RequestTelemetry, Telemetry, ExceptionTelemetry } from "applicationinsights/out/Declarations/Contracts";
 import { TelemetryClient } from "applicationinsights";
-import * as os from 'os';
-import { CorrelationContext } from "applicationinsights/out/AutoCollection/CorrelationContextManager";
 
 @injectable()
 export class Logger {
     private readonly tasks: any;
     private readonly telemetry: TelemetryClient;
-    private readonly correlation: CorrelationContext;
-    constructor(tasks: any, telemetry: TelemetryClient, correlation: CorrelationContext) {
+    constructor(tasks: any, telemetry: TelemetryClient) {
         this.telemetry = telemetry;
         this.tasks = tasks;
-        this.correlation = correlation;
     }
 
     async command<TCommand extends TerraformCommand>(command: TCommand, handler: (command: TCommand) => Promise<number>) : Promise<number>{
         let start: [number, number] = process.hrtime();
-        let props : {[key: string] : string} = <any>command;
-        props["operatingSystem"] = os.type();
         let request: RequestTelemetry = <RequestTelemetry>{
             name: command.name,
             properties: <any>command,
-            contextObjects: <any>this.correlation
         }
         try{
             let rvalue: number = await handler(command);
@@ -36,7 +29,6 @@ export class Logger {
             request.success = false;
             this.telemetry.trackException(<ExceptionTelemetry>{
                 exception: e,
-                contextObjects: <any>this.correlation
             });
             throw e;
         }

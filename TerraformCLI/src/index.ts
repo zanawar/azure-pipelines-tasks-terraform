@@ -23,14 +23,13 @@ import { Logger } from "./logger";
 import ai = require('applicationinsights');
 import { TelemetryClient } from "applicationinsights";
 import FlushOptions = require("applicationinsights/out/Library/FlushOptions");
-import { CorrelationContext } from "applicationinsights/out/AutoCollection/CorrelationContextManager";
-ai.setup("fe2e6d1f-86dd-44d1-ab2d-f6bc5a425699")
+ai.setup("df6a1fb7-b82f-42f4-8e5a-f8d7bec3ebb4")
     .setAutoCollectConsole(true, true)
     .setAutoCollectExceptions(true)
     .setAutoCollectDependencies(true)
     .setAutoDependencyCorrelation(true)
+    .setInternalLogging(false)
     .start();
-let correlation: CorrelationContext = ai.getCorrelationContext();
 
 var container = new Container();
 
@@ -40,7 +39,7 @@ container.bind<ITerraformProvider>(TerraformInterfaces.ITerraformProvider).toDyn
 container.bind<IMediator>(MediatorInterfaces.IMediator).to(Mediator);
 container.bind<ITaskAgent>(TerraformInterfaces.ITaskAgent).to(TaskAgent);
 container.bind<AzRunner>(AzRunner).toDynamicValue((context: interfaces.Context) => new AzRunner(tasks));
-container.bind<Logger>(Logger).toDynamicValue((context: interfaces.Context) => new Logger(tasks, ai.defaultClient, correlation));
+container.bind<Logger>(Logger).toDynamicValue((context: interfaces.Context) => new Logger(tasks, ai.defaultClient));
 container.bind<TelemetryClient>(TelemetryClient).toConstantValue(ai.defaultClient);
 
 // bind handlers for each azure shell command
@@ -80,10 +79,6 @@ mediator.executeRawString("version")
         tasks.setResult(tasks.TaskResult.Failed, error)
     })
     .finally(() => {        
-        ai.defaultClient.flush(<FlushOptions>{ 
-            callback: (response: string) => {
-                console.debug("telemetry client flush:", response);
-            }
-        });
+        ai.defaultClient.flush();
     });
 
