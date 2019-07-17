@@ -12,6 +12,7 @@ declare module "./scenarios"{
         inputTerraformSecureVarsFile(this: TaskScenario<TerraformInputs>, secureVarsFile: string) : TaskScenario<TerraformInputs>;
         inputAzureRmBackend(this: TaskScenario<TerraformInputs>, serviceName: string, storageAccountName: string, containerName: string, key: string, resourceGroupName: string): TaskScenario<TerraformInputs>;
         inputAzureRmEnsureBackend(this: TaskScenario<TerraformInputs>, resourceGroupLocation?: string, storageAccountSku?: string): TaskScenario<TerraformInputs>;
+        inputApplicationInsightsInstrumentationKey(this: TaskScenario<TerraformInputs>, instrumentationKey?: string): TaskScenario<TerraformInputs>;
         answerTerraformExists(this: TaskScenario<TerraformInputs>, terraformExists?: boolean): TaskScenario<TerraformInputs>;
         answerTerraformCommandIsSuccessful(this: TaskScenario<TerraformInputs>, args?: string): TaskScenario<TerraformInputs>;
         answerTerraformCommandWithVarsFileAsWorkingDirFails(this: TaskScenario<TerraformInputs>): TaskScenario<TerraformInputs>;
@@ -38,6 +39,7 @@ export interface TerraformInputs {
     backendAzureRmContainerName?: string;
     backendAzureRmKey?: string;
     environmentServiceName?: string;
+    aiInstrumentationKey?: string;
 }
 
 export class TerraformAzureRmEnsureBackend extends TaskInputsAre<TerraformInputs>{
@@ -51,6 +53,18 @@ export class TerraformAzureRmEnsureBackend extends TaskInputsAre<TerraformInputs
 }
 TaskScenario.prototype.inputAzureRmEnsureBackend = function(this: TaskScenario<TerraformInputs>, resourceGroupLocation?: string, storageAccountSku?: string): TaskScenario<TerraformInputs>{
     this.inputFactory((builder) => new TerraformAzureRmEnsureBackend(builder, resourceGroupLocation, storageAccountSku));
+    return this;
+}
+
+export class TerraformApplicationInsightsInstrumentationKey extends TaskInputsAre<TerraformInputs>{
+    constructor(builder: TaskInputBuilder<TerraformInputs>, instrumentationKey: string = "00000000-0000-0000-0000-000000000000") {
+        super(builder, {
+            aiInstrumentationKey: instrumentationKey
+        });
+    }
+}
+TaskScenario.prototype.inputApplicationInsightsInstrumentationKey = function(this: TaskScenario<TerraformInputs>, instrumentationKey?: string): TaskScenario<TerraformInputs>{
+    this.inputFactory((builder) => new TerraformApplicationInsightsInstrumentationKey(builder, instrumentationKey));
     return this;
 }
 

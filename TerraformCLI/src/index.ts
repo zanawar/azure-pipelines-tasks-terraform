@@ -22,8 +22,8 @@ import { Logger } from "./logger";
 
 import ai = require('applicationinsights');
 import { TelemetryClient } from "applicationinsights";
-import FlushOptions = require("applicationinsights/out/Library/FlushOptions");
-ai.setup("df6a1fb7-b82f-42f4-8e5a-f8d7bec3ebb4")
+
+ai.setup(tasks.getInput("aiInstrumentationKey"))
     .setAutoCollectConsole(true, true)
     .setAutoCollectExceptions(true)
     .setAutoCollectDependencies(true)
