@@ -3,6 +3,7 @@ import { IExecOptions, ToolRunner } from "azure-pipelines-task-lib/toolrunner";
 import { TerraformCommand, TerraformInterfaces, ITerraformProvider, ITaskAgent } from "./terraform";
 import { IHandleCommandString } from "./command-handler";
 import { injectable, inject } from "inversify";
+import { Logger } from "./logger";
 
 export class TerraformValidate extends TerraformCommand{
     readonly secureVarsFile: string | undefined;
@@ -21,23 +22,27 @@ export class TerraformValidate extends TerraformCommand{
 export class TerraformValidateHandler implements IHandleCommandString{
     private readonly terraformProvider: ITerraformProvider;
     private readonly taskAgent: ITaskAgent;
+    private readonly log: Logger;
 
     constructor(
         @inject(TerraformInterfaces.ITerraformProvider) terraformProvider: ITerraformProvider,
         @inject(TerraformInterfaces.ITaskAgent) taskAgent: ITaskAgent,
+        @inject(Logger) log: Logger
     ) {
         this.terraformProvider = terraformProvider;   
-        this.taskAgent = taskAgent;
+        this.taskAgent = taskAgent; 
+        this.log = log;
     }
 
     public async execute(command: string): Promise<number> {
-        let init = new TerraformValidate(
+        let validate = new TerraformValidate(
             command,
             tasks.getInput("workingDirectory"),
             tasks.getInput("commandOptions"),
             tasks.getInput("secureVarsFile")
         );
-        return this.onExecute(init);
+        
+        return this.log.command(validate, (command: TerraformValidate) => this.onExecute(command));
     }
 
     private async onExecute(command: TerraformValidate): Promise<number> {

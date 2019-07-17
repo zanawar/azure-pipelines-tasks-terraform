@@ -3,6 +3,7 @@ import { IExecOptions, ToolRunner } from "azure-pipelines-task-lib/toolrunner";
 import { TerraformCommand, TerraformInterfaces, ITerraformProvider, ITaskAgent } from "./terraform";
 import { IHandleCommandString } from "./command-handler";
 import { injectable, inject } from "inversify";
+import { Logger } from "./logger";
 
 export class TerraformPlan extends TerraformCommand{
     readonly secureVarsFile: string | undefined;
@@ -24,24 +25,28 @@ export class TerraformPlan extends TerraformCommand{
 export class TerraformPlanHandler implements IHandleCommandString{
     private readonly terraformProvider: ITerraformProvider;
     private readonly taskAgent: ITaskAgent;
+    private readonly log: Logger;
 
     constructor(
         @inject(TerraformInterfaces.ITerraformProvider) terraformProvider: ITerraformProvider,
-        @inject(TerraformInterfaces.ITaskAgent) taskAgent: ITaskAgent
+        @inject(TerraformInterfaces.ITaskAgent) taskAgent: ITaskAgent,
+        @inject(Logger) log: Logger
     ) {
         this.terraformProvider = terraformProvider;        
-        this.taskAgent = taskAgent;
+        this.taskAgent = taskAgent;   
+        this.log = log;
     }
 
     public async execute(command: string): Promise<number> {
-        let init = new TerraformPlan(
+        let plan = new TerraformPlan(
             command,
             tasks.getInput("workingDirectory"),
             tasks.getInput("environmentServiceName", true),
             tasks.getInput("commandOptions"),
             tasks.getInput("secureVarsFile")
         );
-        return this.onExecute(init);
+        
+        return this.log.command(plan, (command: TerraformPlan) => this.onExecute(command));
     }
 
     private async onExecute(command: TerraformPlan): Promise<number> {
