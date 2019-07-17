@@ -12,9 +12,9 @@
     ],
     "demands": [],
     "version": {
-        "Major": "0",
-        "Minor": "2",
-        "Patch": "4"
+        "Major": "#{GitVersion.Major}#",
+        "Minor": "#{GitVersion.Minor}#",
+        "Patch": "#{GitVersion.Patch}#"
     },
     "minimumAgentVersion": "1.95.0",
     "instanceNameFormat": "terraform $(command)",
