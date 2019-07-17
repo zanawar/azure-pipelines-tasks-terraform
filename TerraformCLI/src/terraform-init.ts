@@ -17,6 +17,7 @@ import FlushOptions = require("applicationinsights/out/Library/FlushOptions");
 import { Logger } from "./logger";
 
 export enum BackendTypes{
+    local = "local",
     azurerm = "azurerm"
 }
 
@@ -75,7 +76,6 @@ export class TerraformInitHandler implements IHandleCommandString{
     public async onExecute(command: TerraformInit): Promise<number> {
         var terraform = this.terraformProvider.create(command);
         this.setupBackendConfig(command, terraform);
-        throw new Error("Test exception during init!!");
         return terraform.exec(<IExecOptions>{
             cwd: command.workingDirectory
         });
