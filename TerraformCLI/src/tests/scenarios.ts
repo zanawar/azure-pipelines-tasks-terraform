@@ -2,6 +2,7 @@ import ma = require('azure-pipelines-task-lib/mock-answer');
 import { TaskMockRunner } from "azure-pipelines-task-lib/mock-run";
 import "reflect-metadata";
 import TaskAgentMock from './../task-agent-mock';
+import LoggerMock from './../logger-mock';
 
 
 export abstract class TaskInputBuilder<TInputs>{
@@ -143,6 +144,7 @@ export class TaskScenario<TInputs>{
             .forEach(key => delete process.env[key]);
         
         this.taskRunner.registerMock('./task-agent', TaskAgentMock);
+        this.taskRunner.registerMock('./logger', LoggerMock);
     }
 
     public inputFactory(input: (inputs: TaskInputBuilder<TInputs>) => TaskInputDecorator<TInputs>): TaskScenario<TInputs>{

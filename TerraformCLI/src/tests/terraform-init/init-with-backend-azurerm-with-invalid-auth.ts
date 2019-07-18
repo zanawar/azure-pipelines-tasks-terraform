@@ -18,6 +18,7 @@ export let initWithBackendAzureRmWithInvalidAuth = new TaskScenario<TerraformInp
     .inputAzureRmServiceEndpoint(backendServiceName, subscriptionId, tenantId, servicePrincipalId, servicePrincipalKey, "foo")
     .inputTerraformCommand(terraformCommand)
     .inputAzureRmBackend(backendServiceName, backendStorageAccountName, backendContainerName, backendKey, backendResourceGroupName)
+    .inputApplicationInsightsInstrumentationKey()
     .answerTerraformExists()    
     .run()
 

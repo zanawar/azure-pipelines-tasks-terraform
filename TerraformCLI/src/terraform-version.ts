@@ -9,7 +9,7 @@ export class TerraformVersionHandler implements IHandleCommandString{
     constructor(
         @inject(TerraformInterfaces.ITerraformProvider) terraformProvider: ITerraformProvider
     ) {
-        this.terraformProvider = terraformProvider;        
+        this.terraformProvider = terraformProvider;   
     }
 
     public async execute(command: string): Promise<number> {

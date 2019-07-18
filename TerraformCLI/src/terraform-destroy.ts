@@ -1,6 +1,6 @@
 import tasks = require("azure-pipelines-task-lib/task");
 import { IExecOptions, ToolRunner } from "azure-pipelines-task-lib/toolrunner";
-import { TerraformCommand, ITerraformProvider, ITaskAgent, TerraformInterfaces } from "./terraform";
+import { TerraformCommand, ITerraformProvider, ITaskAgent, TerraformInterfaces, ILogger } from "./terraform";
 import { injectable, inject } from "inversify";
 import { IHandleCommandString } from "./command-handler";
 
@@ -24,24 +24,28 @@ export class TerraformDestroy extends TerraformCommand{
 export class TerraformDestroyHandler implements IHandleCommandString{
     private readonly terraformProvider: ITerraformProvider;
     private readonly taskAgent: ITaskAgent;
+    private readonly log: ILogger;
 
     constructor(
         @inject(TerraformInterfaces.ITerraformProvider) terraformProvider: ITerraformProvider,
-        @inject(TerraformInterfaces.ITaskAgent) taskAgent: ITaskAgent
+        @inject(TerraformInterfaces.ITaskAgent) taskAgent: ITaskAgent,
+        @inject(TerraformInterfaces.ILogger) log: ILogger
     ) {
         this.terraformProvider = terraformProvider;           
         this.taskAgent = taskAgent;     
+        this.log = log;
     }
 
     public async execute(command: string): Promise<number> {
-        let init = new TerraformDestroy(
+        let destroy = new TerraformDestroy(
             command,
             tasks.getInput("workingDirectory"),
             tasks.getInput("environmentServiceName", true),
             tasks.getInput("secureVarsFile"),
             tasks.getInput("commandOptions")
         );
-        return this.onExecute(init);
+        
+        return this.log.command(destroy, (command: TerraformDestroy) => this.onExecute(command));
     }
 
     private async onExecute(command: TerraformDestroy): Promise<number> {
