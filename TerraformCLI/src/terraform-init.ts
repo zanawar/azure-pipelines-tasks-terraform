@@ -1,20 +1,15 @@
 import { IExecOptions, ToolRunner } from "azure-pipelines-task-lib/toolrunner";
 import tasks = require("azure-pipelines-task-lib/task");
-import { TerraformCommand, TerraformInterfaces, ITerraformProvider } from "./terraform";
+import { TerraformCommand, TerraformInterfaces, ITerraformProvider, ILogger } from "./terraform";
 import { IHandleCommandString } from "./command-handler";
 import { injectable, inject } from "inversify";
 import { CommandPipeline } from "./command-pipeline";
 import { AzLogin } from "./az-login";
 import { AzAccountSet } from "./az-account-set";
-import { AzGroupCreate, AzGroupCreateResult } from "./az-group-create";
+import { AzGroupCreate } from "./az-group-create";
 import { AzStorageAccountCreate } from "./az-storage-account-create";
-import { AzStorageAccountKeysList, AzStorageAccountKeysListResult } from "./az-storage-account-keys-list";
 import { AzStorageContainerCreate } from "./az-storage-container-create";
 import { MediatorInterfaces, IMediator } from "./mediator";
-import { TelemetryClient } from "applicationinsights";
-import { RequestTelemetry } from "applicationinsights/out/Declarations/Contracts";
-import FlushOptions = require("applicationinsights/out/Library/FlushOptions");
-import { Logger } from "./logger";
 
 export enum BackendTypes{
     local = "local",
@@ -51,12 +46,12 @@ export class TerraformInit extends TerraformCommand{
 export class TerraformInitHandler implements IHandleCommandString{
     private readonly terraformProvider: ITerraformProvider;
     private readonly mediator: IMediator;
-    private readonly log: Logger;
+    private readonly log: ILogger;
 
     constructor(
         @inject(TerraformInterfaces.ITerraformProvider) terraformProvider: ITerraformProvider,
         @inject(MediatorInterfaces.IMediator) mediator: IMediator,
-        @inject(Logger) log: Logger
+        @inject(TerraformInterfaces.ILogger) log: ILogger
     ) {
         this.terraformProvider = terraformProvider;        
         this.mediator = mediator

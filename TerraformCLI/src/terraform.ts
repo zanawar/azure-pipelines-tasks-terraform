@@ -1,5 +1,6 @@
 import { injectable } from 'inversify';
 import { ToolRunner } from "azure-pipelines-task-lib/toolrunner";
+import { PullRequestSystemType } from 'azure-devops-node-api/interfaces/ReleaseInterfaces';
 
 export class TerraformCommand {
     public readonly name: string;
@@ -44,7 +45,14 @@ export interface ITaskAgent {
     downloadSecureFile(secureFileId: string): Promise<string>
 }
 
+export interface ILogger {
+    command<TCommand extends TerraformCommand>(command: TCommand, handler: (command: TCommand) => Promise<number>) : Promise<number>;
+    debug(message: string): void;
+    error(message: string): void;
+}
+
 export const TerraformInterfaces = {
     ITerraformProvider: Symbol("ITerraformProvider"),
-    ITaskAgent: Symbol('ITaskAgent')
+    ITaskAgent: Symbol('ITaskAgent'),
+    ILogger: Symbol('ILogger')
 }

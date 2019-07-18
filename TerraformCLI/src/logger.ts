@@ -1,10 +1,10 @@
 import { injectable } from "inversify";
-import { TerraformCommand } from "./terraform";
+import { TerraformCommand, ILogger } from "./terraform";
 import { RequestTelemetry, Telemetry, ExceptionTelemetry } from "applicationinsights/out/Declarations/Contracts";
 import { TelemetryClient } from "applicationinsights";
 
 @injectable()
-export class Logger {
+export default class Logger implements ILogger {
     private readonly tasks: any;
     private readonly telemetry: TelemetryClient;
     constructor(tasks: any, telemetry: TelemetryClient) {
