@@ -6,6 +6,7 @@ import { TerraformInitHandler } from "./terraform-init";
 import { TerraformVersionHandler } from "./terraform-version";
 import { TerraformValidateHandler } from "./terraform-validate";
 import { TerraformPlanHandler } from "./terraform-plan";
+import { TerraformImportHandler } from "./terraform-import";
 import { TerraformApplyHandler } from "./terraform-apply";
 import { TerraformDestroyHandler } from "./terraform-destroy";
 import TaskAgent from "./task-agent";
@@ -43,6 +44,7 @@ container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(
 container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformVersionHandler).whenTargetNamed("version");
 container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformValidateHandler).whenTargetNamed("validate");
 container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformPlanHandler).whenTargetNamed("plan");
+container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformImportHandler).whenTargetNamed("import");
 container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformApplyHandler).whenTargetNamed("apply");
 container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformDestroyHandler).whenTargetNamed("destroy");
 
