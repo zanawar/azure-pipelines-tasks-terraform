@@ -52,9 +52,21 @@ export class TerraformPlanHandler implements IHandleCommandString{
         var terraform = this.terraformProvider.create(command);
         this.setupAzureRmProvider(command, terraform);
         await this.setupVars(command, terraform);
-        return terraform.exec(<IExecOptions>{
-            cwd: command.workingDirectory
-        });
+
+        let execOptions: IExecOptions = <IExecOptions>{
+            cwd: command.workingDirectory,
+            // if using detailed exit code, disable automated interpretation of exit codes by the toolrunner so exit code 2 doesnt return error
+            ignoreReturnCode: command.options !== undefined && command.options.indexOf('-detailed-exitcode') > -1
+        };
+
+        let exitcode = await terraform.exec(execOptions);
+
+        // ensure exit code 1 still throws error so task result is set to Failed. 
+        if(execOptions.ignoreReturnCode && exitcode === 1){
+            throw "terraform plan failed with exit code 1";
+        }
+
+        return exitcode;
     }
 
     private async setupVars(command: TerraformPlan, terraform: ToolRunner){
