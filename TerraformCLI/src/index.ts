@@ -31,6 +31,15 @@ ai.setup(tasks.getInput("aiInstrumentationKey"))
     .setInternalLogging(false)
     .start();
 
+ai.defaultClient.commonProperties = {
+    'system.teamfoundationcollectionuri': tasks.getVariable("System.TeamFoundationCollectionUri"),
+    'system.teamproject': tasks.getVariable("System.TeamProject"),
+    'system.hosttype': tasks.getVariable("System.HostType"),
+    'agent.os': tasks.getVariable("Agent.OS"),
+    'agent.osarchitecture': tasks.getVariable("Agent.OSArchitecture"),
+    'agent.jobstatus': tasks.getVariable("Agent.JobStatus")
+}    
+
 var container = new Container();
 
 // bind infrastructure components
