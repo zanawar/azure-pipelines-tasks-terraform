@@ -3,7 +3,7 @@ import { AzRunner } from "./az-runner";
 import { Step, StepFrom } from "./command-pipeline-step";
 import { injectable, inject } from "inversify";
 import { Then } from "./command-pipeline-then";
-import { Logger } from "./logger";
+import { TerraformInterfaces, ILogger } from "./terraform";
 
 declare module "./command-pipeline-step" {
     interface Step<TResult> {
@@ -74,11 +74,11 @@ export class AzStorageAccountShow implements ICommand<AzStorageAccountShowResult
 @injectable()
 export class AzStorageAccountCreateHandler implements IHandleCommand<AzStorageAccountCreate, AzStorageAccountCreateResult>{
     private readonly cli: AzRunner;
-    private readonly log: Logger;
+    private readonly log: ILogger;
 
     constructor(
         @inject(AzRunner) cli: AzRunner,
-        @inject(Logger) log: Logger) {
+        @inject(TerraformInterfaces.ILogger) log: ILogger) {
         this.cli = cli;
         this.log = log;
     }
