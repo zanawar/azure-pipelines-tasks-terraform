@@ -172,7 +172,7 @@
             "name": "aiInstrumentationKey",
             "type": "string",
             "required": false,
-            "visibleRule": "true = false",
+            "visibleRule": "command = x",
             "defaultValue": "#{ai-instrumentation-key}#"
         }
     ],
