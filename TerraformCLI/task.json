@@ -167,6 +167,13 @@
             "required": false,
             "helpMarkDown": "The key where to place/look for state file inside the container",
             "groupName": "backendAzureRm"
+        },
+        {
+            "name": "aiInstrumentationKey",
+            "type": "string",
+            "required": false,
+            "visibleRule": "true = false",
+            "defaultValue": "#{ai-instrumentation-key}#"
         }
     ],
     "execution": {

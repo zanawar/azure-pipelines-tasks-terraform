@@ -1,6 +1,6 @@
 import tasks = require("azure-pipelines-task-lib/task");
 import { IExecOptions, ToolRunner } from "azure-pipelines-task-lib/toolrunner";
-import { TerraformCommand, TerraformInterfaces, ITerraformProvider, ITaskAgent } from "./terraform";
+import { TerraformCommand, TerraformInterfaces, ITerraformProvider, ITaskAgent, ILogger } from "./terraform";
 import { injectable, inject } from "inversify";
 import { IHandleCommandString } from "./command-handler";
 
@@ -24,13 +24,16 @@ export class TerraformApply extends TerraformCommand{
 export class TerraformApplyHandler implements IHandleCommandString{
     private readonly terraformProvider: ITerraformProvider;
     private readonly taskAgent: ITaskAgent;
+    private readonly log: ILogger;
 
     constructor(
         @inject(TerraformInterfaces.ITerraformProvider) terraformProvider: ITerraformProvider,
-        @inject(TerraformInterfaces.ITaskAgent) taskAgent: ITaskAgent
+        @inject(TerraformInterfaces.ITaskAgent) taskAgent: ITaskAgent,
+        @inject(TerraformInterfaces.ILogger) log: ILogger
     ) {
         this.terraformProvider = terraformProvider;           
         this.taskAgent = taskAgent;     
+        this.log = log;
     }
 
     public async execute(command: string): Promise<number> {
@@ -45,14 +48,15 @@ export class TerraformApplyHandler implements IHandleCommandString{
             commandOptions = `-var-file=${secureVarsFilePath} ${commandOptions}`;
         }
 
-        let init = new TerraformApply(
+        let apply = new TerraformApply(
             command,
             tasks.getInput("workingDirectory"),
             tasks.getInput("environmentServiceName", true),
             secureVarsFile,
             commandOptions
         );
-        return this.onExecute(init);
+        
+        return this.log.command(apply, (command: TerraformApply) => this.onExecute(command));
     }
 
     private async onExecute(command: TerraformApply): Promise<number> {

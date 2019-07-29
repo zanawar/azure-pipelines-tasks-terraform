@@ -5,6 +5,7 @@ import { env } from './validate-with-options.env';
 
 new TaskScenario<TerraformInputs>()
     .inputTerraformCommand(env.terraformCommand, env.commandOptions)
+    .inputApplicationInsightsInstrumentationKey()
     .answerTerraformExists()    
     .answerTerraformCommandIsSuccessful(env.commandOptions)
     .answerTerraformCommandWithVarsFileAsWorkingDirFails()

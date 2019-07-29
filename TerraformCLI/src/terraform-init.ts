@@ -1,18 +1,18 @@
 import { IExecOptions, ToolRunner } from "azure-pipelines-task-lib/toolrunner";
 import tasks = require("azure-pipelines-task-lib/task");
-import { TerraformCommand, TerraformInterfaces, ITerraformProvider } from "./terraform";
+import { TerraformCommand, TerraformInterfaces, ITerraformProvider, ILogger } from "./terraform";
 import { IHandleCommandString } from "./command-handler";
 import { injectable, inject } from "inversify";
 import { CommandPipeline } from "./command-pipeline";
 import { AzLogin } from "./az-login";
 import { AzAccountSet } from "./az-account-set";
-import { AzGroupCreate, AzGroupCreateResult } from "./az-group-create";
+import { AzGroupCreate } from "./az-group-create";
 import { AzStorageAccountCreate } from "./az-storage-account-create";
-import { AzStorageAccountKeysList, AzStorageAccountKeysListResult } from "./az-storage-account-keys-list";
 import { AzStorageContainerCreate } from "./az-storage-container-create";
 import { MediatorInterfaces, IMediator } from "./mediator";
 
 export enum BackendTypes{
+    local = "local",
     azurerm = "azurerm"
 }
 
@@ -46,13 +46,16 @@ export class TerraformInit extends TerraformCommand{
 export class TerraformInitHandler implements IHandleCommandString{
     private readonly terraformProvider: ITerraformProvider;
     private readonly mediator: IMediator;
+    private readonly log: ILogger;
 
     constructor(
         @inject(TerraformInterfaces.ITerraformProvider) terraformProvider: ITerraformProvider,
-        @inject(MediatorInterfaces.IMediator) mediator: IMediator
+        @inject(MediatorInterfaces.IMediator) mediator: IMediator,
+        @inject(TerraformInterfaces.ILogger) log: ILogger
     ) {
         this.terraformProvider = terraformProvider;        
         this.mediator = mediator
+        this.log = log;
     }
 
     public async execute(command: string): Promise<number> {
@@ -62,10 +65,10 @@ export class TerraformInitHandler implements IHandleCommandString{
             tasks.getInput("backendType"),
             tasks.getInput("commandOptions"),
         );
-        return this.onExecute(init);
+        return this.log.command(init, (command: TerraformInit) => this.onExecute(command));
     }
 
-    private async onExecute(command: TerraformInit): Promise<number> {
+    public async onExecute(command: TerraformInit): Promise<number> {
         var terraform = this.terraformProvider.create(command);
         this.setupBackendConfig(command, terraform);
         return terraform.exec(<IExecOptions>{

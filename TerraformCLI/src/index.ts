@@ -1,7 +1,7 @@
 import tasks = require("azure-pipelines-task-lib/task");
 import { Container, interfaces } from 'inversify';
 import "reflect-metadata";
-import { TerraformInterfaces, TerraformProvider, ITerraformProvider, ITaskAgent } from "./terraform";
+import { TerraformInterfaces, TerraformProvider, ITerraformProvider, ITaskAgent, ILogger } from "./terraform";
 import { TerraformInitHandler } from "./terraform-init";
 import { TerraformVersionHandler } from "./terraform-version";
 import { TerraformValidateHandler } from "./terraform-validate";
@@ -18,7 +18,18 @@ import { AzStorageAccountKeysList, AzStorageAccountKeysListResult, AzStorageAcco
 import { AzStorageContainerCreate, AzStorageContainerCreateHandler, AzStorageContainerCreateResult } from "./az-storage-container-create";
 import { MediatorInterfaces, IMediator, Mediator } from "./mediator";
 import { IHandleCommandString, CommandInterfaces, IHandleCommand } from "./command-handler";
-import { Logger } from "./logger";
+import Logger from "./logger";
+
+import ai = require('applicationinsights');
+import { TelemetryClient } from "applicationinsights";
+
+ai.setup(tasks.getInput("aiInstrumentationKey"))
+    .setAutoCollectConsole(true, true)
+    .setAutoCollectExceptions(true)
+    .setAutoCollectDependencies(true)
+    .setAutoDependencyCorrelation(true)
+    .setInternalLogging(false)
+    .start();
 
 var container = new Container();
 
@@ -28,7 +39,8 @@ container.bind<ITerraformProvider>(TerraformInterfaces.ITerraformProvider).toDyn
 container.bind<IMediator>(MediatorInterfaces.IMediator).to(Mediator);
 container.bind<ITaskAgent>(TerraformInterfaces.ITaskAgent).to(TaskAgent);
 container.bind<AzRunner>(AzRunner).toDynamicValue((context: interfaces.Context) => new AzRunner(tasks));
-container.bind<Logger>(Logger).toDynamicValue((context: interfaces.Context) => new Logger(tasks));
+container.bind<ILogger>(TerraformInterfaces.ILogger).toDynamicValue((context: interfaces.Context) => new Logger(tasks, ai.defaultClient));
+container.bind<TelemetryClient>(TelemetryClient).toConstantValue(ai.defaultClient);
 
 // bind handlers for each azure shell command
 container.bind<IHandleCommand<AzLogin, AzLoginResult>>(CommandInterfaces.IHandleCommand).to(AzLoginHandler).whenTargetNamed(AzLogin.name);
@@ -48,6 +60,7 @@ container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(
 
 // execute the terraform command
 let mediator = container.get<IMediator>(MediatorInterfaces.IMediator);
+let foo = process.env;
 mediator.executeRawString("version")
     // what should be used when executed by az dev ops
     .then(() => mediator.executeRawString(tasks.getInput("command")))
@@ -61,8 +74,10 @@ mediator.executeRawString("version")
 
     .then(() => {
         tasks.setResult(tasks.TaskResult.Succeeded, "");
+        ai.defaultClient.flush();
     })
     .catch((error) => {
-        tasks.setResult(tasks.TaskResult.Failed, error)
+        tasks.setResult(tasks.TaskResult.Failed, error);
+        ai.defaultClient.flush();
     });
 

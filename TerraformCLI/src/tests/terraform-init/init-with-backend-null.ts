@@ -4,6 +4,7 @@ import '../scenarios-terraform'
 
 new TaskScenario<TerraformInputs>()
     .inputTerraformCommand('init')
+    .inputApplicationInsightsInstrumentationKey()
     .answerTerraformExists()    
     .answerTerraformCommandIsSuccessful()
     .answerTerraformCommandWithVarsFileAsWorkingDirFails()
