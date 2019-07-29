@@ -65,7 +65,13 @@ export class TerraformInitHandler implements IHandleCommandString{
             tasks.getInput("backendType"),
             tasks.getInput("commandOptions"),
         );
-        return this.log.command(init, (command: TerraformInit) => this.onExecute(command));
+
+        let loggedProps = {
+            "backendType": init.backendType,
+            "commandOptionsDefined": init.options !== undefined
+        };
+
+        return this.log.command(init, (command: TerraformInit) => this.onExecute(command), loggedProps);
     }
 
     public async onExecute(command: TerraformInit): Promise<number> {

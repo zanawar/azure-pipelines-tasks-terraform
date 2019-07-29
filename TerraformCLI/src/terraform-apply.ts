@@ -55,8 +55,13 @@ export class TerraformApplyHandler implements IHandleCommandString{
             secureVarsFile,
             commandOptions
         );
+
+        let loggedProps = {
+            "secureVarsFileDefined": apply.secureVarsFile !== undefined,
+            "commandOptionsDefined": apply.options !== undefined
+        }
         
-        return this.log.command(apply, (command: TerraformApply) => this.onExecute(command));
+        return this.log.command(apply, (command: TerraformApply) => this.onExecute(command), loggedProps);
     }
 
     private async onExecute(command: TerraformApply): Promise<number> {
