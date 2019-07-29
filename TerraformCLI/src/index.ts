@@ -74,11 +74,10 @@ mediator.executeRawString("version")
 
     .then(() => {
         tasks.setResult(tasks.TaskResult.Succeeded, "");
+        ai.defaultClient.flush();
     })
     .catch((error) => {
-        tasks.setResult(tasks.TaskResult.Failed, error)
-    })
-    .finally(() => {        
+        tasks.setResult(tasks.TaskResult.Failed, error);
         ai.defaultClient.flush();
     });
 
