@@ -46,7 +46,7 @@ export interface ITaskAgent {
 }
 
 export interface ILogger {
-    command<TCommand extends TerraformCommand>(command: TCommand, handler: (command: TCommand) => Promise<number>) : Promise<number>;
+    command<TCommand extends TerraformCommand>(command: TCommand, handler: (command: TCommand) => Promise<number>, properties: any) : Promise<number>;
     debug(message: string): void;
     error(message: string): void;
 }

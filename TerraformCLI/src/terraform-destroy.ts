@@ -44,8 +44,13 @@ export class TerraformDestroyHandler implements IHandleCommandString{
             tasks.getInput("secureVarsFile"),
             tasks.getInput("commandOptions")
         );
+
+        let loggedProps = {
+            "secureVarsFileDefined": destroy.secureVarsFile !== undefined,
+            "commandOptionsDefined": destroy.options !== undefined
+        }
         
-        return this.log.command(destroy, (command: TerraformDestroy) => this.onExecute(command));
+        return this.log.command(destroy, (command: TerraformDestroy) => this.onExecute(command), loggedProps);
     }
 
     private async onExecute(command: TerraformDestroy): Promise<number> {

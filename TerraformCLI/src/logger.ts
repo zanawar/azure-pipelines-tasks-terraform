@@ -12,11 +12,11 @@ export default class Logger implements ILogger {
         this.tasks = tasks;
     }
 
-    async command<TCommand extends TerraformCommand>(command: TCommand, handler: (command: TCommand) => Promise<number>) : Promise<number>{
+    async command<TCommand extends TerraformCommand>(command: TCommand, handler: (command: TCommand) => Promise<number>, properties: any) : Promise<number>{
         let start: [number, number] = process.hrtime();
         let request: RequestTelemetry = <RequestTelemetry>{
             name: command.name,
-            properties: <any>command,
+            properties: properties,
         }
         try{
             let rvalue: number = await handler(command);

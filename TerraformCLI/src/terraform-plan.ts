@@ -44,8 +44,13 @@ export class TerraformPlanHandler implements IHandleCommandString{
             tasks.getInput("commandOptions"),
             tasks.getInput("secureVarsFile")
         );
+
+        let loggedProps = {
+            "secureVarsFileDefined": plan.secureVarsFile !== undefined,
+            "commandOptionsDefined": plan.options !== undefined
+        }
         
-        return this.log.command(plan, (command: TerraformPlan) => this.onExecute(command));
+        return this.log.command(plan, (command: TerraformPlan) => this.onExecute(command), loggedProps);
     }
 
     private async onExecute(command: TerraformPlan): Promise<number> {
