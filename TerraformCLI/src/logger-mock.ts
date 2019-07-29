@@ -11,7 +11,7 @@ export default class LoggerMock implements ILogger {
         this.tasks = tasks;
     }
 
-    command<TCommand extends TerraformCommand>(command: TCommand, handler: (command: TCommand) => Promise<number>) : Promise<number>{
+    command<TCommand extends TerraformCommand>(command: TCommand, handler: (command: TCommand) => Promise<number>, properties: any) : Promise<number>{
         return handler(command);
     }
 

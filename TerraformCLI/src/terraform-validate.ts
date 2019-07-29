@@ -40,8 +40,14 @@ export class TerraformValidateHandler implements IHandleCommandString{
             tasks.getInput("commandOptions"),
             tasks.getInput("secureVarsFile")
         );
+
+        let loggedProps = {
+            "secureVarsFileDefined": validate.secureVarsFile !== undefined,
+            "commandOptionsDefined": validate.options !== undefined
+        }
         
-        return this.log.command(validate, (command: TerraformValidate) => this.onExecute(command));
+        
+        return this.log.command(validate, (command: TerraformValidate) => this.onExecute(command), loggedProps);
     }
 
     private async onExecute(command: TerraformValidate): Promise<number> {
