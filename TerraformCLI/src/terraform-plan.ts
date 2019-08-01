@@ -55,18 +55,18 @@ export class TerraformPlanHandler implements IHandleCommandString{
 
         let execOptions: IExecOptions = <IExecOptions>{
             cwd: command.workingDirectory,
-            // if using detailed exit code, disable automated interpretation of exit codes by the toolrunner so exit code 2 doesnt return error
-            ignoreReturnCode: command.options !== undefined && command.options.indexOf('-detailed-exitcode') > -1
+            // if using detailed exit code, disable automated interpretation of exit codes by the toolrunner so exit code 2 doesn't return error
+            ignoreReturnCode: command.options !== undefined && command.options !== null && command.options.indexOf('-detailed-exitcode') > -1
         };
 
-        let exitcode = await terraform.exec(execOptions);
+        let exitCode = await terraform.exec(execOptions);
 
         // ensure exit code 1 still throws error so task result is set to Failed. 
-        if(execOptions.ignoreReturnCode && exitcode === 1){
+        if(execOptions.ignoreReturnCode && exitCode === 1){
             throw "terraform plan failed with exit code 1";
         }
 
-        return exitcode;
+        return exitCode;
     }
 
     private async setupVars(command: TerraformPlan, terraform: ToolRunner){
