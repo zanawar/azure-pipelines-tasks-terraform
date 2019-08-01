@@ -7,11 +7,11 @@ The tasks in this extension allow for running terraform cli commands from both t
 The Terraform CLI task supports executing the following commands
 
 - version
-- init (NEW automated backend creation)
+- init
 - validate
-- plan
+- plan (NEW plan change detection)
 - apply
-- destroy (NEW)
+- destroy
 
 ## Compatible with Linux Build Agents
 
@@ -44,7 +44,7 @@ The backend configuration will be prompted when relevant for the selected comman
 
 ![Terraform AzureRM Backend Configuration](https://raw.githubusercontent.com/charleszipp/azure-pipelines-tasks-terraform/master/screenshots/overview-tfcli-backend-azurerm.jpg)
 
-### (NEW) Automated Remote Backend Creation
+### Automated Remote Backend Creation
 
 The task supports automatically creating the resource group, storage account, and container for remote azurerm backend. To enable this, select the task for the terraform init command. Check the checkbox labled "Create Backend (If not exists)" underneath the backend type drop down. Once selected, the resource group location and storage account sku can be provided. The defaults are 'eastus' and 'Standard_RAGRS' respectively. The task will utilize AzureCLI to create the resource group, storage account, and container as specified in the backend configuration.
 
@@ -55,3 +55,12 @@ The task supports automatically creating the resource group, storage account, an
 There are two methods to provide secrets within the vars provided to terraform commands. First, if providing individual `-var` options to the command line, the secret pipeline variables can be used. Use the Command Options field to input your secret vars as `-var 'secret=$(mySecretPipelineVar)`. Secondly, a var file secured in Secure Files Library of Azure DevOps pipeline can be specified via drop-down menu. Storing sensitive var files in the Secure Files Library not only provides encryption at rest, it also allows the files to have different access control applied than that of the Source Repository and Build/Release Pipelines.
 
 ![Terraform CLI Secure Vars and Var Files](https://raw.githubusercontent.com/charleszipp/azure-pipelines-tasks-terraform/master/screenshots/overview-tfcli-secure-vars.JPG)
+
+## (NEW) Terraform Plan Change Detection
+
+When running terraform plan with `-detailed-exitcode`, a pipeline variable will be set to indicate if any changes exist in the plan. `TERRAFORM_PLAN_HAS_CHANGES` will be set to `true` if plan detected changes. Otherwise, this variable will be set to `false`. This can be used in conjunction with `Custom Condition` expression under `Control Options` tab of the task to skip terraform apply if no changes were detected.
+
+Sample expression
+```
+and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_CHANGES'], 'true'))
+```

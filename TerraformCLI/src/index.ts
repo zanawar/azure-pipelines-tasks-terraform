@@ -70,6 +70,7 @@ container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(
 // execute the terraform command
 let mediator = container.get<IMediator>(MediatorInterfaces.IMediator);
 let foo = process.env;
+const lastExitCodeVariableName = "TERRAFORM_LAST_EXITCODE";
 mediator.executeRawString("version")
     // what should be used when executed by az dev ops
     .then(() => mediator.executeRawString(tasks.getInput("command")))
@@ -81,11 +82,13 @@ mediator.executeRawString("version")
     // .then(() => mediator.execute("apply"))
     // end for testing only
 
-    .then(() => {
+    .then((exitCode) => {
+        tasks.setVariable(lastExitCodeVariableName, exitCode.toString(), false);
         tasks.setResult(tasks.TaskResult.Succeeded, "");
         ai.defaultClient.flush();
     })
     .catch((error) => {
+        tasks.setVariable(lastExitCodeVariableName, "1", false);
         tasks.setResult(tasks.TaskResult.Failed, error);
         ai.defaultClient.flush();
     });

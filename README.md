@@ -12,9 +12,25 @@ See readme for each of the tasks for development setup for each.
 
 ## Release Notes
 
+### 0.4.10
+
+#### Added pipeline variables that indicate last exit code and indicate if plan detected changes
+
+This change will introduce two new pipeline variables that will be available to subsequent tasks in response to #68
+
+The first is available after any terraform command used and is TERRAFORM_LAST_EXITCODE. This will contain the exit code emitted from the terraform executable when the task was run.
+
+The second is available only for terraform plan and is TERRAFORM_PLAN_HAS_CHANGES. This will have either true or false as valid values and will indicate true if plan detected changes. If -detailed-exitcode is not provided in command options, this variable will always be true. However, if -detailed-exitcode is provided, then this variable will be set to false if exit code 0 (empty diff) was emitted.
+
+### 0.4.9
+
+#### Fixed issue where using `-detailed-exitcode` would cause terraform plan to fail
+
+As reported in #16, the `-detailed-exitcode` option would produce exit code 2 if changes were detected. The `azure-pipelines-task-lib` library would interpret this as a failure. Now if the `-detailed-exitcode` option is provided, exit code 2 will be considered a successful execution.
+
 ### 0.4.4
 
-#### Fixed issue that occured for existing azure storage accounts of kind "StorageV2"
+#### Fixed issue that occurred for existing azure storage accounts of kind "StorageV2"
 
 Fixed issue where errors where occurring for storage accounts that were not of kind "BlobStorage". The underlying azure cli storage account create command was being executed regardless of the storage account's existance. If the storage account existed prior to executing the command, the command would attempt to set the storage account to kind "BlobStorage" access tier "hot" and configured sku. This would result in an error when updating storage account to this configuration was not supported. Example would be updating existing storage accounts that are kind "StorageV2" to "BlobStorage". This update is not permitted.
 
@@ -24,7 +40,7 @@ With this change, no attempt will be made to update existing storage accounts.
 
 #### Fix command options sequence error
 
-Fixed issue where automatically injected `apply` command options `-auto-approve` and `-var-file` were being placed after output plan file path. Output file plan path was being provided in the Commmand Options input field. The auto injected options would be appended after the user provided options. The auto injected options will now be inserted ahead of user provided options. This will allow users to provide a plan path at the end of their provided options to ensure all options are ordered as terraform expects.
+Fixed issue where automatically injected `apply` command options `-auto-approve` and `-var-file` were being placed after output plan file path. Output file plan path was being provided in the Command Options input field. The auto injected options would be appended after the user provided options. The auto injected options will now be inserted ahead of user provided options. This will allow users to provide a plan path at the end of their provided options to ensure all options are ordered as terraform expects.
 
 ### 0.4.1
 
@@ -38,7 +54,7 @@ Fixed validation error reported during marketplace upload documented with issue 
 
 #19 Create/Ensure AzureRM Backend Storage Account
 
-The task supports automatically creating the resource group, storage account, and container for remote azurerm backend. To enable this, select the task for the terraform init command. Check the checkbox labled "Create Backend (If not exists)" underneath the backend type drop down. Once selected, the resource group location and storage account sku can be provided. The defaults are 'eastus' and 'Standard_RAGRS' respectively. The task will utilize AzureCLI to create the resource group, storage account, and container as specified in the backend configuration.
+The task supports automatically creating the resource group, storage account, and container for remote azurerm backend. To enable this, select the task for the terraform init command. Check the checkbox labeled "Create Backend (If not exists)" underneath the backend type drop down. Once selected, the resource group location and storage account sku can be provided. The defaults are 'eastus' and 'Standard_RAGRS' respectively. The task will utilize AzureCLI to create the resource group, storage account, and container as specified in the backend configuration.
 
 ### 0.3.4
 
@@ -75,7 +91,7 @@ This would result in the task executing `validate` as follows
 ```
 terraform validate -input=true -lock=false -no-color
 ```
-Command options will always preceed any other options that are generated via dedicated input such as backend config and/or variable file. 
+Command options will always precede any other options that are generated via dedicated input such as backend config and/or variable file. 
 
 ### 0.2.6
 
