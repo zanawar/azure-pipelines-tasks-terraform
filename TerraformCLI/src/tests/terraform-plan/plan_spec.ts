@@ -20,6 +20,22 @@ describe('terraform plan', function(){
             .assertExecutedTerraformVersion()
             .run();
     });
+    it('azurerm with detailed exit code and changes present', function(){        
+        let env = require('./plan-azurerm-with-detailed-exitcode-with-changes.env').env
+        new TestScenario(env.taskScenarioPath)
+            .assertExecutionSucceeded()
+            .assertExecutedTerraformCommand(env.expectedCommand)
+            .assertExecutedTerraformVersion()
+            .run();
+    });
+    it('azurerm with detailed exit code and no changes present', function(){        
+        let env = require('./plan-azurerm-with-detailed-exitcode-without-changes.env').env
+        new TestScenario(env.taskScenarioPath)
+            .assertExecutionSucceeded()
+            .assertExecutedTerraformCommand(env.expectedCommand)
+            .assertExecutedTerraformVersion()
+            .run();
+    });
     it('azurerm with secure var file', function(){
         let env = require('./plan-azurerm-with-secure-var-file.env').env;
         new TestScenario(env.taskScenarioPath)
