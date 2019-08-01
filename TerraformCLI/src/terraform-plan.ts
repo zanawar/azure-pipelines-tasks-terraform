@@ -46,8 +46,8 @@ export class TerraformPlanHandler implements IHandleCommandString{
         );
 
         let loggedProps = {
-            "secureVarsFileDefined": plan.secureVarsFile !== undefined,
-            "commandOptionsDefined": plan.options !== undefined
+            "secureVarsFileDefined": plan.secureVarsFile !== undefined && plan.secureVarsFile !== '' && plan.secureVarsFile !== null,
+            "commandOptionsDefined": plan.options !== undefined && plan.options !== '' && plan.options !== null
         }
         
         return this.log.command(plan, (command: TerraformPlan) => this.onExecute(command), loggedProps);
@@ -65,7 +65,7 @@ export class TerraformPlanHandler implements IHandleCommandString{
         };
 
         let exitCode = await terraform.exec(execOptions);
-
+        let foo = terraform.execSync()
         this.setPlanHasChangesVariable(command.options, exitCode);
 
         // ensure exit code 1 still throws error so task result is set to Failed. 
