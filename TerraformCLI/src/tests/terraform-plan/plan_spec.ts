@@ -26,6 +26,8 @@ describe('terraform plan', function(){
             .assertExecutionSucceeded()
             .assertExecutedTerraformCommand(env.expectedCommand)
             .assertExecutedTerraformVersion()
+            .assertPipelineVariableSet("TERRAFORM_LAST_EXITCODE", "2")
+            .assertPipelineVariableSet("TERRAFORM_PLAN_HAS_CHANGES", "true")
             .run();
     });
     it('azurerm with detailed exit code and no changes present', function(){        
@@ -34,6 +36,8 @@ describe('terraform plan', function(){
             .assertExecutionSucceeded()
             .assertExecutedTerraformCommand(env.expectedCommand)
             .assertExecutedTerraformVersion()
+            .assertPipelineVariableSet("TERRAFORM_LAST_EXITCODE", "0")
+            .assertPipelineVariableSet("TERRAFORM_PLAN_HAS_CHANGES", "false")
             .run();
     });
     it('azurerm with secure var file', function(){

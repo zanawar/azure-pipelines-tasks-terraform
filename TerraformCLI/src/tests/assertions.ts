@@ -86,6 +86,25 @@ export class TaskExecutedWithEnvironmentVariables extends TestAssertionDecorator
     }
 }
 
+export class TaskSetPipelineVariable extends TestAssertionDecorator {
+    private readonly name: string;
+    private readonly value: string;
+    private readonly isSecret: boolean;
+    
+    constructor(assertions: TestAssertionBuilder, name: string, value: string, isSecret: boolean | undefined) {
+        super(assertions);
+        this.name = name;
+        this.value = value;
+        this.isSecret = isSecret || false;
+    }
+    run(context: TestContext): void {        
+        this.builder.run(context);
+        let stdoutLine: string = `##vso[task.setvariable variable=${this.name};issecret=${this.isSecret};]${this.value}`;
+        let message = `Pipeline variable '${this.name}' was not set as expected`;
+        assert.equal(context.testRunner.stdOutContained(stdoutLine), true, message);
+    }
+}
+
 export class TestScenario{
     public readonly taskScenarioPath: string;
     private assertions: TestAssertionBuilder;    
@@ -111,6 +130,10 @@ export class TestScenario{
     }
     public assertEnvironmentVariables(env: { [key: string]: string }) : TestScenario {
         this.assert((assertions) => new TaskExecutedWithEnvironmentVariables(assertions, env));
+        return this;
+    }
+    public assertPipelineVariableSet(name: string, value: string, isSecret?: boolean | undefined) : TestScenario {
+        this.assert((assertions) => new TaskSetPipelineVariable(assertions, name, value, isSecret));
         return this;
     }
     public run(): void{        
