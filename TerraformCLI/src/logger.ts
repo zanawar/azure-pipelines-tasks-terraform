@@ -45,12 +45,33 @@ export default class Logger implements ILogger {
             request.resultCode = 500;
             request.success = false;
             if(e instanceof TerraformAggregateError){
-                (<TerraformAggregateError>e).errors
-                    .map(error => <ExceptionTelemetry>{ exception: error })
+                let aggregateErrors = (<TerraformAggregateError>e);
+                let errorProperties = {
+                    "stderr": aggregateErrors.stderr,
+                    "aggregated-errors" : JSON.stringify(aggregateErrors.errors)
+                }
+                this.telemetry.trackException(<ExceptionTelemetry>{
+                    exception: e,
+                    properties : {
+                        ...loggedOptions, ...properties, ...errorProperties
+                    }
+                });
+                aggregateErrors.errors
+                    .map(error => <ExceptionTelemetry>{ 
+                        exception: error,
+                        properties : {
+                            ...loggedOptions, ...properties, ...errorProperties
+                        } 
+                    })
                     .forEach(exception => this.telemetry.trackException(exception));                
             }
             else{
-                this.telemetry.trackException(<ExceptionTelemetry>{ exception: e });
+                this.telemetry.trackException(<ExceptionTelemetry>{ 
+                    exception: e,
+                    properties : {
+                        ...loggedOptions, ...properties
+                    } 
+                });
             }
             
             throw e;
