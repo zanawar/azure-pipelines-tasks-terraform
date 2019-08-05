@@ -1,7 +1,8 @@
 import { injectable } from "inversify";
 import { TerraformCommand, ILogger } from "./terraform";
-import { RequestTelemetry, Telemetry, ExceptionTelemetry } from "applicationinsights/out/Declarations/Contracts";
+import { RequestTelemetry, ExceptionTelemetry } from "applicationinsights/out/Declarations/Contracts";
 import { TelemetryClient } from "applicationinsights";
+import { TerraformAggregateError } from "./terraform-aggregate-error";
 
 @injectable()
 export default class Logger implements ILogger {
@@ -40,12 +41,39 @@ export default class Logger implements ILogger {
             request.success = true;
             return rvalue;
         }
-        catch(e) {
+        catch(e) {            
             request.resultCode = 500;
             request.success = false;
-            this.telemetry.trackException(<ExceptionTelemetry>{
-                exception: e,
-            });
+            if(e instanceof TerraformAggregateError){
+                let aggregateErrors = (<TerraformAggregateError>e);
+                let errorProperties = {
+                    "stderr": aggregateErrors.stderr,
+                    "aggregated-errors" : JSON.stringify(aggregateErrors.errors)
+                }
+                this.telemetry.trackException(<ExceptionTelemetry>{
+                    exception: e,
+                    properties : {
+                        ...loggedOptions, ...properties, ...errorProperties
+                    }
+                });
+                aggregateErrors.errors
+                    .map(error => <ExceptionTelemetry>{ 
+                        exception: error,
+                        properties : {
+                            ...loggedOptions, ...properties, ...errorProperties
+                        } 
+                    })
+                    .forEach(exception => this.telemetry.trackException(exception));                
+            }
+            else{
+                this.telemetry.trackException(<ExceptionTelemetry>{ 
+                    exception: e,
+                    properties : {
+                        ...loggedOptions, ...properties
+                    } 
+                });
+            }
+            
             throw e;
         }
         finally{
