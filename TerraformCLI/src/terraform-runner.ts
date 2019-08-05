@@ -1,6 +1,7 @@
 import tasks = require("azure-pipelines-task-lib/task");
 import { ToolRunner, IExecSyncOptions } from "azure-pipelines-task-lib/toolrunner";
 import { TerraformCommand, ITaskAgent } from "./terraform";
+import { TerraformAggregateError } from "./terraform-aggregate-error";
 
 export interface TerraformCommandContext {
     terraform: ToolRunner;
@@ -135,7 +136,7 @@ export class TerraformRunner{
             cwd: this.command.workingDirectory
         });
         if(result.stderr){
-            throw new Error(result.stderr);
+            throw new TerraformAggregateError(this.command.name, result.stderr, result.code);
         }
         return result.code;
     }

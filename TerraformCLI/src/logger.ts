@@ -1,7 +1,8 @@
 import { injectable } from "inversify";
 import { TerraformCommand, ILogger } from "./terraform";
-import { RequestTelemetry, Telemetry, ExceptionTelemetry } from "applicationinsights/out/Declarations/Contracts";
+import { RequestTelemetry, ExceptionTelemetry } from "applicationinsights/out/Declarations/Contracts";
 import { TelemetryClient } from "applicationinsights";
+import { TerraformAggregateError } from "./terraform-aggregate-error";
 
 @injectable()
 export default class Logger implements ILogger {
@@ -24,12 +25,18 @@ export default class Logger implements ILogger {
             request.success = true;
             return rvalue;
         }
-        catch(e) {
+        catch(e) {            
             request.resultCode = 500;
             request.success = false;
-            this.telemetry.trackException(<ExceptionTelemetry>{
-                exception: e,
-            });
+            if(e instanceof TerraformAggregateError){
+                (<TerraformAggregateError>e).errors
+                    .map(error => <ExceptionTelemetry>{ exception: error })
+                    .forEach(exception => this.telemetry.trackException(exception));                
+            }
+            else{
+                this.telemetry.trackException(<ExceptionTelemetry>{ exception: e });
+            }
+            
             throw e;
         }
         finally{
