@@ -1,20 +1,15 @@
-import { TerraformInterfaces, ITerraformProvider } from "./terraform";
+import tasks = require("azure-pipelines-task-lib/task");
+import { TerraformCommand } from "./terraform";
 import { IHandleCommandString } from "./command-handler";
-import { injectable, inject } from "inversify";
+import { injectable } from "inversify";
+import { TerraformRunner } from "./terraform-runner";
 
 @injectable()
 export class TerraformVersionHandler implements IHandleCommandString{
-    private readonly terraformProvider: ITerraformProvider;
-
-    constructor(
-        @inject(TerraformInterfaces.ITerraformProvider) terraformProvider: ITerraformProvider
-    ) {
-        this.terraformProvider = terraformProvider;   
-    }
-
     public async execute(command: string): Promise<number> {
-        var terraform = this.terraformProvider.create();
-        terraform.arg(command);
-        return terraform.exec();
+        return new TerraformRunner(
+            new TerraformCommand("version", tasks.getInput("workingDirectory"))
+        )
+        .exec();
     }
 }

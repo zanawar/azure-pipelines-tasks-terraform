@@ -1,7 +1,7 @@
 import tasks = require("azure-pipelines-task-lib/task");
 import { Container, interfaces } from 'inversify';
 import "reflect-metadata";
-import { TerraformInterfaces, TerraformProvider, ITerraformProvider, ITaskAgent, ILogger } from "./terraform";
+import { TerraformInterfaces, ITaskAgent, ILogger } from "./terraform";
 import { TerraformInitHandler } from "./terraform-init";
 import { TerraformVersionHandler } from "./terraform-version";
 import { TerraformValidateHandler } from "./terraform-validate";
@@ -44,7 +44,6 @@ var container = new Container();
 
 // bind infrastructure components
 container.bind<Container>("container").toConstantValue(container);
-container.bind<ITerraformProvider>(TerraformInterfaces.ITerraformProvider).toDynamicValue((context: interfaces.Context) => new TerraformProvider(tasks));
 container.bind<IMediator>(MediatorInterfaces.IMediator).to(Mediator);
 container.bind<ITaskAgent>(TerraformInterfaces.ITaskAgent).to(TaskAgent);
 container.bind<AzRunner>(AzRunner).toDynamicValue((context: interfaces.Context) => new AzRunner(tasks));

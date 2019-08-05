@@ -1,6 +1,5 @@
-import { IExecOptions, ToolRunner } from "azure-pipelines-task-lib/toolrunner";
 import tasks = require("azure-pipelines-task-lib/task");
-import { TerraformCommand, TerraformInterfaces, ITerraformProvider, ILogger } from "./terraform";
+import { TerraformCommand, TerraformInterfaces, ILogger } from "./terraform";
 import { IHandleCommandString } from "./command-handler";
 import { injectable, inject } from "inversify";
 import { CommandPipeline } from "./command-pipeline";
@@ -10,6 +9,7 @@ import { AzGroupCreate } from "./az-group-create";
 import { AzStorageAccountCreate } from "./az-storage-account-create";
 import { AzStorageContainerCreate } from "./az-storage-container-create";
 import { MediatorInterfaces, IMediator } from "./mediator";
+import { TerraformRunner, TerraformCommandDecorator, TerraformCommandBuilder, TerraformCommandContext } from "./terraform-runner";
 
 export enum BackendTypes{
     local = "local",
@@ -42,48 +42,25 @@ export class TerraformInit extends TerraformCommand{
     }
 }
 
-@injectable()
-export class TerraformInitHandler implements IHandleCommandString{
-    private readonly terraformProvider: ITerraformProvider;
+declare module "./terraform-runner" {
+    interface TerraformRunner{
+        withAzureRmBackend(this: TerraformRunner, mediator: IMediator, backendType?: BackendTypes | undefined): TerraformRunner;
+    }
+}
+
+export class TerraformWithAzureRmBackend extends TerraformCommandDecorator{    
+    private readonly backendType?: BackendTypes | undefined
     private readonly mediator: IMediator;
-    private readonly log: ILogger;
-
-    constructor(
-        @inject(TerraformInterfaces.ITerraformProvider) terraformProvider: ITerraformProvider,
-        @inject(MediatorInterfaces.IMediator) mediator: IMediator,
-        @inject(TerraformInterfaces.ILogger) log: ILogger
-    ) {
-        this.terraformProvider = terraformProvider;        
-        this.mediator = mediator
-        this.log = log;
+    constructor(builder: TerraformCommandBuilder, mediator: IMediator, backendType?: BackendTypes | undefined) {
+        super(builder);
+        this.backendType = backendType;
+        this.mediator = mediator;
     }
-
-    public async execute(command: string): Promise<number> {
-        let init = new TerraformInit(
-            command,            
-            tasks.getInput("workingDirectory"),
-            tasks.getInput("backendType"),
-            tasks.getInput("commandOptions"),
-        );
-
-        let loggedProps = {
-            "backendType": init.backendType,
-            "commandOptionsDefined": init.options !== undefined
-        };
-
-        return this.log.command(init, (command: TerraformInit) => this.onExecute(command), loggedProps);
-    }
-
-    public async onExecute(command: TerraformInit): Promise<number> {
-        var terraform = this.terraformProvider.create(command);
-        this.setupBackendConfig(command, terraform);
-        return terraform.exec(<IExecOptions>{
-            cwd: command.workingDirectory
-        });
-    }
-
-    private setupBackendConfig(command: TerraformInit, terraform: ToolRunner){
-        if(command.backendType && command.backendType == BackendTypes.azurerm){
+    async onRun(context: TerraformCommandContext): Promise<void> {        
+        if(context.command.name !== 'init')
+            throw "azurerM backend should only be setup for 'init' command.";
+            
+        if(this.backendType && this.backendType == BackendTypes.azurerm){
             let backendServiceName = tasks.getInput("backendServiceArm", true);
             let scheme = tasks.getEndpointAuthorizationScheme(backendServiceName, true);
             if(scheme != "ServicePrincipal"){
@@ -102,7 +79,7 @@ export class TerraformInitHandler implements IHandleCommandString{
             }
 
             for(var config in backendConfig){
-                terraform.arg(`-backend-config=${config}=${backendConfig[config]}`);
+                context.terraform.arg(`-backend-config=${config}=${backendConfig[config]}`);
             }
 
             let ensureBackendChecked: boolean = tasks.getBoolInput("ensureBackend");
@@ -138,5 +115,45 @@ export class TerraformInitHandler implements IHandleCommandString{
                 backendConfig.storage_account_name
             ))
             .execute(this.mediator);
+    }
+}
+
+TerraformRunner.prototype.withAzureRmBackend = function(this: TerraformRunner, mediator: IMediator, backendType?: BackendTypes | undefined): TerraformRunner {
+    return this.with((builder) => new TerraformWithAzureRmBackend(builder, mediator, backendType));
+}
+
+@injectable()
+export class TerraformInitHandler implements IHandleCommandString{
+    private readonly mediator: IMediator;
+    private readonly log: ILogger;
+
+    constructor(
+        @inject(MediatorInterfaces.IMediator) mediator: IMediator,
+        @inject(TerraformInterfaces.ILogger) log: ILogger
+    ) {
+        this.mediator = mediator
+        this.log = log;
+    }
+
+    public async execute(command: string): Promise<number> {
+        let init = new TerraformInit(
+            command,            
+            tasks.getInput("workingDirectory"),
+            tasks.getInput("backendType"),
+            tasks.getInput("commandOptions"),
+        );
+
+        let loggedProps = {
+            "backendType": init.backendType,
+            "commandOptionsDefined": init.options !== undefined
+        };
+
+        return this.log.command(init, (command: TerraformInit) => this.onExecute(command), loggedProps);
+    }
+
+    public async onExecute(command: TerraformInit): Promise<number> {
+        return new TerraformRunner(command)
+            .withAzureRmBackend(this.mediator, command.backendType)
+            .exec();
     }
 }
