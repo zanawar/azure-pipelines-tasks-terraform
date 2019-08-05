@@ -15,10 +15,26 @@ export default class Logger implements ILogger {
 
     async command<TCommand extends TerraformCommand>(command: TCommand, handler: (command: TCommand) => Promise<number>, properties: any) : Promise<number>{
         let start: [number, number] = process.hrtime();
+        
+        let loggedOptions: any = {};
+        if(command.options){
+            let commandOptions = command.options.split(' ');            
+            commandOptions.forEach(commandOption => {
+                if(commandOption.startsWith('-')){       
+                    let loggedOption = "command-option" + commandOption;
+                    if(loggedOption.includes('=')){
+                        loggedOption = loggedOption.substr(0, (loggedOption.indexOf('=')));            
+                    }
+                    loggedOptions[loggedOption] = (loggedOptions[loggedOption] || 0) + 1;
+                }    
+            });
+        }
+
         let request: RequestTelemetry = <RequestTelemetry>{
             name: command.name,
-            properties: properties,
-        }
+            properties: { ...loggedOptions, ...properties }
+        };
+
         try{
             let rvalue: number = await handler(command);
             request.resultCode = 200;

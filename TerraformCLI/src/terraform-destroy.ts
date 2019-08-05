@@ -43,8 +43,8 @@ export class TerraformDestroyHandler implements IHandleCommandString{
         );
 
         let loggedProps = {
-            "secureVarsFileDefined": destroy.secureVarsFile !== undefined,
-            "commandOptionsDefined": destroy.options !== undefined
+            "secureVarsFileDefined": destroy.secureVarsFile !== undefined && destroy.secureVarsFile !== '' && destroy.secureVarsFile !== null,
+            "commandOptionsDefined": destroy.options !== undefined && destroy.options !== '' && destroy.options !== null
         }
         
         return this.log.command(destroy, (command: TerraformDestroy) => this.onExecute(command), loggedProps);
