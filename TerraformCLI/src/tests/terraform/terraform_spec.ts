@@ -7,4 +7,9 @@ describe('terraform', function(){
             .assertExecutionFailed()
             .run();
     });
+    it('terraform populates stderr on success', function(){
+        new TestScenario(require.resolve('./terraform-populates-stderr-on-success'))
+            .assertExecutionSucceeded()
+            .run();
+    });
 });
