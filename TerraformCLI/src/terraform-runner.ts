@@ -122,11 +122,15 @@ export class TerraformRunner{
         return this.with((builder) => new TerraformWithSecureVarFile(builder, taskAgent, secureVarFileId));
     }
 
-    async exec(): Promise<number>{
+    async exec(successfulExitCodes?: number[] | undefined): Promise<number>{
         await this.builder.run(<TerraformCommandContext>{
             terraform: this.terraform,
             command: this.command
         });
+
+        if(!successfulExitCodes || successfulExitCodes.length == 0){
+            successfulExitCodes = [0];
+        }
 
         // append the user provided options last.
         if (this.command.options) {
@@ -135,7 +139,7 @@ export class TerraformRunner{
         let result = this.terraform.execSync(<IExecSyncOptions>{
             cwd: this.command.workingDirectory
         });
-        if(result.stderr){
+        if(!successfulExitCodes.includes(result.code)){
             throw new TerraformAggregateError(this.command.name, result.stderr, result.code);
         }
         return result.code;
