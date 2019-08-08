@@ -3,6 +3,7 @@ import { TerraformError } from "./terraform-error";
 export class TerraformAggregateError extends Error {
     public readonly errors: TerraformError[];
     public readonly stderr: string;
+    public readonly exitCode: number;
     constructor(command: string, stderr: string, exitCode: number) {
         let stderrEscaped: string = stderr
         .replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
@@ -17,8 +18,9 @@ export class TerraformAggregateError extends Error {
             .join(" | ");
         super(message);
         this.stderr = stderrEscaped;
-        this.name = `Terraform command '${command}' failed with exit code '${exitCode}.`;
+        this.name = `Terraform command '${command}' failed with exit code '${exitCode}'.`;
         this.errors = [];
+        this.exitCode = exitCode;
         lines.forEach((line, i) => {
             if (line.startsWith('Error:')) {
                 let name: string = line.replace('Error: ', '');

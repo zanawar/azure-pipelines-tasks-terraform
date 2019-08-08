@@ -14,7 +14,7 @@ declare module "./scenarios"{
         inputAzureRmEnsureBackend(this: TaskScenario<TerraformInputs>, resourceGroupLocation?: string, storageAccountSku?: string): TaskScenario<TerraformInputs>;
         inputApplicationInsightsInstrumentationKey(this: TaskScenario<TerraformInputs>, instrumentationKey?: string): TaskScenario<TerraformInputs>;
         answerTerraformExists(this: TaskScenario<TerraformInputs>, terraformExists?: boolean): TaskScenario<TerraformInputs>;
-        answerTerraformCommandIsSuccessful(this: TaskScenario<TerraformInputs>, args?: string, exitCode?: number): TaskScenario<TerraformInputs>;
+        answerTerraformCommandIsSuccessful(this: TaskScenario<TerraformInputs>, args?: string, exitCode?: number, stderr?: string): TaskScenario<TerraformInputs>;
         answerTerraformCommandWithVarsFileAsWorkingDirFails(this: TaskScenario<TerraformInputs>): TaskScenario<TerraformInputs>;
         answerAzExists(this: TaskScenario<TerraformInputs>, azExists?: boolean): TaskScenario<TerraformInputs>;
         answerAzCommandIsSuccessfulWithResultRaw<TCommand extends ICommand<TResult>, TResult>(this: TaskScenario<TerraformInputs>, command: TCommand, result: string): TaskScenario<TerraformInputs>;
@@ -135,10 +135,12 @@ TaskScenario.prototype.answerTerraformCommandWithVarsFileAsWorkingDirFails = fun
 export class TerraformCommandIsSuccessful extends TaskAnswerDecorator<TerraformInputs>{
     private readonly args: string | undefined;
     private readonly exitCode: number | undefined;
-    constructor(builder: TaskAnswerBuilder<TerraformInputs>, args?: string, exitCode?: number) {
+    private readonly stderr: string | undefined;
+    constructor(builder: TaskAnswerBuilder<TerraformInputs>, args?: string, exitCode?: number, stderr?: string) {
         super(builder);
         this.args = args;
         this.exitCode = exitCode;
+        this.stderr = stderr;
     }
     build(inputs: TerraformInputs): TaskLibAnswers {
         let a = this.builder.build(inputs);
@@ -156,13 +158,14 @@ export class TerraformCommandIsSuccessful extends TaskAnswerDecorator<TerraformI
 
         a.exec[command] = <TaskLibAnswerExecResult>{
             code : this.exitCode || 0,
-            stdout : `${inputs.command} successful`
+            stdout : `${inputs.command} successful`,
+            stderr : this.stderr
         }
         return a;
     }
 }
-TaskScenario.prototype.answerTerraformCommandIsSuccessful = function(this: TaskScenario<TerraformInputs>, args?: string, exitCode?: number): TaskScenario<TerraformInputs>{
-    this.answerFactory((builder) => new TerraformCommandIsSuccessful(builder, args, exitCode));
+TaskScenario.prototype.answerTerraformCommandIsSuccessful = function(this: TaskScenario<TerraformInputs>, args?: string, exitCode?: number, stderr?: string): TaskScenario<TerraformInputs>{
+    this.answerFactory((builder) => new TerraformCommandIsSuccessful(builder, args, exitCode, stderr));
     return this;
 }
 
