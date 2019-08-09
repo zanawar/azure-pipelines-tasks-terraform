@@ -12,6 +12,18 @@ See readme for each of the tasks for development setup for each.
 
 ## Release Notes
 
+### 0.4.13
+
+Fixed issue where task would fail when using TF_LOG debug variable. When this variable was used, logging would be written to stderr even when the command was successful (i.e. exit code 0). This would cause the task to decide the command failed due to the existence of content in stderr. The fix changes the decision to be based of the exit code. This should allow for TF_LOG to be used and the task succeed when the underlying command succeeds.
+
+### 0.4.12
+
+Parse errors from stderr output and write to exception telemetry.
+
+### 0.4.11
+
+Record which command option flags were used during execution without values in telemetry.
+
 ### 0.4.10
 
 #### Added pipeline variables that indicate last exit code and indicate if plan detected changes

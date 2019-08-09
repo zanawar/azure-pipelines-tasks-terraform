@@ -22,6 +22,7 @@ import Logger from "./logger";
 
 import ai = require('applicationinsights');
 import { TelemetryClient } from "applicationinsights";
+import { TerraformAggregateError } from "./terraform-aggregate-error";
 
 ai.setup(tasks.getInput("aiInstrumentationKey"))
     .setAutoCollectConsole(true, true)
@@ -87,7 +88,10 @@ mediator.executeRawString("version")
         ai.defaultClient.flush();
     })
     .catch((error) => {
-        tasks.setVariable(lastExitCodeVariableName, "1", false);
+        let exitCode: number = 1;
+        if(error instanceof TerraformAggregateError)
+            exitCode = (<TerraformAggregateError>error).exitCode || exitCode;
+        tasks.setVariable(lastExitCodeVariableName, exitCode.toString(), false);
         tasks.setResult(tasks.TaskResult.Failed, error);
         ai.defaultClient.flush();
     });

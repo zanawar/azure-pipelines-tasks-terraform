@@ -54,11 +54,19 @@ export class TerraformPlanHandler implements IHandleCommandString{
         let exitCode = await new TerraformRunner(command)
             .withAzureRmProvider(command.environmentServiceName)
             .withSecureVarsFile(this.taskAgent, command.secureVarsFile)
-            .exec();
+            .exec(this.getPlanSuccessfulExitCodes(command.options));
 
         this.setPlanHasChangesVariable(command.options, exitCode);
 
         return exitCode;
+    }
+
+    private getPlanSuccessfulExitCodes(commandOptions: string | undefined): number[]{
+        let rvalues: number[] = [];
+        rvalues.push(0);
+        if(this.hasDetailedExitCode(commandOptions))
+            rvalues.push(2);
+        return rvalues;
     }
 
     private hasDetailedExitCode(commandOptions: string | undefined): boolean{
