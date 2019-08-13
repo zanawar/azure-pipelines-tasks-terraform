@@ -12,7 +12,7 @@ let expectedEnv: { [key: string]: string } = {
 }
 
 const terraformCommand: string = "apply";
-const commandOptions:string = "-input=true -lock=false -no-color -auto-approve"
+const commandOptions:string = "-input=true -lock=false -no-color -auto-approve -var=\"test_var=test\" -var='test_map={name=\"test\",code=\"abc\"}'"
 const expectedCommand: string = `${terraformCommand} ${commandOptions}`
 
 export let env: any = {
