@@ -12,7 +12,7 @@ See readme for each of the tasks for development setup for each.
 
 ## Release Notes
 
-### 0.4.15
+### 0.4.14
 
 Fixed issue where backend storage account creation would return error due to deprecated storage account kind. This was due to a change in azure storage.
 
