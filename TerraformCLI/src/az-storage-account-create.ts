@@ -33,7 +33,7 @@ export class AzStorageAccountCreate implements ICommand<AzStorageAccountCreateRe
     readonly kind: string;
     readonly encryptionServices: string;
     readonly accessTier: string;
-    constructor(name: string, resourceGroup: string, sku: string, kind: string = "BlobStorage", encryptionServices: string = "blob", accessTier: string = "hot") {
+    constructor(name: string, resourceGroup: string, sku: string, kind: string = "StorageV2", encryptionServices: string = "blob", accessTier: string = "hot") {
         this.name = name;
         this.resourceGroup = resourceGroup;
         this.sku = sku;
