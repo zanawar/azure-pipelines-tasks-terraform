@@ -12,6 +12,10 @@ See readme for each of the tasks for development setup for each.
 
 ## Release Notes
 
+### 0.4.15
+
+Fixed issue where backend storage account creation would return error due to deprecated storage account kind. This was due to a change in azure storage.
+
 ### 0.4.13
 
 Fixed issue where task would fail when using TF_LOG debug variable. When this variable was used, logging would be written to stderr even when the command was successful (i.e. exit code 0). This would cause the task to decide the command failed due to the existence of content in stderr. The fix changes the decision to be based of the exit code. This should allow for TF_LOG to be used and the task succeed when the underlying command succeeds.
