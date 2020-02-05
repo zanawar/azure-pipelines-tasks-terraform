@@ -2,6 +2,7 @@ import tasks = require("azure-pipelines-task-lib/task");
 import { ToolRunner, IExecSyncOptions } from "azure-pipelines-task-lib/toolrunner";
 import { TerraformCommand, ITaskAgent } from "./terraform";
 import { TerraformAggregateError } from "./terraform-aggregate-error";
+import * as dotenv from "dotenv"
 
 export interface TerraformCommandContext {
     terraform: ToolRunner;
@@ -77,15 +78,25 @@ export class TerraformWithAutoApprove extends TerraformCommandDecorator{
 export class TerraformWithSecureVarFile extends TerraformCommandDecorator{    
     private readonly taskAgent: ITaskAgent;
     private readonly secureVarFileId: string | undefined;
-    constructor(builder: TerraformCommandBuilder, taskAgent: ITaskAgent, secureVarFileId?: string | undefined) {
+    private readonly isEnvFile: boolean;
+    constructor(builder: TerraformCommandBuilder, taskAgent: ITaskAgent, secureVarFileId?: string | undefined, isEnvFile?: boolean | undefined) {
         super(builder);
         this.taskAgent = taskAgent;
         this.secureVarFileId = secureVarFileId;
+        this.isEnvFile = isEnvFile ? isEnvFile : false; 
     }
     async onRun(context: TerraformCommandContext): Promise<void> {        
         if(this.secureVarFileId){
             const secureFilePath = await this.taskAgent.downloadSecureFile(this.secureVarFileId);
-            context.terraform.arg(`-var-file=${secureFilePath}`);
+            if(this.isEnvFile) {
+                let config = dotenv.config({ path: secureFilePath }).parsed;
+                if ((!config) || (Object.keys(config).length === 0 && config.constructor === Object)) {
+                    throw "The .env file doesn't have valid entries.";
+                }
+            } else {
+                context.terraform.arg(`-var-file=${secureFilePath}`);
+            }
+
         }
     }
 }
@@ -118,8 +129,8 @@ export class TerraformRunner{
         return this;
     }
 
-    withSecureVarsFile(taskAgent: ITaskAgent, secureVarFileId?: string | undefined): TerraformRunner{
-        return this.with((builder) => new TerraformWithSecureVarFile(builder, taskAgent, secureVarFileId));
+    withSecureVarsFile(taskAgent: ITaskAgent, secureVarFileId?: string | undefined, isEnvFile?: boolean | undefined): TerraformRunner{
+        return this.with((builder) => new TerraformWithSecureVarFile(builder, taskAgent, secureVarFileId, isEnvFile));
     }
 
     async exec(successfulExitCodes?: number[] | undefined): Promise<number>{

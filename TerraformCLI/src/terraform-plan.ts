@@ -6,6 +6,7 @@ import { TerraformRunner } from "./terraform-runner";
 
 export class TerraformPlan extends TerraformCommand{
     readonly secureVarsFile: string | undefined;
+    readonly isEnvFile: boolean | undefined;
     readonly environmentServiceName: string;
 
     constructor(
@@ -13,10 +14,12 @@ export class TerraformPlan extends TerraformCommand{
         workingDirectory: string,
         environmentServiceName: string, 
         options?: string, 
-        secureVarsFile?: string) {
+        secureVarsFile?: string,
+        isEnvFile?: boolean,) {
         super(name, workingDirectory, options);
         this.environmentServiceName = environmentServiceName;
         this.secureVarsFile = secureVarsFile;
+        this.isEnvFile = isEnvFile;
     }
 }
 
@@ -39,7 +42,8 @@ export class TerraformPlanHandler implements IHandleCommandString{
             tasks.getInput("workingDirectory"),
             tasks.getInput("environmentServiceName", true),
             tasks.getInput("commandOptions"),
-            tasks.getInput("secureVarsFile")
+            tasks.getInput("secureVarsFile"),
+            tasks.getBoolInput("isEnvFile", false)
         );
 
         let loggedProps = {
@@ -53,7 +57,7 @@ export class TerraformPlanHandler implements IHandleCommandString{
     private async onExecute(command: TerraformPlan): Promise<number> {
         let exitCode = await new TerraformRunner(command)
             .withAzureRmProvider(command.environmentServiceName)
-            .withSecureVarsFile(this.taskAgent, command.secureVarsFile)
+            .withSecureVarsFile(this.taskAgent, command.secureVarsFile, command.isEnvFile)
             .exec(this.getPlanSuccessfulExitCodes(command.options));
 
         this.setPlanHasChangesVariable(command.options, exitCode);
