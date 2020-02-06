@@ -70,7 +70,7 @@
             "type": "secureFile",
             "label": "Secured Variables File (Secrets)",
             "required": false,
-            "helpMarkDown": "Pick a terraform vars or .env file from Azure DevOps Secure Files. This should be option should be used for terraform variable files that contain secrets.",
+            "helpMarkDown": "Pick a secure file from Azure DevOps Secure Files. This option is used to pass terraform variables using a tfvars or .env file stored in secure files.",
             "groupName": "variables",
             "properties": {
                 "EnableManage": "True",
