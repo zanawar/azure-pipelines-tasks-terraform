@@ -6,7 +6,6 @@ import { TerraformRunner } from "./terraform-runner";
 
 export class TerraformValidate extends TerraformCommand{
     readonly secureVarsFile: string | undefined;
-    readonly isEnvFile: boolean | undefined;
     constructor(
         name: string, 
         workingDirectory: string,
@@ -15,7 +14,6 @@ export class TerraformValidate extends TerraformCommand{
         isEnvFile?: boolean) {
         super(name, workingDirectory, options);
         this.secureVarsFile = secureVarsFile;
-        this.isEnvFile = isEnvFile
     }
 }
 
@@ -37,8 +35,7 @@ export class TerraformValidateHandler implements IHandleCommandString{
             command,
             tasks.getInput("workingDirectory"),
             tasks.getInput("commandOptions"),
-            tasks.getInput("secureVarsFile"),
-            tasks.getBoolInput("isEnvFile", false)
+            tasks.getInput("secureVarsFile")
         );
 
         let loggedProps = {
@@ -51,7 +48,7 @@ export class TerraformValidateHandler implements IHandleCommandString{
 
     private async onExecute(command: TerraformValidate): Promise<number> {
         return new TerraformRunner(command)
-            .withSecureVarsFile(this.taskAgent, command.secureVarsFile, command.isEnvFile)
+            .withSecureVarsFile(this.taskAgent, command.secureVarsFile)
             .exec();
     }
 }

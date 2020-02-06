@@ -6,7 +6,6 @@ import { TerraformRunner } from "./terraform-runner";
 
 export class TerraformDestroy extends TerraformCommand{
     readonly secureVarsFile: string | undefined;
-    readonly isEnvFile: boolean;
     readonly environmentServiceName: string;
 
     constructor(
@@ -19,7 +18,6 @@ export class TerraformDestroy extends TerraformCommand{
         super(name, workingDirectory, options);
         this.environmentServiceName = environmentServiceName;
         this.secureVarsFile = secureVarsFile;
-        this.isEnvFile = isEnvFile;
     }
 }
 
@@ -58,7 +56,7 @@ export class TerraformDestroyHandler implements IHandleCommandString{
         return await new TerraformRunner(command)                                    
             .withAutoApprove()
             .withAzureRmProvider(command.environmentServiceName)            
-            .withSecureVarsFile(this.taskAgent, command.secureVarsFile, command.isEnvFile)
+            .withSecureVarsFile(this.taskAgent, command.secureVarsFile)
             .exec();
     }
 }

@@ -6,7 +6,6 @@ import { TerraformRunner } from "./terraform-runner";
 
 export class TerraformApply extends TerraformCommand {
     readonly secureVarsFile: string | undefined;
-    readonly isEnvfile: boolean;
     readonly environmentServiceName: string;
 
     constructor(
@@ -14,12 +13,10 @@ export class TerraformApply extends TerraformCommand {
         workingDirectory: string,
         environmentServiceName: string, 
         secureVarsFile: string | undefined,
-        isEnvFile: boolean,
         options?: string) {
         super(name, workingDirectory, options);
         this.environmentServiceName = environmentServiceName;
         this.secureVarsFile = secureVarsFile;
-        this.isEnvfile = isEnvFile;
     }
 }
 
@@ -42,7 +39,6 @@ export class TerraformApplyHandler implements IHandleCommandString{
             tasks.getInput("workingDirectory"),
             tasks.getInput("environmentServiceName", true),
             tasks.getInput("secureVarsFile"),
-            tasks.getBoolInput("isEnvFile", false),
             tasks.getInput("commandOptions")
         );
 
@@ -56,7 +52,7 @@ export class TerraformApplyHandler implements IHandleCommandString{
 
     private async onExecute(command: TerraformApply): Promise<number> {
         return await new TerraformRunner(command)
-            .withSecureVarsFile(this.taskAgent, command.secureVarsFile, command.isEnvfile)
+            .withSecureVarsFile(this.taskAgent, command.secureVarsFile)
             .withAutoApprove()
             .withAzureRmProvider(command.environmentServiceName)
             .exec();

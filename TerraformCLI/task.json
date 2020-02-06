@@ -78,15 +78,6 @@
             }
         },
         {
-            "name": "isEnvFile",
-            "type": "boolean",
-            "label": "Use .env file",
-            "required": false,
-            "defaultValue": false,
-            "helpMarkDown": "If the secure file is `.env` file, enable this option.",
-            "groupName": "variables"          
-        },
-        {
             "name": "commandOptions",
             "type": "string",
             "label": "Command Options",
