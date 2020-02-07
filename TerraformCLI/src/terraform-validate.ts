@@ -10,8 +10,7 @@ export class TerraformValidate extends TerraformCommand{
         name: string, 
         workingDirectory: string,
         options?: string, 
-        secureVarsFile?: string,
-        isEnvFile?: boolean) {
+        secureVarsFile?: string) {
         super(name, workingDirectory, options);
         this.secureVarsFile = secureVarsFile;
     }
