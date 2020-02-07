@@ -13,7 +13,6 @@ export class TerraformDestroy extends TerraformCommand{
         workingDirectory: string,
         environmentServiceName: string, 
         secureVarsFile: string | undefined,
-        isEnvFile: boolean,
         options?: string) {
         super(name, workingDirectory, options);
         this.environmentServiceName = environmentServiceName;
@@ -40,7 +39,6 @@ export class TerraformDestroyHandler implements IHandleCommandString{
             tasks.getInput("workingDirectory"),
             tasks.getInput("environmentServiceName", true),
             tasks.getInput("secureVarsFile"),
-            tasks.getBoolInput("isEnvFile", false),
             tasks.getInput("commandOptions")
         );
 
