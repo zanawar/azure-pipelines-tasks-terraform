@@ -2,6 +2,8 @@ import tasks = require("azure-pipelines-task-lib/task");
 import { ToolRunner, IExecSyncOptions } from "azure-pipelines-task-lib/toolrunner";
 import { TerraformCommand, ITaskAgent } from "./terraform";
 import { TerraformAggregateError } from "./terraform-aggregate-error";
+import * as dotenv from "dotenv"
+import * as path from "path"
 
 export interface TerraformCommandContext {
     terraform: ToolRunner;
@@ -85,9 +87,24 @@ export class TerraformWithSecureVarFile extends TerraformCommandDecorator{
     async onRun(context: TerraformCommandContext): Promise<void> {        
         if(this.secureVarFileId){
             const secureFilePath = await this.taskAgent.downloadSecureFile(this.secureVarFileId);
-            context.terraform.arg(`-var-file=${secureFilePath}`);
+            const fileName = tasks.getSecureFileName(this.secureVarFileId);
+            if(this.isEnvFile(fileName)) {
+                let config = dotenv.config({ path: secureFilePath }).parsed;
+                if ((!config) || (Object.keys(config).length === 0 && config.constructor === Object)) {
+                    throw "The .env file doesn't have valid entries.";
+                }
+            } else {
+                context.terraform.arg(`-var-file=${secureFilePath}`);
+            }
+
         }
     }
+    isEnvFile(fileName: string) {
+        if (fileName === undefined || fileName === null) return false;
+        if (fileName === '.env') return true;
+        return ('.env' === path.extname(fileName))
+    }
+
 }
 
 export class TerraformRunner{
