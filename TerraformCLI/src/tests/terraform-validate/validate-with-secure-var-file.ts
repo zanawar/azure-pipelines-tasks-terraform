@@ -5,8 +5,7 @@ import { env } from './validate-with-secure-var-file.env';
 
 export let validateWithNoArgs = new TaskScenario<TerraformInputs>()
     .inputTerraformCommand(env.terraformCommand)
-    .inputTerraformSecureVarsFile(env.secureVarsFileId)
-    .inputSecureFile(env.secureVarsFileId, env.secureVarsFileName)   
+    .inputTerraformSecureVarsFile(env.secureVarsFileId, env.secureVarsFileName)
     .inputApplicationInsightsInstrumentationKey()    
     .answerTerraformExists()
     .answerTerraformCommandIsSuccessful(env.commandOptions)
