@@ -198,14 +198,12 @@ export class TaskScenario<TInputs extends TaskInputs>{
             }
         });
 
-        inputs.environmentVariables.forEach((value: string, key: string) => {
-            process.env[key] = value;
-        });
-        delete inputs.environmentVariables;
-
-        if(!process.env["AGENT_TEMPDIRECTORY"]){
-            process.env["AGENT_TEMPDIRECTORY"] = inputs.workingDirectory;
-        }
+        if(inputs.environmentVariables){
+            inputs.environmentVariables.forEach((value: string, key: string) => {
+                process.env[key] = value;
+            });
+            delete inputs.environmentVariables;
+        }  
 
         for(var i in inputs){
             if(inputs[i])

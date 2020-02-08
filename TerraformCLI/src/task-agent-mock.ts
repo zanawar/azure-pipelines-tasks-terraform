@@ -8,13 +8,14 @@ export default class TaskAgentMock implements ITaskAgent {
     }
 
     async downloadSecureFile(secureFileId: string): Promise<string> {
-        const secureFileEnv = `SECUREFILE_NAME_${secureFileId}`;
-        let filePath: string = "";
-        filePath = process.env[secureFileEnv] || filePath;
-        const agentTempDir = process.env["AGENT_TEMPDIRECTORY"];
-        if(agentTempDir && filePath){
-            filePath = path.join(agentTempDir, filePath);
+        const secureFileEnv = `SECUREFILE_NAME_${secureFileId}`;        
+        let filePath = process.env[secureFileEnv];
+
+        if(!filePath){
+            throw `Secure file ${secureFileId} not found. Did you add 'inputSecureFile' into your scenario pipeline?`
         }
+
+        console.log("CZ SECURE FILE PATH IS: ", path.resolve(filePath));
         
         return Promise.resolve(filePath);
     }
