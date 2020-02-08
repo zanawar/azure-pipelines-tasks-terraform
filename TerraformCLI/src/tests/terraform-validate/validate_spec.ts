@@ -25,4 +25,12 @@ describe('terraform validate', function(){
             .assertExecutedTerraformVersion()
             .run();
     });
+    it('with secure env file', function(){
+        let env = require('./validate-with-secure-env-file.env').env;
+        new TestScenario(env.taskScenarioPath)
+            .assertExecutionSucceeded()   
+            .assertExecutedTerraformCommand(env.expectedCommand)
+            .assertExecutedTerraformVersion()
+            .run();
+    });
 });

@@ -11,16 +11,14 @@ const expectedEnv: { [key: string]: string } = {
     'ARM_CLIENT_SECRET': servicePrincipalKey,
 }
 
-const terraformCommand: string = 'apply';
-const secureVarsFileId: string = "bc813121-0bf2-4713-9949-bfb54023bd6c"
-const secureVarsFileName: string = "./.bin/tests/terraform-apply/default.vars";
-const commandArgs: string = `-var-file=${secureVarsFileName} -auto-approve`;
-const expectedCommand: string = `${terraformCommand} ${commandArgs}`
+const terraformCommand: string = 'plan';
+const secureVarsFileId: string = "6b4ef608-ca4c-4185-92fb-0554b8a2ec72"
+const secureVarsFileName: string = "./.bin/tests/terraform-plan/default.env";
+const expectedCommand: string = `${terraformCommand}`
 
-export const env: any = {
-    taskScenarioPath: require.resolve('./apply-azurerm-with-secure-var-file'),
+export let env: any = {
+    taskScenarioPath: require.resolve('./plan-azurerm-with-secure-env-file'),
     terraformCommand,
-    commandArgs,
     environmentServiceName,
     subscriptionId,
     tenantId,

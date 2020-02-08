@@ -8,7 +8,7 @@
             "type": "node",
             "request": "launch",
             "name": "debug:tf cli",
-            "preLaunchTask": "tsc: build tf cli",
+            "preLaunchTask": "build tf cli",
             "program": "${workspaceFolder}/TerraformCLI/src/index.ts",
             "cwd": "${workspaceFolder}/TerraformCLI",
             "protocol": "inspector",
@@ -25,37 +25,33 @@
             "type": "node",
             "request": "launch",
             "name": "debug:tf cli:tests",
-            "preLaunchTask": "tsc: build tf cli",
+            "preLaunchTask": "build tf cli",
             "program": "${workspaceFolder}/TerraformCLI/node_modules/mocha/bin/_mocha",
             "cwd": "${workspaceFolder}/TerraformCLI",
             "args": [
                 "--timeout",
                 "999999",
                 ".bin/tests/**/*_spec.js"
-            ],
-            "protocol": "inspector",
-            "console": "integratedTerminal"
+            ]
         },
         {
             "type": "node",
             "request": "launch",
             "name": "debug:tf cli:tests:scenario",
-            "preLaunchTask": "tsc: build tf cli",
+            "preLaunchTask": "build tf cli",
             "program": "${workspaceFolder}/TerraformCLI/node_modules/mocha/bin/_mocha",
             "cwd": "${workspaceFolder}/TerraformCLI",
             "args": [
                 "--timeout",
                 "999999",
-                ".bin/tests/terraform-apply/apply_spec.js"
+                ".bin/tests/terraform-plan/plan_spec.js"
             ],
-            "protocol": "inspector",
-            "console": "integratedTerminal"
         },
         {
             "type": "node",
             "request": "launch",
             "name": "debug:tf cli:e2e",
-            "preLaunchTask": "tsc: build tf cli",
+            "preLaunchTask": "build tf cli",
             "program": "${workspaceFolder}/TerraformCLI/node_modules/mocha/bin/_mocha",
             "cwd": "${workspaceFolder}/TerraformCLI",
             "args": [
@@ -63,8 +59,6 @@
                 "999999",
                 ".bin/e2e/**/*_spec.js"
             ],
-            "protocol": "inspector",
-            "console": "integratedTerminal"
         },
         {
             "type": "node",
