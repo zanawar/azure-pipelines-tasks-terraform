@@ -12,9 +12,9 @@ See readme for each of the tasks for development setup for each.
 
 ## Release Notes
 
-### 0.4.15
+### 0.4.16
 
-Add support for TF_VAR_ envrionment variables and .env files.
+Add support for secure .env files. Secure variable files chosen that end in `.env` will be treated as .env files. The environment variables within the file will be emitted to the task process so that they are available to terraform.
 
 ### 0.4.14
 
