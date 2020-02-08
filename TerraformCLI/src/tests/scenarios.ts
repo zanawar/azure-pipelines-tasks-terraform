@@ -124,13 +124,17 @@ export class TaskAzureRmServiceEndpoint extends TaskEndpointDecorator{
     }    
 }
 
-export class TaskScenario<TInputs>{
+export interface TaskInputs {
+    workingDirectory: string;
+    environmentVariables: Map<string, string>;
+}
+
+export class TaskScenario<TInputs extends TaskInputs>{
     private readonly taskRunner: TaskMockRunner;
     public readonly taskPath: string;    
     answers: TaskAnswerBuilder<TInputs>;
     inputs: TaskInputBuilder<TInputs>;
     endpoints: TaskEndpointBuilder;
-    envVars: Map<string, string>;
     
     constructor(taskPath: string = "./../index") {
         this.taskPath = require.resolve(taskPath);
@@ -138,11 +142,10 @@ export class TaskScenario<TInputs>{
         this.answers = new DefaultTaskAnswer();
         this.inputs = new DefaultTaskInput<TInputs>();
         this.endpoints = new DefaultTaskEndpoint();
-        this.envVars = new Map<string, string>();
         
         //clear any environment vars set by the previous run
         Object.keys(process.env)
-            .filter(key => key.startsWith("INPUT_"))
+            .filter(key => key.startsWith("INPUT_") || key.startsWith("SECUREFILE_NAME_"))
             .forEach(key => delete process.env[key]);
         
         this.taskRunner.registerMock('./task-agent', TaskAgentMock);
@@ -174,15 +177,6 @@ export class TaskScenario<TInputs>{
         return this;
     }
 
-    public inputSecureFile(id: string, name: string): TaskScenario<TInputs> {
-        return this.inputEnvVar(`SECUREFILE_NAME_${id}`, name);
-    }
-
-    public inputEnvVar(name: string, value: string): TaskScenario<TInputs> {
-        this.envVars.set(name, value);
-        return this;
-    }
-
     public run(): void {
         if(!this.inputs || !this.answers)
             throw "No scenario steps defined. Unable to execute scenario";
@@ -204,9 +198,14 @@ export class TaskScenario<TInputs>{
             }
         });
 
-        this.envVars.forEach((value: string, key: string) => {
+        inputs.environmentVariables.forEach((value: string, key: string) => {
             process.env[key] = value;
         });
+        delete inputs.environmentVariables;
+
+        if(!process.env["AGENT_TEMPDIRECTORY"]){
+            process.env["AGENT_TEMPDIRECTORY"] = inputs.workingDirectory;
+        }
 
         for(var i in inputs){
             if(inputs[i])
