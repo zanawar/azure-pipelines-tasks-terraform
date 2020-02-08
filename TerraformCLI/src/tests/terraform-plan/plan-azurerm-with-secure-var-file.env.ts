@@ -1,31 +1,33 @@
-let environmentServiceName = "dev";
-let subscriptionId: string = "sub1";
-let tenantId: string = "ten1";
-let servicePrincipalId: string = "servicePrincipal1";
-let servicePrincipalKey: string = "servicePrincipalKey123";
+const environmentServiceName = "dev";
+const subscriptionId: string = "sub1";
+const tenantId: string = "ten1";
+const servicePrincipalId: string = "servicePrincipal1";
+const servicePrincipalKey: string = "servicePrincipalKey123";
 
-let expectedEnv: { [key: string]: string } = {
+const expectedEnv: { [key: string]: string } = {
     'ARM_SUBSCRIPTION_ID': subscriptionId,
     'ARM_TENANT_ID': tenantId,
     'ARM_CLIENT_ID': servicePrincipalId,
     'ARM_CLIENT_SECRET': servicePrincipalKey,
 }
 
-let terraformCommand: string = 'plan';
-let secureVarsFile: string = "foo.vars";
-let commandArgs: string = `-var-file=${secureVarsFile}`;
-let expectedCommand: string = `${terraformCommand} ${commandArgs}`
+const terraformCommand: string = 'plan';
+const secureVarsFileId: string = "6b4ef608-ca4c-4185-92fb-0554b8a2ec72"
+const secureVarsFileName: string = "./.bin/tests/terraform-plan/default.vars";
+const commandArgs: string = `-var-file=${secureVarsFileName}`;
+const expectedCommand: string = `${terraformCommand} ${commandArgs}`
 
 export let env: any = {
-    taskScenarioPath:           require.resolve('./plan-azurerm-with-secure-var-file'),
-    terraformCommand:           terraformCommand,
-    commandArgs:                commandArgs,
-    environmentServiceName:     environmentServiceName,
-    subscriptionId:             subscriptionId,
-    tenantId:                   tenantId,
-    servicePrincipalId:         servicePrincipalId,
-    servicePrincipalKey:        servicePrincipalKey,
-    expectedEnv:                expectedEnv,
-    expectedCommand:            expectedCommand,
-    secureVarsFile:             secureVarsFile
+    taskScenarioPath: require.resolve('./plan-azurerm-with-secure-var-file'),
+    terraformCommand,
+    commandArgs,
+    environmentServiceName,
+    subscriptionId,
+    tenantId,
+    servicePrincipalId,
+    servicePrincipalKey,
+    expectedEnv,
+    expectedCommand,
+    secureVarsFileId,
+    secureVarsFileName
 }

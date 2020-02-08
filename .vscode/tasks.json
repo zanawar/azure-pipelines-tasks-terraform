@@ -1,33 +1,23 @@
 {
-    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // See https://go.microsoft.com/fwlink/?LinkId=733558 
     // for the documentation about the tasks.json format
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "tsc: build tf cli",
-            "type": "typescript",
-            "tsconfig": "TerraformCLI\\tsconfig.json",
-            "problemMatcher": [
-                "$tsc"
-            ]
-        },
-        {
-            "label": "tsc: build tf installer",
-            "type": "typescript",
-            "tsconfig": "TerraformInstaller\\tsconfig.json",
-            "problemMatcher": [
-                "$tsc"
-            ]
-        },
-        {
-            "label": "npm: test tf cli",
+            "label": "build tf cli",
             "type": "npm",
-            "script": "test:local",
+            "script": "build",
             "path": "TerraformCLI/",
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "test tf cli",
+            "type": "npm",
+            "script": "test",
+            "path": "TerraformCLI/",
+            "group": "test",
+            "problemMatcher": []
         }
     ]
 }

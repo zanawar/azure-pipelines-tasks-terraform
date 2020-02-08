@@ -3,14 +3,16 @@
   "version": "0.1.7",
   "description": "This contains the Azure DevOps Pipeline tasks for installing and executing terraform commands within a build or release. These tasks are intended to work on any build agent. They are also intended to provide a guided abstraction to deploying infrastructure within Azure.",
   "main": "index.js",
-  "dependencies": {},
+  "dependencies": {
+    "dotenv": "^8.2.0"
+  },
   "devDependencies": {
     "cross-var": "^1.1.0",
     "tfx-cli": "^0.6.3"
   },
   "scripts": {
-    "pack" : "cross-var ./node_modules/.bin/tfx extension create --manifests vss-extension.json --output-path .bin --override { \\\"version\\\" : \\\"$npm_package_version\\\" }",
-    "publish" : "cross-var ./node_modules/.bin/tfx extension publish --vsix .bin/charleszipp.azure-pipelines-tasks-terraform-$npm_package_version.vsix"
+    "pack": "cross-var ./node_modules/.bin/tfx extension create --manifests vss-extension.json --output-path .bin --override { \\\"version\\\" : \\\"$npm_package_version\\\" }",
+    "publish": "cross-var ./node_modules/.bin/tfx extension publish --vsix .bin/charleszipp.azure-pipelines-tasks-terraform-$npm_package_version.vsix"
   },
   "repository": {
     "type": "git",
