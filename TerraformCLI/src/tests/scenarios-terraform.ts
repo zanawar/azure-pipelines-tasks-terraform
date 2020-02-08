@@ -148,13 +148,6 @@ export class TerraformCommandIsSuccessful extends TaskAnswerDecorator<TerraformI
         let command = `terraform ${inputs.command}`;
         if(this.args)
             command = `${command} ${this.args}`;                  
-        if(inputs.secureVarsFile &&  command.indexOf('-var-file') < 0){
-            command = `${command} -var-file=${inputs.secureVarsFile}`
-        }
-        // todo: remove unsecured vars file
-        if(inputs.varsFile && inputs.varsFile != inputs.workingDirectory && command.indexOf('-var-file') < 0){
-            command = `${command} -var-file=${inputs.varsFile}`
-        } 
 
         a.exec[command] = <TaskLibAnswerExecResult>{
             code : this.exitCode || 0,

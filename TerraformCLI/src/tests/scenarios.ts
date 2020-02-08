@@ -130,6 +130,7 @@ export class TaskScenario<TInputs>{
     answers: TaskAnswerBuilder<TInputs>;
     inputs: TaskInputBuilder<TInputs>;
     endpoints: TaskEndpointBuilder;
+    envVars: Map<string, string>;
     
     constructor(taskPath: string = "./../index") {
         this.taskPath = require.resolve(taskPath);
@@ -137,6 +138,7 @@ export class TaskScenario<TInputs>{
         this.answers = new DefaultTaskAnswer();
         this.inputs = new DefaultTaskInput<TInputs>();
         this.endpoints = new DefaultTaskEndpoint();
+        this.envVars = new Map<string, string>();
         
         //clear any environment vars set by the previous run
         Object.keys(process.env)
@@ -172,6 +174,15 @@ export class TaskScenario<TInputs>{
         return this;
     }
 
+    public inputSecureFile(id: string, name: string): TaskScenario<TInputs> {
+        return this.inputEnvVar(`SECUREFILE_NAME_${id}`, name);
+    }
+
+    public inputEnvVar(name: string, value: string): TaskScenario<TInputs> {
+        this.envVars.set(name, value);
+        return this;
+    }
+
     public run(): void {
         if(!this.inputs || !this.answers)
             throw "No scenario steps defined. Unable to execute scenario";
@@ -193,12 +204,16 @@ export class TaskScenario<TInputs>{
             }
         });
 
+        this.envVars.forEach((value: string, key: string) => {
+            process.env[key] = value;
+        });
+
         for(var i in inputs){
             if(inputs[i])
                 this.taskRunner.setInput(i, inputs[i]);
         }    
 
-        this.taskRunner.setAnswers(answers);        
+        this.taskRunner.setAnswers(answers);    
         this.taskRunner.run();
     }
 }
