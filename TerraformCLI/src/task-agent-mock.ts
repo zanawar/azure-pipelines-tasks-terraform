@@ -1,6 +1,5 @@
 import { ITaskAgent } from './terraform';
 import { injectable } from 'inversify';
-import path from 'path';
 
 @injectable()
 export default class TaskAgentMock implements ITaskAgent {
