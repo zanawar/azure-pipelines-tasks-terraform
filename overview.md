@@ -52,9 +52,13 @@ The task supports automatically creating the resource group, storage account, an
 
 ## Secure Variable Secrets
 
-There are three methods to provide secrets within the vars provided to terraform commands. First, if providing individual `-var` options to the command line, the secret pipeline variables can be used. Use the Command Options field to input your secret vars as `-var 'secret=$(mySecretPipelineVar)`. Secondly, a var file secured in Secure Files Library of Azure DevOps pipeline can be specified via drop-down menu. Storing sensitive var files in the Secure Files Library not only provides encryption at rest, it also allows the files to have different access control applied than that of the Source Repository and Build/Release Pipelines. Finally, if the Secure Variables file name is `*.env`, it is refered as `.env` file. This task loads environment variables from the `.env` file.  
+There are three methods to provide secrets within the vars provided to terraform commands. First, if providing individual `-var` options to the command line, the secret pipeline variables can be used. Use the Command Options field to input your secret vars as `-var 'secret=$(mySecretPipelineVar)`. Secondly, a var file secured in Secure Files Library of Azure DevOps pipeline can be specified via drop-down menu. Storing sensitive var files in the Secure Files Library not only provides encryption at rest, it also allows the files to have different access control applied than that of the Source Repository and Build/Release Pipelines.
 
-_.env file example_
+### Secure Env Files (NEW)
+
+If the Secure Variables file name is `*.env`, it is referred as `.env` file. This task loads environment variables from the `.env` file.  
+
+#### _.env file example_
 
 ```bash
 KEY1=VALUE1
