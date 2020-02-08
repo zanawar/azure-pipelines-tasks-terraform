@@ -12,6 +12,10 @@ See readme for each of the tasks for development setup for each.
 
 ## Release Notes
 
+### 0.4.16
+
+Add support for secure .env files. Secure variable files chosen that end in `.env` will be treated as .env files. The environment variables within the file will be emitted to the task process so that they are available to terraform.
+
 ### 0.4.14
 
 Fixed issue where backend storage account creation would return error due to deprecated storage account kind. This was due to a change in azure storage.

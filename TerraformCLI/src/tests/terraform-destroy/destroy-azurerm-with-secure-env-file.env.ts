@@ -11,14 +11,14 @@ const expectedEnv: { [key: string]: string } = {
     'ARM_CLIENT_SECRET': servicePrincipalKey,
 }
 
-const terraformCommand: string = 'apply';
+const terraformCommand: string = 'destroy';
 const secureVarsFileId: string = "bc813121-0bf2-4713-9949-bfb54023bd6c"
-const secureVarsFileName: string = "./.bin/tests/terraform-apply/default.vars";
-const commandArgs: string = `-var-file=${secureVarsFileName} -auto-approve`;
+const secureVarsFileName: string = "./.bin/tests/terraform-destroy/default.env";
+const commandArgs: string = `-auto-approve`;
 const expectedCommand: string = `${terraformCommand} ${commandArgs}`
 
 export const env: any = {
-    taskScenarioPath: require.resolve('./apply-azurerm-with-secure-var-file'),
+    taskScenarioPath: require.resolve('./destroy-azurerm-with-secure-env-file'),
     terraformCommand,
     commandArgs,
     environmentServiceName,
