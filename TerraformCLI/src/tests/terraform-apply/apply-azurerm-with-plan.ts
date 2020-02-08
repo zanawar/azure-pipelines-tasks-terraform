@@ -6,7 +6,7 @@ import { env } from './apply-azurerm-with-plan.env';
 new TaskScenario<TerraformInputs>()
     .inputAzureRmServiceEndpoint(env.environmentServiceName, env.subscriptionId, env.tenantId, env.servicePrincipalId, env.servicePrincipalKey)
     .inputTerraformCommand(env.terraformCommand, env.commandOptions)
-    .inputTerraformSecureVarsFile(env.secureVarsFile)
+    .inputTerraformSecureVarsFile(env.secureVarsFileId, env.secureVarsFileName)
     .input({ environmentServiceName: env.environmentServiceName })
     .inputApplicationInsightsInstrumentationKey()
     .answerTerraformExists()    

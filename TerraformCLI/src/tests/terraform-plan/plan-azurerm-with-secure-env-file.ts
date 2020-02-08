@@ -1,7 +1,7 @@
 import { TaskScenario } from '../scenarios';
 import { TerraformInputs } from '../scenarios-terraform';
-import { env } from './destroy-azurerm-with-secure-var-file.env';
 import '../scenarios-terraform'
+import { env } from './plan-azurerm-with-secure-env-file.env';
 
 new TaskScenario<TerraformInputs>()
     .inputAzureRmServiceEndpoint(env.environmentServiceName, env.subscriptionId, env.tenantId, env.servicePrincipalId, env.servicePrincipalKey)
@@ -10,6 +10,5 @@ new TaskScenario<TerraformInputs>()
     .inputTerraformSecureVarsFile(env.secureVarsFileId, env.secureVarsFileName)
     .inputApplicationInsightsInstrumentationKey()
     .answerTerraformExists()
-    .answerTerraformCommandIsSuccessful(env.commandArgs)
-    .answerTerraformCommandWithVarsFileAsWorkingDirFails()
+    .answerTerraformCommandIsSuccessful()
     .run()

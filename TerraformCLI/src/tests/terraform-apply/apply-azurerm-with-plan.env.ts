@@ -1,12 +1,10 @@
-import { command } from "azure-pipelines-task-lib";
+const environmentServiceName = "dev";
+const subscriptionId: string = "sub1";
+const tenantId: string = "ten1";
+const servicePrincipalId: string = "servicePrincipal1";
+const servicePrincipalKey: string = "servicePrincipalKey123";
 
-let environmentServiceName = "dev";
-let subscriptionId: string = "sub1";
-let tenantId: string = "ten1";
-let servicePrincipalId: string = "servicePrincipal1";
-let servicePrincipalKey: string = "servicePrincipalKey123";
-
-let expectedEnv: { [key: string]: string } = {
+const expectedEnv: { [key: string]: string } = {
     'ARM_SUBSCRIPTION_ID': subscriptionId,
     'ARM_TENANT_ID': tenantId,
     'ARM_CLIENT_ID': servicePrincipalId,
@@ -15,23 +13,25 @@ let expectedEnv: { [key: string]: string } = {
 
 const terraformCommand: string = "apply";
 const plan: string = "terraform.tfplan"
-const secureVarsFile: string = 'foo.vars';
+const secureVarsFileId: string = "bc813121-0bf2-4713-9949-bfb54023bd6c"
+const secureVarsFileName: string = "./.bin/tests/terraform-apply/default.vars";
 const commandOptions: string = `${plan}`;
-const expectedOptions: string = `-var-file=${secureVarsFile} -auto-approve ${plan}`;
+const expectedOptions: string = `-var-file=${secureVarsFileName} -auto-approve ${plan}`;
 const expectedCommand: string = `${terraformCommand} ${expectedOptions}`
 
 export let env: any = {
     taskScenarioPath:           require.resolve('./apply-azurerm-with-plan'),
-    terraformCommand:           terraformCommand,
-    commandOptions:             commandOptions,
-    plan:                       plan,
-    secureVarsFile:             secureVarsFile,
-    expectedOptions:            expectedOptions,
-    expectedCommand:            expectedCommand,
-    environmentServiceName:     environmentServiceName,
-    subscriptionId:             subscriptionId,
-    tenantId:                   tenantId,
-    servicePrincipalId:         servicePrincipalId,
-    servicePrincipalKey:        servicePrincipalKey,
-    expectedEnv:                expectedEnv
+    terraformCommand,
+    commandOptions,
+    plan,
+    secureVarsFileId,
+    secureVarsFileName,
+    expectedOptions,
+    expectedCommand,
+    environmentServiceName,
+    subscriptionId,
+    tenantId,
+    servicePrincipalId,
+    servicePrincipalKey,
+    expectedEnv
 }
