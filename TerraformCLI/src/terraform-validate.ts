@@ -6,7 +6,6 @@ import { TerraformRunner } from "./terraform-runner";
 
 export class TerraformValidate extends TerraformCommand{
     readonly secureVarsFile: string | undefined;
-
     constructor(
         name: string, 
         workingDirectory: string,

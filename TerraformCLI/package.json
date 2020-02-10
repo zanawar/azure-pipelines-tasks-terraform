@@ -4,7 +4,7 @@
   "description": "Azure deveops pipeline task to execute terraform cli commands",
   "main": ".bin/index.js",
   "scripts": {
-    "build": "tsc --build",
+    "build": "tsc --build && cpx \"src/tests/**/*.{env,vars}\" \".bin/tests\"",
     "pack": "./node_modules/.bin/copyfiles package.json task.json icon.png \".bin/*.js\" -e \".bin/tests/*\" .dist && cd .dist && npm install --only=prod",
     "delete": "./node_modules/.bin/tfx build tasks delete --task-id 721c3f90-d938-11e8-9d92-09d7594721b5",
     "upload": "./node_modules/.bin/tfx build tasks upload --task-path .dist",
@@ -32,10 +32,10 @@
     "@types/node": "^10.12.27",
     "@types/q": "^1.5.1",
     "copyfiles": "^2.1.0",
-    "dotenv": "^6.2.0",
+    "cpx": "^1.5.0",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.18.0",
-    "nyc": "^14.1.1",
+    "nyc": "^15.0.0",
     "tfx-cli": "^0.6.4",
     "typescript": "^3.3.3333"
   },
@@ -43,6 +43,7 @@
     "applicationinsights": "^1.4.0",
     "azure-devops-node-api": "^7.0.0",
     "azure-pipelines-task-lib": "^2.7.1",
+    "dotenv": "^8.2.0",
     "inversify": "^5.0.1",
     "reflect-metadata": "^0.1.13"
   }

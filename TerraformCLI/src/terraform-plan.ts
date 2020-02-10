@@ -46,7 +46,7 @@ export class TerraformPlanHandler implements IHandleCommandString{
             "secureVarsFileDefined": plan.secureVarsFile !== undefined && plan.secureVarsFile !== '' && plan.secureVarsFile !== null,
             "commandOptionsDefined": plan.options !== undefined && plan.options !== '' && plan.options !== null
         }
-        
+         
         return this.log.command(plan, (command: TerraformPlan) => this.onExecute(command), loggedProps);
     }
 

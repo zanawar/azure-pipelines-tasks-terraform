@@ -1,6 +1,6 @@
 import { TaskScenario } from '../scenarios';
 import { TerraformInputs } from '../scenarios-terraform';
-import { env } from './destroy-azurerm-with-secure-var-file.env';
+import { env } from './apply-azurerm-with-secure-env-file.env';
 import '../scenarios-terraform'
 
 new TaskScenario<TerraformInputs>()

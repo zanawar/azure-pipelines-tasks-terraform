@@ -124,7 +124,12 @@ export class TaskAzureRmServiceEndpoint extends TaskEndpointDecorator{
     }    
 }
 
-export class TaskScenario<TInputs>{
+export interface TaskInputs {
+    workingDirectory: string;
+    environmentVariables: Map<string, string>;
+}
+
+export class TaskScenario<TInputs extends TaskInputs>{
     private readonly taskRunner: TaskMockRunner;
     public readonly taskPath: string;    
     answers: TaskAnswerBuilder<TInputs>;
@@ -140,7 +145,7 @@ export class TaskScenario<TInputs>{
         
         //clear any environment vars set by the previous run
         Object.keys(process.env)
-            .filter(key => key.startsWith("INPUT_"))
+            .filter(key => key.startsWith("INPUT_") || key.startsWith("SECUREFILE_NAME_"))
             .forEach(key => delete process.env[key]);
         
         this.taskRunner.registerMock('./task-agent', TaskAgentMock);
@@ -193,12 +198,19 @@ export class TaskScenario<TInputs>{
             }
         });
 
+        if(inputs.environmentVariables){
+            inputs.environmentVariables.forEach((value: string, key: string) => {
+                process.env[key] = value;
+            });
+            delete inputs.environmentVariables;
+        }  
+
         for(var i in inputs){
             if(inputs[i])
                 this.taskRunner.setInput(i, inputs[i]);
         }    
 
-        this.taskRunner.setAnswers(answers);        
+        this.taskRunner.setAnswers(answers);    
         this.taskRunner.run();
     }
 }

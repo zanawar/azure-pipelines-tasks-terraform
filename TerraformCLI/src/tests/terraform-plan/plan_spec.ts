@@ -49,6 +49,16 @@ describe('terraform plan', function(){
             // test runner does not expose env vars set within the task so cannot use this yet
             //.andAssert((assertions) => new TaskExecutedWithEnvironmentVariables(assertions, expectedEnv));
             .run();
+    });    
+    it('azurerm with secure env file', function(){
+        let env = require('./plan-azurerm-with-secure-env-file.env').env;
+        new TestScenario(env.taskScenarioPath)
+            .assertExecutionSucceeded()   
+            .assertExecutedTerraformCommand(env.expectedCommand)
+            .assertExecutedTerraformVersion()
+            // test runner does not expose env vars set within the task so cannot use this yet
+            //.andAssert((assertions) => new TaskExecutedWithEnvironmentVariables(assertions, expectedEnv));
+            .run();
     });
     it('azurerm with invalid auth scheme', function(){
         new TestScenario(require.resolve('./plan-azurerm-with-invalid-auth-scheme'))
