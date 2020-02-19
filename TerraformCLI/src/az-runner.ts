@@ -1,5 +1,4 @@
 import { ToolRunner } from "azure-pipelines-task-lib/toolrunner";
-import * as tasks from 'azure-pipelines-task-lib/task';
 import { injectable } from "inversify";
 
 @injectable()
@@ -23,7 +22,7 @@ export class AzRunner {
         if(result.code !== 0 && result.stderr)
             throw new Error(result.stderr);
         else if(result.code === 0 && result.stderr && result.stderr.startsWith("WARNING"))
-            tasks.warning(result.stderr);
+            this.tasks.warning(result.stderr);
 
         let rvalue: T = <T>JSON.parse(result.stdout);
         return rvalue;
