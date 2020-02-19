@@ -30,7 +30,7 @@ export class AzStorageContainerCreate implements ICommand<AzStorageContainerCrea
     }
 
     toString() : string {
-        return `storage container create --name ${this.name} --account-name ${this.accountName}`;
+        return `storage container create --auth-mode login --name ${this.name} --account-name ${this.accountName}`;
     }
 }
 
