@@ -28,5 +28,9 @@ new TaskScenario<TerraformInputs>()
     )
     .answerAzCommandIsSuccessfulWithResult(new AzStorageAccountCreate(env.backendStorageAccountName, env.backendResourceGroupName, env.backendStorageAccountSku), <AzStorageAccountCreateResult>{})
     .answerAzCommandIsSuccessfulWithResultRaw(new AzStorageAccountKeysList(env.backendStorageAccountName, env.backendResourceGroupName), JSON.stringify([new AzStorageAccountKey("primary", "full", env.backendKey)]))
-    .answerAzCommandIsSuccessfulWithResult(new AzStorageContainerCreate(env.backendContainerName, env.backendStorageAccountName), <AzStorageAccountCreateResult>{})
+    .answerAzCommandIsSuccessfulWithResult(
+        new AzStorageContainerCreate(env.backendContainerName, env.backendStorageAccountName), 
+        <AzStorageAccountCreateResult>{},
+        "WARNING: No connection string, account key or sas token found, we will query account keys for your storage account. Please try to use --auth-mode login or provide one of the following parameters: connection string, account key or sas token for your storage account."
+    )
     .run()
