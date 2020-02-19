@@ -12,6 +12,10 @@ See readme for each of the tasks for development setup for each.
 
 ## Release Notes
 
+### 0.4.20
+
+Fixed issue where azure cli operations (used to ensure backend exists) interpreted warnings as failures. Azure cli will write warnings to stderr while keeping exit code 0. In this condition, the task will no longer fail.
+
 ### 0.4.16
 
 Add support for secure .env files. Secure variable files chosen that end in `.env` will be treated as .env files. The environment variables within the file will be emitted to the task process so that they are available to terraform.
