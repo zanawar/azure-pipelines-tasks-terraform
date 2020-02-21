@@ -29,6 +29,12 @@
             "displayName": "Variables",
             "isExpanded": false,
             "visibleRule": "command = validate || command = plan || command = apply || command = destroy"
+        },
+        {
+            "name": "showVariables",
+            "displayName": "Show Variables",
+            "isExpanded": false,
+            "visibleRule": "command = show"
         }
     ],
     "inputs": [{
@@ -43,7 +49,8 @@
                 "validate": "validate",
                 "plan": "plan",
                 "apply": "apply",
-                "destroy": "destroy"
+                "destroy": "destroy",
+                "show": "show"
             },
             "properties": {
                 "EditableOptions": "False"
@@ -174,6 +181,31 @@
             "required": false,
             "visibleRule": "command = x",
             "defaultValue": "#{ai-instrumentation-key}#"
+        },
+        {
+            "name": "inputPlanFile",
+            "type": "filePath",
+            "label": "Input plan File",
+            "required": false,
+            "helpMarkDown": "path to a terraform plan or state file to show its content",
+            "groupName": "showVariables"
+        },
+        {
+            "name": "outputFile",
+            "type": "string",
+            "label": "Output File",
+            "required": false,
+            "helpMarkDown": "path to json file",
+            "groupName": "showVariables"
+        },
+        {
+            "name": "detectDestroy",
+            "type": "boolean",
+            "label": "Detects destroy",
+            "defaultValue": "false",
+            "required": false,
+            "helpMarkDown": "If checked, the task will output a variable to report if a destroy was detected in the terraform plan output file",
+            "groupName": "showVariables"
         }
     ],
     "execution": {
