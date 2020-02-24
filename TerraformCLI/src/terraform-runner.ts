@@ -6,6 +6,7 @@ import * as dotenv from "dotenv"
 import * as path from "path"
 import { promises } from "fs";
 import { InputFilterOperator } from "azure-devops-node-api/interfaces/common/FormInputInterfaces";
+import { SingleReleaseExpands } from "azure-devops-node-api/interfaces/ReleaseInterfaces";
 
 export interface TerraformCommandContext {
     terraform: ToolRunner;
@@ -116,7 +117,7 @@ export class TerraformWithShow extends TerraformCommandDecorator{
         this.inputFile = inputFile;
     }
     async onRun(context: TerraformCommandContext): Promise<void>{
-        context.terraform.line("-json "+this.inputFile)
+        context.terraform.line(`-json ${this.inputFile}`)
     }
 }
 
@@ -174,8 +175,16 @@ export class TerraformRunner{
         if (this.command.options) {
             this.terraform.line(this.command.options);
         }
+
+        let silentFlagValue = false ;
+        if (this.command.name == "show")
+        {
+            silentFlagValue = true; 
+        }
+       
         let result = this.terraform.execSync(<IExecSyncOptions>{
-            cwd: this.command.workingDirectory
+            cwd: this.command.workingDirectory,
+            silent: silentFlagValue
         });
         if(!successfulExitCodes.includes(result.code)){
             throw new TerraformAggregateError(this.command.name, result.stderr, result.code);

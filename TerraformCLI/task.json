@@ -189,23 +189,6 @@
             "required": false,
             "helpMarkDown": "path to a terraform plan or state file to show its content",
             "groupName": "showVariables"
-        },
-        {
-            "name": "outputFile",
-            "type": "string",
-            "label": "Output File",
-            "required": false,
-            "helpMarkDown": "path to json file",
-            "groupName": "showVariables"
-        },
-        {
-            "name": "detectDestroy",
-            "type": "boolean",
-            "label": "Detects destroy",
-            "defaultValue": "false",
-            "required": false,
-            "helpMarkDown": "If checked, the task will output a variable to report if a destroy was detected in the terraform plan output file",
-            "groupName": "showVariables"
         }
     ],
     "execution": {

@@ -6,21 +6,15 @@ import { TerraformRunner, TerraformWithShow } from "./terraform-runner";
 import * as file from "fs";
 
 export class TerraformShow extends TerraformCommand{
-   readonly outputFile: string | undefined;
    readonly inputPlanFile: string |undefined;
-   readonly detectDestroy: boolean |undefined;
 
     constructor(
         name: string, 
         workingDirectory: string,
         inputPlanFile: string,
-        outputFile: string,    
-        detectDestroy: boolean,
         options?: string){
         super(name, workingDirectory, options);
         this.inputPlanFile = inputPlanFile;
-        this.outputFile = outputFile;
-        this.detectDestroy = detectDestroy;
     }
 }
 
@@ -42,15 +36,11 @@ export class TerraformShowHandler implements IHandleCommandString{
             command,
             tasks.getInput("workingDirectory"),   
             tasks.getInput("inputPlanFile"),
-            tasks.getInput("outputFile"),
-            tasks.getBoolInput("detectDestroy"),
             tasks.getInput("commandOptions")
         );
 
         let loggedProps = {
             "commandOptionsDefined": show.options !== undefined && show.options !== '' && show.options !== null,
-            "inputPlanFile": show.inputPlanFile !== undefined && show.inputPlanFile !== '' && show.inputPlanFile !== null,
-            "outputFile": show.outputFile !== undefined && show.outputFile !=='' && show.outputFile != null
         }             
         return this.log.command(show, (command: TerraformShow) => this.onExecute(command), loggedProps);       
     }
@@ -61,38 +51,21 @@ export class TerraformShowHandler implements IHandleCommandString{
             .withShowOptions(command.inputPlanFile)
             .execWithOutput();
               
-        //Save to file  
-        if (command.outputFile !== undefined)
-        {
-            this.saveToFile(result.stdout, command.outputFile);
-        }
-
         //check for destroy
-        if(command.detectDestroy === true)
-        {  
-            if (command.inputPlanFile !== undefined)
+          
+        if (command.inputPlanFile !== undefined)
+        {
+            if(command.inputPlanFile.includes(".tfstate"))
+            {     
+                tasks.warning("Cannot check for destroy in .tfstate file");
+            }  
+            else 
             {
-                if(command.inputPlanFile.includes(".tfstate"))
-                {     
-                    console.warn("Cannot check for destroy in .tfstate file");
-                }  
-                else 
-                {
-                    this.detectDestroyChanges(result.stdout);   
-                } 
-            }       
-        }
+                this.detectDestroyChanges(result.stdout);   
+            } 
+        }       
+        
         return result.code;
-    }
-
-    private saveToFile(content: string, outputFile: string):void
-    {
-        file.writeFile(outputFile, content,  function(err) {
-            if (err) {
-                console.error(`failed to save output to a file ${err}`);
-            }
-            console.log(`Json output saved to ${outputFile}`);
-        });          
     }
 
     private detectDestroyChanges(result: string): void
@@ -103,17 +76,18 @@ export class TerraformShowHandler implements IHandleCommandString{
         for (let resourceChange  of jsonResult.resource_changes) {
             if  (resourceChange.change.actions.includes(deleteValue))
             {
-                this.setDestroyDetectedFlag("TRUE");
-                console.warn("Destroy detected!")
+                this.setDestroyDetectedFlag(true);
+                tasks.warning("Destroy detected!")
                 return;
             }
         }
-        this.setDestroyDetectedFlag("FALSE");  
+        console.log("No destroy detected")
+        this.setDestroyDetectedFlag(false);  
     }
 
-    private setDestroyDetectedFlag(value : string):void
+    private setDestroyDetectedFlag(value : boolean):void
     {
-        tasks.setVariable("TERRAFORM_PLAN_HAS_DESTROY_CHANGES", value, false);
+        tasks.setVariable("TERRAFORM_PLAN_HAS_DESTROY_CHANGES", value.toString(), false);
         console.log(`set vso[task.setvariable variable=TERRAFORM_PLAN_HAS_DESTROY_CHANGES] to ${value}`)
     }
 }
