@@ -1,8 +1,9 @@
-provider "azurerm"{
-  version = "=2.0.0"
-  features {}
+provider "azurerm" {
+    features {
+    }
 }
 
-terraform{
-    backend "azurerm"{}
+terraform {
+  backend "azurerm" {}
 }
+
