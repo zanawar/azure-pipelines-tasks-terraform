@@ -114,10 +114,11 @@ export class TerraformWithShow extends TerraformCommandDecorator{
     private readonly inputFile: string | undefined;
     constructor(builder: TerraformCommandBuilder, inputFile?: string |undefined) {
         super(builder);
-        this.inputFile = inputFile;
-    }
+        this.inputFile = inputFile === undefined? "" : inputFile;
+    } 
     async onRun(context: TerraformCommandContext): Promise<void>{
         context.terraform.line(`-json ${this.inputFile}`)
+      
     }
 }
 
@@ -175,16 +176,11 @@ export class TerraformRunner{
         if (this.command.options) {
             this.terraform.line(this.command.options);
         }
-
-        let silentFlagValue = false ;
-        if (this.command.name == "show")
-        {
-            silentFlagValue = true; 
-        }
+ 
        
         let result = this.terraform.execSync(<IExecSyncOptions>{
             cwd: this.command.workingDirectory,
-            silent: silentFlagValue
+            silent: this.command.isSilent
         });
         if(!successfulExitCodes.includes(result.code)){
             throw new TerraformAggregateError(this.command.name, result.stderr, result.code);

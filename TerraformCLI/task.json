@@ -184,10 +184,10 @@
         },
         {
             "name": "inputPlanFile",
-            "type": "filePath",
+            "type": "string",
             "label": "Input plan File",
             "required": false,
-            "helpMarkDown": "path to a terraform plan or state file to show its content",
+            "helpMarkDown": "path to a terraform plan or state file to show its content, If no path is specified, the current state will be shown.",
             "groupName": "showVariables"
         }
     ],

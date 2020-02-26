@@ -13,7 +13,7 @@ export class TerraformShow extends TerraformCommand{
         workingDirectory: string,
         inputPlanFile: string,
         options?: string){
-        super(name, workingDirectory, options);
+        super(name, workingDirectory, options, true);
         this.inputPlanFile = inputPlanFile;
     }
 }
@@ -63,7 +63,7 @@ export class TerraformShowHandler implements IHandleCommandString{
             {
                 this.detectDestroyChanges(result.stdout);   
             } 
-        }       
+        }      
         
         return result.code;
     }
@@ -81,13 +81,13 @@ export class TerraformShowHandler implements IHandleCommandString{
                 return;
             }
         }
-        console.log("No destroy detected")
+        tasks.debug("No destroy detected")
         this.setDestroyDetectedFlag(false);  
     }
 
     private setDestroyDetectedFlag(value : boolean):void
     {
         tasks.setVariable("TERRAFORM_PLAN_HAS_DESTROY_CHANGES", value.toString(), false);
-        console.log(`set vso[task.setvariable variable=TERRAFORM_PLAN_HAS_DESTROY_CHANGES] to ${value}`)
+        tasks.debug(`set vso[task.setvariable variable=TERRAFORM_PLAN_HAS_DESTROY_CHANGES] to ${value}`)
     }
 }
