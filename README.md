@@ -12,6 +12,14 @@ See readme for each of the tasks for development setup for each.
 
 ## Release Notes
 
+### 0.4.22
+
+Fixed [issue #112](https://github.com/charleszipp/azure-pipelines-tasks-terraform/issues/112) where the sample templates within `TerraformTemplates/sample` are throwing an error when using the 2.0.0 version of the azurerm provider
+
+```shell
+"features": required field is not set
+```
+
 ### 0.4.21
 
 Fixed issue where warning was occurring during ensure backend operation related to `--auth-mode login` not being provided to azure cli. The auth mode will now be provided to prevent the warning message. The specific warning resolved is below.
