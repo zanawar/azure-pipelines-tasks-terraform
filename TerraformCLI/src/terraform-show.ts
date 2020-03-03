@@ -50,7 +50,7 @@ export class TerraformShowHandler implements IHandleCommandString{
             .execWithOutput();
               
         //check for destroy
-        if (command.inputPlanFile) //CZ: modified this to truthy check as the value was 'null'. !== undefined will evaluate true when value is null
+        if (command.inputPlanFile)
         {
             if(command.inputPlanFile.includes(".tfstate"))
             {     

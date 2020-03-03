@@ -114,11 +114,10 @@ export class TerraformWithShow extends TerraformCommandDecorator{
     private readonly inputFile: string | undefined;
     constructor(builder: TerraformCommandBuilder, inputFile?: string |undefined) {
         super(builder);
-        this.inputFile = inputFile //CZ: removed the ternary check. will instead use truthy check to conditionally add the plan file if one was specified
+        this.inputFile = inputFile
     } 
     async onRun(context: TerraformCommandContext): Promise<void>{
         context.terraform.arg('-json');
-        // CZ: use .arg to conditionally add the input file when it is defined and not-null
         if(this.inputFile){
             context.terraform.arg(this.inputFile.toString())
         }
