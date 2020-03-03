@@ -9,6 +9,6 @@ export let showWithNoArgs = new TaskScenario<TerraformInputs>()
     .inputApplicationInsightsInstrumentationKey()
     
     .answerTerraformExists()
-    .answerTerraformCommandIsSuccessful(undefined, 0, "", env.stdout)
+    .answerTerraformCommandIsSuccessful(env.commandOptions, 0, "", env.stdout)
     .answerTerraformCommandWithVarsFileAsWorkingDirFails()
     .run();  
