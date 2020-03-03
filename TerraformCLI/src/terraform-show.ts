@@ -21,14 +21,11 @@ export class TerraformShow extends TerraformCommand{
 
 @injectable()
 export class TerraformShowHandler implements IHandleCommandString{
-    private readonly taskAgent: ITaskAgent;
     private readonly log: ILogger;
 
     constructor(
-        @inject(TerraformInterfaces.ITaskAgent) taskAgent: ITaskAgent,
         @inject(TerraformInterfaces.ILogger) log: ILogger
     ) {
-        this.taskAgent = taskAgent; 
         this.log = log;
     }
 
@@ -53,8 +50,7 @@ export class TerraformShowHandler implements IHandleCommandString{
             .execWithOutput();
               
         //check for destroy
-        
-        if (command.inputPlanFile !== undefined)
+        if (command.inputPlanFile) //CZ: modified this to truthy check as the value was 'null'. !== undefined will evaluate true when value is null
         {
             if(command.inputPlanFile.includes(".tfstate"))
             {     
