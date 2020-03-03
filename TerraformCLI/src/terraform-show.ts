@@ -4,6 +4,7 @@ import { IHandleCommandString } from "./command-handler";
 import { injectable, inject } from "inversify";
 import { TerraformRunner, TerraformWithShow } from "./terraform-runner";
 import * as file from "fs";
+import { ResultDetails } from "azure-devops-node-api/interfaces/TestInterfaces";
 
 export class TerraformShow extends TerraformCommand{
    readonly inputPlanFile: string |undefined;
@@ -41,7 +42,7 @@ export class TerraformShowHandler implements IHandleCommandString{
 
         let loggedProps = {
             "commandOptionsDefined": show.options !== undefined && show.options !== '' && show.options !== null,
-        }             
+        }   
         return this.log.command(show, (command: TerraformShow) => this.onExecute(command), loggedProps);       
     }
 
@@ -52,7 +53,7 @@ export class TerraformShowHandler implements IHandleCommandString{
             .execWithOutput();
               
         //check for destroy
-          
+        
         if (command.inputPlanFile !== undefined)
         {
             if(command.inputPlanFile.includes(".tfstate"))
