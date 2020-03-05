@@ -2,13 +2,16 @@ export class TerraformCommand {
     public readonly name: string;
     public readonly options: string | undefined;
     public readonly workingDirectory: string;
+    public readonly isSilent: boolean | undefined;
     constructor(
         name: string,
         workingDirectory: string,
-        options?: string) {
+        options?: string,
+        isSilent?:boolean) {
         this.name = name;
         this.workingDirectory = workingDirectory;
         this.options = options;
+        this.isSilent = isSilent;
     }
 }
 

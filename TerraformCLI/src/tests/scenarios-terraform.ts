@@ -5,16 +5,19 @@ import { getSecureFileName } from 'azure-pipelines-task-lib';
 import { TaskCompletedEvent, TaskAgentSession } from 'azure-devops-node-api/interfaces/TaskAgentInterfaces';
 import { AzLogin, AzLoginResult, AzSubscription, AzUser } from '../az-login';
 import { ICommand } from '../command-handler';
+import { BuildReason } from 'azure-devops-node-api/interfaces/BuildInterfaces';
+import { TestResult2 } from 'azure-devops-node-api/interfaces/TestInterfaces';
 
 declare module "./scenarios"{
     interface TaskScenario<TInputs>{
         inputTerraformCommand(this: TaskScenario<TerraformInputs>, command: string, options?: string, workingDirectory?: string): TaskScenario<TerraformInputs>;
+        inputTerrformShowCommand(this: TaskScenario<TerraformInputs>, inputPlanFile: string):TaskScenario<TerraformInputs>;
         inputTerraformSecureVarsFile(this: TaskScenario<TerraformInputs>, secureVarsFileId: string, secureVarsFileName: string) : TaskScenario<TerraformInputs>;
         inputAzureRmBackend(this: TaskScenario<TerraformInputs>, serviceName: string, storageAccountName: string, containerName: string, key: string, resourceGroupName: string): TaskScenario<TerraformInputs>;
         inputAzureRmEnsureBackend(this: TaskScenario<TerraformInputs>, resourceGroupLocation?: string, storageAccountSku?: string): TaskScenario<TerraformInputs>;
         inputApplicationInsightsInstrumentationKey(this: TaskScenario<TerraformInputs>, instrumentationKey?: string): TaskScenario<TerraformInputs>;
         answerTerraformExists(this: TaskScenario<TerraformInputs>, terraformExists?: boolean): TaskScenario<TerraformInputs>;
-        answerTerraformCommandIsSuccessful(this: TaskScenario<TerraformInputs>, args?: string, exitCode?: number, stderr?: string): TaskScenario<TerraformInputs>;
+        answerTerraformCommandIsSuccessful(this: TaskScenario<TerraformInputs>, args?: string, exitCode?: number, stderr?: string, stdout?: String): TaskScenario<TerraformInputs>;
         answerTerraformCommandWithVarsFileAsWorkingDirFails(this: TaskScenario<TerraformInputs>): TaskScenario<TerraformInputs>;
         answerAzExists(this: TaskScenario<TerraformInputs>, azExists?: boolean): TaskScenario<TerraformInputs>;
         answerAzCommandIsSuccessfulWithResultRaw<TCommand extends ICommand<TResult>, TResult>(this: TaskScenario<TerraformInputs>, command: TCommand, result: string, warning?: string): TaskScenario<TerraformInputs>;
@@ -41,6 +44,7 @@ export interface TerraformInputs {
     environmentServiceName?: string;
     aiInstrumentationKey?: string;
     environmentVariables: Map<string, string>;
+    inputPlanFile: string;
 }
 
 export class TerraformAzureRmEnsureBackend extends TaskInputsAre<TerraformInputs>{
@@ -107,6 +111,24 @@ TaskScenario.prototype.inputTerraformSecureVarsFile = function(this: TaskScenari
     return this;
 }
 
+export class ShowVarsIs extends TaskInputDecorator<TerraformInputs> {
+    private inputPlanFile: string;
+
+    constructor (inputs: TaskInputBuilder<TerraformInputs>, inputPlanFile: string){
+        super(inputs);
+        this.inputPlanFile = inputPlanFile;
+    }
+
+    build (): TerraformInputs {
+        const inputs = this.inputs.build();
+        inputs.inputPlanFile = this.inputPlanFile;
+        return inputs;
+    }
+}
+TaskScenario.prototype.inputTerrformShowCommand = function (this: TaskScenario<TerraformInputs>, inputPlanFile: string): TaskScenario<TerraformInputs>{
+    this.inputFactory((builder) => new ShowVarsIs(builder, inputPlanFile));
+    return this;
+}
 export class TerraformAzureRmBackend extends TaskInputsAre<TerraformInputs> {    
     constructor(inputs: TaskInputBuilder<TerraformInputs>, serviceName: string, storageAccountName: string, containerName: string, key: string, resourceGroupName: string) {
         super(inputs, {
@@ -147,11 +169,14 @@ export class TerraformCommandIsSuccessful extends TaskAnswerDecorator<TerraformI
     private readonly args: string | undefined;
     private readonly exitCode: number | undefined;
     private readonly stderr: string | undefined;
-    constructor(builder: TaskAnswerBuilder<TerraformInputs>, args?: string, exitCode?: number, stderr?: string) {
+    private readonly stdout:string | undefined;
+    //update to add optional stdout , provide 
+    constructor(builder: TaskAnswerBuilder<TerraformInputs>, args?: string, exitCode?: number, stderr?: string, stdout?:string) {
         super(builder);
         this.args = args;
         this.exitCode = exitCode;
         this.stderr = stderr;
+        this.stdout = stdout;
     }
     build(inputs: TerraformInputs): TaskLibAnswers {
         let a = this.builder.build(inputs);
@@ -159,17 +184,17 @@ export class TerraformCommandIsSuccessful extends TaskAnswerDecorator<TerraformI
         let command = `terraform ${inputs.command}`;
         if(this.args)
             command = `${command} ${this.args}`;                  
-
+        
         a.exec[command] = <TaskLibAnswerExecResult>{
             code : this.exitCode || 0,
-            stdout : `${inputs.command} successful`,
-            stderr : this.stderr
+            stdout : this.stdout || `${inputs.command} successful`,
+            stderr : this.stderr,
         }
         return a;
     }
 }
-TaskScenario.prototype.answerTerraformCommandIsSuccessful = function(this: TaskScenario<TerraformInputs>, args?: string, exitCode?: number, stderr?: string): TaskScenario<TerraformInputs>{
-    this.answerFactory((builder) => new TerraformCommandIsSuccessful(builder, args, exitCode, stderr));
+TaskScenario.prototype.answerTerraformCommandIsSuccessful = function(this: TaskScenario<TerraformInputs>, args?: string, exitCode?: number, stderr?: string, stdout?: string): TaskScenario<TerraformInputs>{
+    this.answerFactory((builder) => new TerraformCommandIsSuccessful(builder, args, exitCode, stderr, stdout));
     return this;
 }
 

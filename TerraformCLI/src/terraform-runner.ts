@@ -1,9 +1,12 @@
 import tasks = require("azure-pipelines-task-lib/task");
-import { ToolRunner, IExecSyncOptions } from "azure-pipelines-task-lib/toolrunner";
+import { ToolRunner, IExecSyncOptions, IExecSyncResult } from "azure-pipelines-task-lib/toolrunner";
 import { TerraformCommand, ITaskAgent } from "./terraform";
 import { TerraformAggregateError } from "./terraform-aggregate-error";
 import * as dotenv from "dotenv"
 import * as path from "path"
+import { promises } from "fs";
+import { InputFilterOperator } from "azure-devops-node-api/interfaces/common/FormInputInterfaces";
+import { SingleReleaseExpands } from "azure-devops-node-api/interfaces/ReleaseInterfaces";
 
 export interface TerraformCommandContext {
     terraform: ToolRunner;
@@ -107,6 +110,20 @@ export class TerraformWithSecureVarFile extends TerraformCommandDecorator{
 
 }
 
+export class TerraformWithShow extends TerraformCommandDecorator{
+    private readonly inputFile: string | undefined;
+    constructor(builder: TerraformCommandBuilder, inputFile?: string |undefined) {
+        super(builder);
+        this.inputFile = inputFile
+    } 
+    async onRun(context: TerraformCommandContext): Promise<void>{
+        context.terraform.arg('-json');
+        if(this.inputFile){
+            context.terraform.arg(this.inputFile.toString())
+        }
+    }
+}
+
 export class TerraformRunner{
     private readonly terraform: ToolRunner;
     private readonly terraformPath: string;
@@ -139,12 +156,20 @@ export class TerraformRunner{
         return this.with((builder) => new TerraformWithSecureVarFile(builder, taskAgent, secureVarFileId));
     }
 
+    withShowOptions(inputFile?: string | undefined): TerraformRunner{
+        return this.with((builder) => new TerraformWithShow(builder, inputFile));
+    }
     async exec(successfulExitCodes?: number[] | undefined): Promise<number>{
+        
+        let result = await this.execWithOutput(successfulExitCodes);
+        return result.code;
+    }
+    async execWithOutput(successfulExitCodes?: number[] | undefined): Promise<IExecSyncResult>{
         await this.builder.run(<TerraformCommandContext>{
             terraform: this.terraform,
             command: this.command
         });
-
+        
         if(!successfulExitCodes || successfulExitCodes.length == 0){
             successfulExitCodes = [0];
         }
@@ -153,12 +178,16 @@ export class TerraformRunner{
         if (this.command.options) {
             this.terraform.line(this.command.options);
         }
+ 
+
         let result = this.terraform.execSync(<IExecSyncOptions>{
-            cwd: this.command.workingDirectory
+            cwd: this.command.workingDirectory,
+            silent: this.command.isSilent
         });
         if(!successfulExitCodes.includes(result.code)){
             throw new TerraformAggregateError(this.command.name, result.stderr, result.code);
         }
-        return result.code;
+        
+        return result;
     }
 }
