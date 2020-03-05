@@ -1,9 +1,10 @@
 import tasks = require("azure-pipelines-task-lib/task");
-import { ToolRunner, IExecSyncOptions } from "azure-pipelines-task-lib/toolrunner";
+import { ToolRunner, IExecSyncOptions, IExecSyncResult, IExecOptions } from "azure-pipelines-task-lib/toolrunner";
 import { TerraformCommand, ITaskAgent } from "./terraform";
 import { TerraformAggregateError } from "./terraform-aggregate-error";
 import * as dotenv from "dotenv"
 import * as path from "path"
+import os from 'os';
 
 export interface TerraformCommandContext {
     terraform: ToolRunner;
@@ -111,13 +112,23 @@ export class TerraformRunner{
     private readonly terraform: ToolRunner;
     private readonly terraformPath: string;
     public readonly command: TerraformCommand;
-    private builder: TerraformCommandBuilder;    
+    private builder: TerraformCommandBuilder;
+    private stdOutBuffers: Buffer[] = [];
+    private stdErrBuffers: Buffer[] = [];
 
     constructor(command: TerraformCommand) {
-        this.terraformPath = tasks.which("terraform", true);
-        this.terraform = tasks.tool(this.terraformPath);
         this.command = command;
         this.builder = new TerraformWithCommand(command);
+        
+        this.terraformPath = tasks.which("terraform", true);
+        this.terraform = tasks.tool(this.terraformPath);
+
+        this.terraform.on("stdout", (data: Buffer) => {
+            this.stdOutBuffers.push(data);
+        });
+        this.terraform.on("stderr", (data: Buffer) => {
+            this.stdErrBuffers.push(data);
+        });
     }
 
     with(decoratorFactory: (builder: TerraformCommandBuilder) => TerraformCommandBuilder): TerraformRunner{
@@ -139,6 +150,15 @@ export class TerraformRunner{
         return this.with((builder) => new TerraformWithSecureVarFile(builder, taskAgent, secureVarFileId));
     }
 
+    private _processBuffers(buffers: Buffer[]): string {
+        return buffers
+            .map(data => {
+                return data.toString();
+            })
+            .join(os.EOL)
+            .toString();
+    }
+
     async exec(successfulExitCodes?: number[] | undefined): Promise<number>{
         await this.builder.run(<TerraformCommandContext>{
             terraform: this.terraform,
@@ -152,13 +172,21 @@ export class TerraformRunner{
         // append the user provided options last.
         if (this.command.options) {
             this.terraform.line(this.command.options);
+        }        
+        
+        let code = await this.terraform.exec(<IExecOptions>{
+            cwd: this.command.workingDirectory,
+            ignoreReturnCode: true
+        });        
+        
+        //CZ: stdout content will be needed once a PR to add terraform show merges
+        //let stdout = this._processBuffers(this.stdOutBuffers);        
+        let stderr = this._processBuffers(this.stdErrBuffers);
+
+        if(!successfulExitCodes.includes(code)){
+            throw new TerraformAggregateError(this.command.name, stderr, code);
         }
-        let result = this.terraform.execSync(<IExecSyncOptions>{
-            cwd: this.command.workingDirectory
-        });
-        if(!successfulExitCodes.includes(result.code)){
-            throw new TerraformAggregateError(this.command.name, result.stderr, result.code);
-        }
-        return result.code;
+        return code;
     }
 }
+
