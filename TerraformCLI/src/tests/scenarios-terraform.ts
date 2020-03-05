@@ -20,8 +20,8 @@ declare module "./scenarios"{
         answerTerraformCommandIsSuccessful(this: TaskScenario<TerraformInputs>, args?: string, exitCode?: number, stderr?: string, stdout?: String): TaskScenario<TerraformInputs>;
         answerTerraformCommandWithVarsFileAsWorkingDirFails(this: TaskScenario<TerraformInputs>): TaskScenario<TerraformInputs>;
         answerAzExists(this: TaskScenario<TerraformInputs>, azExists?: boolean): TaskScenario<TerraformInputs>;
-        answerAzCommandIsSuccessfulWithResultRaw<TCommand extends ICommand<TResult>, TResult>(this: TaskScenario<TerraformInputs>, command: TCommand, result: string): TaskScenario<TerraformInputs>;
-        answerAzCommandIsSuccessfulWithResult<TCommand extends ICommand<TResult>, TResult>(this: TaskScenario<TerraformInputs>, command: TCommand, result: TResult): TaskScenario<TerraformInputs>;
+        answerAzCommandIsSuccessfulWithResultRaw<TCommand extends ICommand<TResult>, TResult>(this: TaskScenario<TerraformInputs>, command: TCommand, result: string, warning?: string): TaskScenario<TerraformInputs>;
+        answerAzCommandIsSuccessfulWithResult<TCommand extends ICommand<TResult>, TResult>(this: TaskScenario<TerraformInputs>, command: TCommand, result: TResult, warning?: string): TaskScenario<TerraformInputs>;
         answerAzCommandFailsWithErrorRaw<TCommand extends ICommand<TResult>, TResult>(this: TaskScenario<TerraformInputs>, command: TCommand, error: string): TaskScenario<TerraformInputs>;
     }
 }
@@ -257,10 +257,12 @@ TaskScenario.prototype.answerAzExists = function(this: TaskScenario<TerraformInp
 export class AzCommandIsSuccessfulWithResultRaw<TCommand extends ICommand<TResult>, TResult> extends TaskAnswerDecorator<TerraformInputs>{
     private readonly command: TCommand;
     private readonly result: string;
-    constructor(builder: TaskAnswerBuilder<TerraformInputs>, command: TCommand, result: string) {
+    private readonly warning: string;
+    constructor(builder: TaskAnswerBuilder<TerraformInputs>, command: TCommand, result: string, warning: string = "") {
         super(builder);
         this.command = command;
         this.result = result;
+        this.warning = warning;
     }
     build(inputs: TerraformInputs): TaskLibAnswers {
         let a = this.builder.build(inputs);        
@@ -268,22 +270,23 @@ export class AzCommandIsSuccessfulWithResultRaw<TCommand extends ICommand<TResul
         let command = `az ${this.command.toString()}`;
         a.exec[command] =  <TaskLibAnswerExecResult>{
             code: 0,
-            stdout: this.result
+            stdout: this.result,
+            stderr: this.warning
         }
         return a;
     }
 }
-TaskScenario.prototype.answerAzCommandIsSuccessfulWithResultRaw = function<TCommand extends ICommand<TResult>, TResult>(this: TaskScenario<TerraformInputs>, command: TCommand, result: string): TaskScenario<TerraformInputs>{    
-    return this.answerFactory((builder) => new AzCommandIsSuccessfulWithResultRaw<TCommand, TResult>(builder, command, result));
+TaskScenario.prototype.answerAzCommandIsSuccessfulWithResultRaw = function<TCommand extends ICommand<TResult>, TResult>(this: TaskScenario<TerraformInputs>, command: TCommand, result: string, warning: string = ""): TaskScenario<TerraformInputs>{    
+    return this.answerFactory((builder) => new AzCommandIsSuccessfulWithResultRaw<TCommand, TResult>(builder, command, result, warning));
 }
 
 export class AzCommandIsSuccessfulWithResult<TCommand extends ICommand<TResult>, TResult> extends AzCommandIsSuccessfulWithResultRaw<TCommand, TResult>{
-    constructor(builder: TaskAnswerBuilder<TerraformInputs>, command: TCommand, result: TResult) {
-        super(builder, (command), JSON.stringify(result));
+    constructor(builder: TaskAnswerBuilder<TerraformInputs>, command: TCommand, result: TResult, warning: string = "") {
+        super(builder, (command), JSON.stringify(result), warning);
     }
 }
-TaskScenario.prototype.answerAzCommandIsSuccessfulWithResult = function<TCommand extends ICommand<TResult>, TResult>(this: TaskScenario<TerraformInputs>, command: TCommand, result: TResult): TaskScenario<TerraformInputs>{
-    return this.answerFactory((builder) => new AzCommandIsSuccessfulWithResult<TCommand, TResult>(builder, command, result));
+TaskScenario.prototype.answerAzCommandIsSuccessfulWithResult = function<TCommand extends ICommand<TResult>, TResult>(this: TaskScenario<TerraformInputs>, command: TCommand, result: TResult, warning: string = ""): TaskScenario<TerraformInputs>{
+    return this.answerFactory((builder) => new AzCommandIsSuccessfulWithResult<TCommand, TResult>(builder, command, result, warning));
 }
 
 export class AzCommandFailsWithErrorRaw<TCommand extends ICommand<TResult>, TResult> extends TaskAnswerDecorator<TerraformInputs>{

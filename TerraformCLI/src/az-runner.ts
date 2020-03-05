@@ -18,9 +18,11 @@ export class AzRunner {
 
         cli.line(line);
         let result = cli.execSync();
-        
-        if(result.stderr)
+
+        if(result.code !== 0 && result.stderr)
             throw new Error(result.stderr);
+        else if(result.code === 0 && result.stderr && result.stderr.startsWith("WARNING"))
+            this.tasks.warning(result.stderr);
 
         let rvalue: T = <T>JSON.parse(result.stdout);
         return rvalue;

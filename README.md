@@ -12,6 +12,26 @@ See readme for each of the tasks for development setup for each.
 
 ## Release Notes
 
+### 0.4.22
+
+Fixed [issue #112](https://github.com/charleszipp/azure-pipelines-tasks-terraform/issues/112) where the sample templates within `TerraformTemplates/sample` are throwing an error when using the 2.0.0 version of the azurerm provider
+
+```shell
+"features": required field is not set
+```
+
+### 0.4.21
+
+Fixed issue where warning was occurring during ensure backend operation related to `--auth-mode login` not being provided to azure cli. The auth mode will now be provided to prevent the warning message. The specific warning resolved is below.
+
+```text
+WARNING: No connection string, account key or sas token found, we will query account keys for your storage account. Please try to use --auth-mode login or provide one of the following parameters: connection string, account key or sas token for your storage account.
+```
+
+### 0.4.20
+
+Fixed issue where azure cli operations (used to ensure backend exists) interpreted warnings as failures. Azure cli will write warnings to stderr while keeping exit code 0. In this condition, the task will no longer fail.
+
 ### 0.4.16
 
 Add support for secure .env files. Secure variable files chosen that end in `.env` will be treated as .env files. The environment variables within the file will be emitted to the task process so that they are available to terraform.
