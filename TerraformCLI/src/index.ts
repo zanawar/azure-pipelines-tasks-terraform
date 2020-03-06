@@ -4,7 +4,7 @@ import "reflect-metadata";
 import { TerraformInterfaces, ITaskAgent, ILogger, TaskInput } from "./terraform";
 import { TerraformInitHandler } from "./terraform-init";
 import { TerraformVersionHandler } from "./terraform-version";
-import { TerraformValidateHandler, TerraformValidate } from "./terraform-validate";
+import { TerraformValidateHandler } from "./terraform-validate";
 import { TerraformPlanHandler } from "./terraform-plan";
 import { TerraformApplyHandler } from "./terraform-apply";
 import { TerraformDestroyHandler } from "./terraform-destroy";
@@ -87,20 +87,19 @@ const taskInput = <TaskInput>{
     aiInstrumentationKey: tasks.getInput("aiInstrumentationKey"),
 };
 
-// execute the terraform command
 let mediator = container.get<IMediator>(MediatorInterfaces.IMediator);
 const lastExitCodeVariableName = "TERRAFORM_LAST_EXITCODE";
-mediator.executeRawString("version")
-    // what should be used when executed by az dev ops
-    .then(() => mediator.executeRawString(tasks.getInput("command")))
+let result: Promise<number> = mediator.executeRawString("version");
+switch(taskInput.command){
+    case "foo":
+        //result = result.then(() => mediator.execute(<TerraformValidate>taskInput));
+        break;
+    default:
+        result = result.then(() => mediator.executeRawString(taskInput.command));
+        break;
+}
 
-    // for testing only
-    // .then(() => mediator.execute("init"))
-    // .then(() => mediator.execute("validate"))
-    // .then(() => mediator.execute("plan"))
-    // .then(() => mediator.execute("apply"))
-    // end for testing only
-
+result
     .then((exitCode) => {
         tasks.setVariable(lastExitCodeVariableName, exitCode.toString(), false);
         tasks.setResult(tasks.TaskResult.Succeeded, "");
@@ -114,4 +113,3 @@ mediator.executeRawString("version")
         tasks.setResult(tasks.TaskResult.Failed, error);
         ai.defaultClient.flush();
     });
-
