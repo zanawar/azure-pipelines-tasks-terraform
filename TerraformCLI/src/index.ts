@@ -1,10 +1,10 @@
 import tasks = require("azure-pipelines-task-lib/task");
 import { Container, interfaces } from 'inversify';
 import "reflect-metadata";
-import { TerraformInterfaces, ITaskAgent, ILogger } from "./terraform";
+import { TerraformInterfaces, ITaskAgent, ILogger, TaskInput } from "./terraform";
 import { TerraformInitHandler } from "./terraform-init";
 import { TerraformVersionHandler } from "./terraform-version";
-import { TerraformValidateHandler } from "./terraform-validate";
+import { TerraformValidateHandler, TerraformValidate } from "./terraform-validate";
 import { TerraformPlanHandler } from "./terraform-plan";
 import { TerraformApplyHandler } from "./terraform-apply";
 import { TerraformDestroyHandler } from "./terraform-destroy";
@@ -67,9 +67,28 @@ container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(
 container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformApplyHandler).whenTargetNamed("apply");
 container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformDestroyHandler).whenTargetNamed("destroy");
 
+const taskInput = <TaskInput>{
+    command: tasks.getInput("command"),
+    name: tasks.getInput("command"),
+    workingDirectory: tasks.getInput("workingDirectory"),
+    environmentServiceName: tasks.getInput("environmentServiceName"),
+    secureVarsFile: tasks.getInput("secureVarsFile"),
+    commandOptions: tasks.getInput("commandOptions"),
+    options: tasks.getInput("commandOptions"),
+    backendType: tasks.getInput("backendType"),
+    backendServiceArm: tasks.getInput("backendServiceArm"),
+    ensureBackend: tasks.getBoolInput("ensureBackend"),
+    backendAzureRmResourceGroupName: tasks.getInput("backendAzureRmResourceGroupName"),
+    backendAzureRmResourceGroupLocation: tasks.getInput("backendAzureRmResourceGroupLocation"),
+    backendAzureRmStorageAccountName: tasks.getInput("backendAzureRmStorageAccountName"),
+    backendAzureRmStorageAccountSku: tasks.getInput("backendAzureRmStorageAccountSku"),
+    backendAzureRmContainerName: tasks.getInput("backendAzureRmContainerName"),
+    backendAzureRmKey: tasks.getInput("backendAzureRmKey"),
+    aiInstrumentationKey: tasks.getInput("aiInstrumentationKey"),
+};
+
 // execute the terraform command
 let mediator = container.get<IMediator>(MediatorInterfaces.IMediator);
-let foo = process.env;
 const lastExitCodeVariableName = "TERRAFORM_LAST_EXITCODE";
 mediator.executeRawString("version")
     // what should be used when executed by az dev ops

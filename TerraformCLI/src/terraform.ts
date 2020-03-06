@@ -12,6 +12,41 @@ export class TerraformCommand {
     }
 }
 
+export class TerraformCommandResult {
+    public readonly stdout: string;
+    public readonly stderr: string;
+    public readonly exitCode: number;
+    constructor(
+        stdout: string,
+        stderr: string,
+        exitCode: number,
+    ){
+        this.stdout = stdout;
+        this.stderr = stderr;
+        this.exitCode = exitCode;
+    }
+}
+
+export interface TaskInput{
+    command: string;
+    name: string;
+    workingDirectory?: string | null;
+    environmentServiceName?: string | null;
+    secureVarsFile?: string | null;
+    commandOptions?: string | null;
+    options?: string | null;
+    backendType?: string | null;
+    backendServiceArm?: string | null;
+    ensureBackend?: boolean | null;
+    backendAzureRmResourceGroupName? : string | null;
+    backendAzureRmResourceGroupLocation? : string | null;
+    backendAzureRmStorageAccountName? : string | null;
+    backendAzureRmStorageAccountSku? : string | null;
+    backendAzureRmContainerName? : string | null;
+    backendAzureRmKey? : string | null;
+    aiInstrumentationKey? : string | null;
+}
+
 export interface ITaskAgent {
     downloadSecureFile(secureFileId: string): Promise<string>
 }
