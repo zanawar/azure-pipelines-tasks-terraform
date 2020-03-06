@@ -3,8 +3,8 @@ import { Container, interfaces } from 'inversify';
 import "reflect-metadata";
 import { TerraformInterfaces, ITaskAgent, ILogger, TaskInput } from "./terraform";
 import { TerraformInitHandler } from "./terraform-init";
-import { TerraformVersionHandler } from "./terraform-version";
-import { TerraformValidateHandler } from "./terraform-validate";
+import { TerraformVersionHandler, TerraformVersion, TerraformVersionResult } from "./terraform-version";
+import { TerraformValidateHandler, TerraformValidate } from "./terraform-validate";
 import { TerraformPlanHandler } from "./terraform-plan";
 import { TerraformApplyHandler } from "./terraform-apply";
 import { TerraformDestroyHandler } from "./terraform-destroy";
@@ -17,7 +17,7 @@ import { AzStorageAccountCreate, AzStorageAccountCreateResult, AzStorageAccountC
 import { AzStorageAccountKeysList, AzStorageAccountKeysListResult, AzStorageAccountKeysListHandler } from "./az-storage-account-keys-list";
 import { AzStorageContainerCreate, AzStorageContainerCreateHandler, AzStorageContainerCreateResult } from "./az-storage-container-create";
 import { MediatorInterfaces, IMediator, Mediator } from "./mediator";
-import { IHandleCommandString, CommandInterfaces, IHandleCommand } from "./command-handler";
+import { IHandleCommandString, CommandInterfaces, IHandleCommand, IHandleAsyncCommand, ICommand } from "./command-handler";
 import Logger from "./logger";
 
 import ai = require('applicationinsights');
@@ -61,7 +61,7 @@ container.bind<IHandleCommand<AzStorageContainerCreate, AzStorageContainerCreate
 
 // bind the handlers for each terraform command
 container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformInitHandler).whenTargetNamed("init");
-container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformVersionHandler).whenTargetNamed("version");
+container.bind<IHandleAsyncCommand<TerraformVersion, TerraformVersionResult>>(CommandInterfaces.IHandleAsyncCommand).to(TerraformVersionHandler).whenTargetNamed(TerraformVersion.name);
 container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformValidateHandler).whenTargetNamed("validate");
 container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformPlanHandler).whenTargetNamed("plan");
 container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformApplyHandler).whenTargetNamed("apply");
@@ -89,7 +89,11 @@ const taskInput = <TaskInput>{
 
 let mediator = container.get<IMediator>(MediatorInterfaces.IMediator);
 const lastExitCodeVariableName = "TERRAFORM_LAST_EXITCODE";
-let result: Promise<number> = mediator.executeRawString("version");
+let result: Promise<number> = mediator.executeAsync<TerraformVersion, TerraformVersionResult>(
+        new TerraformVersion(taskInput)
+    )
+    .then((result) => result.exec.exitCode);
+
 switch(taskInput.command){
     case "foo":
         //result = result.then(() => mediator.execute(<TerraformValidate>taskInput));

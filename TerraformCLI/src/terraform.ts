@@ -1,3 +1,5 @@
+import { ICommand } from "./command-handler";
+
 export class TerraformCommand {
     public readonly name: string;
     public readonly options: string | undefined;
@@ -12,7 +14,7 @@ export class TerraformCommand {
     }
 }
 
-export class TerraformCommandResult {
+export class TerraformExecResult {
     public readonly stdout: string;
     public readonly stderr: string;
     public readonly exitCode: number;
@@ -30,11 +32,11 @@ export class TerraformCommandResult {
 export interface TaskInput{
     command: string;
     name: string;
-    workingDirectory?: string | null;
+    workingDirectory: string;
     environmentServiceName?: string | null;
     secureVarsFile?: string | null;
-    commandOptions?: string | null;
-    options?: string | null;
+    commandOptions?: string;
+    options?: string;
     backendType?: string | null;
     backendServiceArm?: string | null;
     ensureBackend?: boolean | null;
@@ -53,6 +55,7 @@ export interface ITaskAgent {
 
 export interface ILogger {
     command<TCommand extends TerraformCommand>(command: TCommand, handler: (command: TCommand) => Promise<number>, properties: any) : Promise<number>;
+    command<TCommand extends ICommand<TResult>, TResult> (command: TCommand, handler: (command: TCommand) => Promise<TResult>, properties: any) : Promise<number>;
     debug(message: string): void;
     error(message: string): void;
 }

@@ -1,9 +1,10 @@
 import { injectable, Container, inject } from "inversify";
-import { IHandleCommandString, CommandInterfaces, ICommand, IHandleCommand } from "./command-handler";
+import { IHandleCommandString, CommandInterfaces, ICommand, IHandleCommand, IHandleAsyncCommand } from "./command-handler";
 
 export interface IMediator {
     executeRawString(command: string): Promise<number>;
-    execute<TCommand extends ICommand<TResult>, TResult>(command: TCommand): TResult
+    execute<TCommand extends ICommand<TResult>, TResult>(command: TCommand): TResult;
+    executeAsync<TCommand extends ICommand<TResult>, TResult>(command: TCommand): Promise<TResult>;
 }
 
 @injectable()
@@ -23,6 +24,11 @@ export class Mediator implements IMediator {
 
     public execute<TCommand extends ICommand<TResult>, TResult>(command: TCommand): TResult {
         let handler = this.container.getNamed<IHandleCommand<TCommand, TResult>>(CommandInterfaces.IHandleCommand, command.constructor.name);
+        return handler.execute(command);
+    }
+
+    public executeAsync<TCommand extends ICommand<TResult>, TResult>(command: TCommand): Promise<TResult> {
+        let handler = this.container.getNamed<IHandleAsyncCommand<TCommand, TResult>>(CommandInterfaces.IHandleAsyncCommand, command.constructor.name);
         return handler.execute(command);
     }
 }

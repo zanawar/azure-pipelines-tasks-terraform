@@ -1,6 +1,6 @@
 import tasks = require("azure-pipelines-task-lib/task");
-import { ToolRunner, IExecSyncOptions, IExecSyncResult, IExecOptions } from "azure-pipelines-task-lib/toolrunner";
-import { TerraformCommand, ITaskAgent } from "./terraform";
+import { ToolRunner, IExecOptions } from "azure-pipelines-task-lib/toolrunner";
+import { TerraformCommand, ITaskAgent, TerraformExecResult } from "./terraform";
 import { TerraformAggregateError } from "./terraform-aggregate-error";
 import * as dotenv from "dotenv"
 import * as path from "path"
@@ -160,6 +160,11 @@ export class TerraformRunner{
     }
 
     async exec(successfulExitCodes?: number[] | undefined): Promise<number>{
+        const result = await this.execWithResult(successfulExitCodes);
+        return result.exitCode;
+    }
+
+    async execWithResult(successfulExitCodes?: number[] | undefined): Promise<TerraformExecResult>{
         await this.builder.run(<TerraformCommandContext>{
             terraform: this.terraform,
             command: this.command
@@ -174,19 +179,18 @@ export class TerraformRunner{
             this.terraform.line(this.command.options);
         }        
         
-        let code = await this.terraform.exec(<IExecOptions>{
+        const code = await this.terraform.exec(<IExecOptions>{
             cwd: this.command.workingDirectory,
             ignoreReturnCode: true
         });        
-        
-        //CZ: stdout content will be needed once a PR to add terraform show merges
-        //let stdout = this._processBuffers(this.stdOutBuffers);        
-        let stderr = this._processBuffers(this.stdErrBuffers);
+                
+        const stdout = this._processBuffers(this.stdOutBuffers);        
+        const stderr = this._processBuffers(this.stdErrBuffers);
 
         if(!successfulExitCodes.includes(code)){
             throw new TerraformAggregateError(this.command.name, stderr, code);
         }
-        return code;
+        return new TerraformExecResult(stdout, stderr, code);
     }
 }
 

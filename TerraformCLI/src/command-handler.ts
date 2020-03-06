@@ -11,7 +11,12 @@ export interface IHandleCommand<TCommand extends ICommand<TResult>, TResult> {
     execute(command: TCommand) : TResult;
 }
 
+export interface IHandleAsyncCommand<TCommand extends ICommand<TResult>, TResult> {
+    execute(command: TCommand) : Promise<TResult>;
+}
+
 export const CommandInterfaces = { 
     IHandleCommandString : Symbol("IHandleCommandString"),
-    IHandleCommand: Symbol("IHandleCommand")
+    IHandleCommand: Symbol("IHandleCommand"),
+    IHandleAsyncCommand: Symbol("IHandleAsyncCommand")
 }
