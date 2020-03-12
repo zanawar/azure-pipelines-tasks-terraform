@@ -108,6 +108,20 @@ export class TerraformWithSecureVarFile extends TerraformCommandDecorator{
 
 }
 
+export class TerraformWithShow extends TerraformCommandDecorator{
+    private readonly inputFile: string | undefined;
+    constructor(builder: TerraformCommandBuilder, inputFile?: string |undefined) {
+        super(builder);
+        this.inputFile =  inputFile;
+    } 
+    async onRun(context: TerraformCommandContext): Promise<void>{
+        context.terraform.arg('-json');
+        if(this.inputFile){
+            context.terraform.arg(this.inputFile.toString())
+        }
+    }
+}
+
 export class TerraformRunner{
     private readonly terraform: ToolRunner;
     private readonly terraformPath: string;
@@ -150,6 +164,9 @@ export class TerraformRunner{
         return this.with((builder) => new TerraformWithSecureVarFile(builder, taskAgent, secureVarFileId));
     }
 
+    withShowOptions(inputFile?: string | undefined): TerraformRunner{
+        return this.with((builder) => new TerraformWithShow(builder, inputFile));
+    }
     private _processBuffers(buffers: Buffer[]): string {
         return buffers
             .map(data => {
@@ -160,6 +177,12 @@ export class TerraformRunner{
     }
 
     async exec(successfulExitCodes?: number[] | undefined): Promise<number>{
+        
+        let result = await this.execWithOutput(successfulExitCodes);
+        return result.code;
+    }
+    async execWithOutput(successfulExitCodes?: number[] | undefined): Promise<IExecSyncResult>{
+
         await this.builder.run(<TerraformCommandContext>{
             terraform: this.terraform,
             command: this.command
@@ -169,24 +192,30 @@ export class TerraformRunner{
             successfulExitCodes = [0];
         }
 
+
         // append the user provided options last.
         if (this.command.options) {
             this.terraform.line(this.command.options);
-        }        
-        
-        let code = await this.terraform.exec(<IExecOptions>{
-            cwd: this.command.workingDirectory,
-            ignoreReturnCode: true
-        });        
-        
-        //CZ: stdout content will be needed once a PR to add terraform show merges
-        //let stdout = this._processBuffers(this.stdOutBuffers);        
-        let stderr = this._processBuffers(this.stdErrBuffers);
+        }     
+         
+        const code = await this.terraform.exec(<IExecOptions>{	
+            cwd: this.command.workingDirectory,	
+            ignoreReturnCode: true,
+            silent: this.command.isSilent
+        });        	
 
-        if(!successfulExitCodes.includes(code)){
-            throw new TerraformAggregateError(this.command.name, stderr, code);
+        const stdout = this._processBuffers(this.stdOutBuffers);        	
+        const stderr = this._processBuffers(this.stdErrBuffers);	
+
+        if(!successfulExitCodes.includes(code)){	
+            throw new TerraformAggregateError(this.command.name, stderr, code);	
         }
-        return code;
+        
+        return <IExecSyncResult>{
+            code,
+            stdout,
+            stderr
+        };
     }
 }
 

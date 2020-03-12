@@ -29,6 +29,12 @@
             "displayName": "Variables",
             "isExpanded": false,
             "visibleRule": "command = validate || command = plan || command = apply || command = destroy"
+        },
+        {
+            "name": "showVariables",
+            "displayName": "Show Variables",
+            "isExpanded": false,
+            "visibleRule": "command = show"
         }
     ],
     "inputs": [{
@@ -43,7 +49,8 @@
                 "validate": "validate",
                 "plan": "plan",
                 "apply": "apply",
-                "destroy": "destroy"
+                "destroy": "destroy",
+                "show": "show"
             },
             "properties": {
                 "EditableOptions": "False"
@@ -174,6 +181,14 @@
             "required": false,
             "visibleRule": "command = x",
             "defaultValue": "#{ai-instrumentation-key}#"
+        },
+        {
+            "name": "inputTargetPlanOrStateFilePath",
+            "type": "string",
+            "label": "Target Plan or State File Path",
+            "required": false,
+            "helpMarkDown": "path to a terraform plan or state file to show its content, If no path is specified, the current state will be shown.",
+            "groupName": "showVariables"
         }
     ],
     "execution": {

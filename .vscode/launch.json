@@ -44,7 +44,7 @@
             "args": [
                 "--timeout",
                 "999999",
-                ".bin/tests/terraform-plan/plan_spec.js"
+                ".bin/tests/terraform-show/show_spec.js"
             ],
         },
         {

@@ -9,9 +9,10 @@ The Terraform CLI task supports executing the following commands
 - version
 - init
 - validate
-- plan (NEW plan change detection)
+- plan
 - apply
 - destroy
+- show (NEW destroy detection)
 
 ## Compatible with Linux Build Agents
 
@@ -65,10 +66,9 @@ KEY1=VALUE1
 KEY2=VALUE2
 ```
 
-
 ![Terraform CLI Secure Vars and Var Files](https://raw.githubusercontent.com/charleszipp/azure-pipelines-tasks-terraform/master/screenshots/overview-tfcli-secure-vars.JPG)
 
-## (NEW) Terraform Plan Change Detection
+## Terraform Plan Change Detection
 
 When running terraform plan with `-detailed-exitcode`, a pipeline variable will be set to indicate if any changes exist in the plan. `TERRAFORM_PLAN_HAS_CHANGES` will be set to `true` if plan detected changes. Otherwise, this variable will be set to `false`. This can be used in conjunction with `Custom Condition` expression under `Control Options` tab of the task to skip terraform apply if no changes were detected.
 
@@ -76,3 +76,7 @@ Sample expression
 ```
 and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_CHANGES'], 'true'))
 ```
+
+## (NEW) Plan Destroy Detection
+
+The task now has the ability to set a pipeline variable `TERRAFORM_PLAN_HAS_DESTROY_CHANGES` if a generated plan has destroy operations. To utilize this, run terraform plan and set the `-out=my-plan-file-path` to write the generated plan to a file. Then run `terraform show` and provide the path to the generated plan file in the `Target Plan or State File Path` input field. If show, detects a destroy operation within the plan file, then the pipeline variable `TERRAFORM_PLAN_HAS_DESTROY_CHANGES` will be set to true.
