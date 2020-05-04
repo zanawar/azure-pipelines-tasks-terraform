@@ -28,15 +28,36 @@ export class TerraformSteps {
         }
     }
 
+    @then("terraform is initialized with the following options")
+    public assertTerraformInitializedWithOptions(table: TableDefinition){
+        this.assertExecutedCommandWithOptions("terraform init", table);
+    }
+
+    @then("an azure storage account is created with the following options")
+    public assertAzureStorageAccountCreatedWithOptions(table: TableDefinition){
+        this.assertExecutedCommandWithOptions("az storage account create", table);
+    }
+
+    @then("an azure storage account is not created")
+    public assertAzureStorageAccountNotCreated(){
+        const executions = requestedAnswers['exec']
+            .filter((exec: string, i: number) => exec.includes("az storage account create"));
+        
+        expect(executions.length, "At least one execution was found that looks like storage account was created").to.be.eq(0);
+    }
+
+    @then("an azure storage container is created with the following options")
+    public assertAzureStorageContainerCreatedWithOptions(table: TableDefinition){
+        this.assertExecutedCommandWithOptions("az storage container create", table);
+    }
+
     @then("the terraform cli task executed command {string} with the following options")
     public assertExecutedCommandWithOptions(command: string, table: TableDefinition){
         const args = table.rows();
-        command = `${command} ${args.join(' ')}`
+        const expected = `${command} ${args.join(' ')}`
 
-        const executions = requestedAnswers['exec']
-        if(executions){
-            expect(executions.indexOf(command)).to.be.greaterThan(-1);
-        }
+        const actual = requestedAnswers['exec'];
+        expect(actual, "expected command was not found in the list of actually executed commands").to.include(expected);
     }
 
     @then("the terraform cli task executed command {string} with the following environment variables")

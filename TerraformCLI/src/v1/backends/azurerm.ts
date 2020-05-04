@@ -42,29 +42,10 @@ export default class AzureRMBackend implements ITerraformBackend {
     private async ensureBackend(ctx: ITaskContext) {
         await new CommandPipeline(this.runner)
             .azLogin()
+            .azAccountSet()
+            .azGroupCreate()
+            .azStorageAccountCreate()
+            .azStorageContainerCreate()
             .exec(ctx);
-        // let shell = new CommandPipeline()
-        //     .azLogin(new AzLogin(
-        //         this.config.tenantId,
-        //         this.config.clientId,
-        //         this.config.clientSecret
-        //     ))
-        //     .azAccountSet(new AzAccountSet(
-        //         this.config.subscriptionId
-        //     ))
-        //     .azGroupCreate(new AzGroupCreate(
-        //         this.config.resourceGroupName,
-        //         this.config.resourceGroupLocation
-        //     ))
-        //     .azStorageAccountCreate(new AzStorageAccountCreate(
-        //         this.config.storageAccountName,
-        //         this.config.resourceGroupName,
-        //         this.config.storageAccountSku
-        //     ))
-        //     .azStorageContainerCreate(new AzStorageContainerCreate(
-        //         this.config.containerName,
-        //         this.config.storageAccountName
-        //     ))
-        //     .execute(this.mediator);
     }
 }

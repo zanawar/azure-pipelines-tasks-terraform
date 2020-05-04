@@ -47,6 +47,14 @@ export class TaskContextSteps {
         this.ctx.backendAzureRmKey = backend.key;
     }
 
+    @given("azurerm ensure backend is checked with the following")
+    public inputAzureRmEnsureBackend(table: TableDefinition){
+        const backend = table.rowsHash();
+        this.ctx.ensureBackend = true;
+        this.ctx.backendAzureRmResourceGroupLocation = backend.location;
+        this.ctx.backendAzureRmStorageAccountSku = backend.sku
+    }
+
     @then("pipeline variable {string} is set to {string}")
     public pipelineVariableIsSet(key: string, value: string){
         const variable = this.ctx.variables[key];

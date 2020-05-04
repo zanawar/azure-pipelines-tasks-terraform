@@ -40,25 +40,25 @@ export default class AzdoTaskContext implements ITaskContext {
         return this.getBoolInput("ensureBackend");
     }
     get backendServiceArm() {
-        return this.getInput("backendServiceArm");
+        return this.getInput("backendServiceArm", true);
     }
     get backendAzureRmResourceGroupName() {
-        return this.getInput("backendAzureRmResourceGroupName");
+        return this.getInput("backendAzureRmResourceGroupName", true);
     }
     get backendAzureRmResourceGroupLocation() {
-        return this.getInput("backendAzureRmResourceGroupLocation");
+        return this.getInput("backendAzureRmResourceGroupLocation", true);
     }
     get backendAzureRmStorageAccountName() {
-        return this.getInput("backendAzureRmStorageAccountName");
+        return this.getInput("backendAzureRmStorageAccountName", true);
     }
     get backendAzureRmStorageAccountSku() {
-        return this.getInput("backendAzureRmStorageAccountSku");
+        return this.getInput("backendAzureRmStorageAccountSku", true);
     }
     get backendAzureRmContainerName() {
-        return this.getInput("backendAzureRmContainerName");
+        return this.getInput("backendAzureRmContainerName", true);
     }
     get backendAzureRmKey() {
-        return this.getInput("backendAzureRmKey");
+        return this.getInput("backendAzureRmKey", true);
     }
     get backendServiceArmAuthorizationScheme() {
         return this.getEndpointAuthorizationScheme(this.backendServiceArm, true);

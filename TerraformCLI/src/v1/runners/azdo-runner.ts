@@ -33,12 +33,7 @@ export default class AzdoRunner implements IRunner {
         // add the groups & subgroups
         options.path.forEach(segment => {
             tool.arg(segment);
-        })
-
-        // add the path to the command, if any
-        if(options.path.length > 0){
-            tool.arg(options.path);
-        }        
+        });
 
         // add the command itself
         tool.arg(options.command);

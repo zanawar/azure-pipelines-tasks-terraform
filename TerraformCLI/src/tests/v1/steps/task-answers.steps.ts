@@ -39,6 +39,11 @@ export class TaskAnswersSteps {
         this.answerToolExists("terraform", true);
     }
 
+    @given("azure cli exists")
+    public answerAzureCliExists(){
+        this.answerToolExists("az", true);
+    }
+
     @given("running command {string} returns successful result")
     public runningCommandReturnsSuccessfulResult(command: string){
         this.answers.exec[command] = <TaskLibAnswerExecResult>{
@@ -75,11 +80,11 @@ export class TaskAnswersSteps {
     }
 
     private answerToolExists(tool: string, exists: boolean){
-        this.answers.which["terraform"] = "terraform";
+        this.answers.which[tool] = tool;
         this.answers.checkPath = this.answers.checkPath || {};
-        this.answers.checkPath["terraform"] = exists;
+        this.answers.checkPath[tool] = exists;
         if(exists){
-            this.answers.exec[`terraform version`] = <TaskLibAnswerExecResult>{
+            this.answers.exec[`${tool} version`] = <TaskLibAnswerExecResult>{
                 code : 0,
                 stdout : `version successful`
             }
