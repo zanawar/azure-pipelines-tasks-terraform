@@ -10,7 +10,8 @@
     "upload": "./node_modules/.bin/tfx build tasks upload --task-path .dist",
     "start": "node --require dotenv/config .bin/index.js",
     "test": "./node_modules/.bin/nyc -r cobertura -r html \"./node_modules/.bin/mocha\" \".bin/tests/**/*_spec.js\" --timeout 999999 --reporter mocha-junit-reporter --reporter-options \"mochaFile=./.test-output/terraform-cli.xml\"",
-    "test:local": "./node_modules/.bin/mocha \".bin/tests/**/*_spec.js\" --timeout 999999"
+    "test:local": "./node_modules/.bin/mocha \".bin/tests/**/*_spec.js\" --timeout 999999",
+    "test:v1": "cucumber-js -p default"
   },
   "repository": {
     "type": "git",
@@ -28,16 +29,29 @@
   },
   "homepage": "https://github.com/charleszipp/azure-pipelines-tasks-terraform#readme",
   "devDependencies": {
+    "@types/chai": "^4.2.10",
+    "@types/cucumber": "^6.0.1",
+    "@types/intercept-stdout": "^0.1.0",
     "@types/mocha": "^5.2.6",
+    "@types/mock-require": "^2.0.0",
     "@types/node": "^10.12.27",
     "@types/q": "^1.5.1",
+    "@types/sinon": "^7.5.2",
     "braces": "^2.3.2",
+    "chai": "^4.2.0",
     "copyfiles": "^2.1.0",
     "cpx": "^1.5.0",
+    "cucumber": "^6.0.5",
+    "cucumber-pretty": "^6.0.0",
+    "cucumber-tsflow": "^3.2.0",
+    "intercept-stdout": "^0.1.2",
     "mocha": "^5.2.0",
     "mocha-junit-reporter": "^1.18.0",
+    "mock-require": "^3.0.3",
     "nyc": "^15.0.0",
+    "sinon": "^9.0.1",
     "tfx-cli": "^0.6.4",
+    "ts-node": "^8.6.2",
     "typescript": "^3.3.3333"
   },
   "dependencies": {

@@ -8,16 +8,22 @@
             "type": "npm",
             "script": "build",
             "path": "TerraformCLI/",
-            "group": "build",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
             "problemMatcher": []
         },
         {
             "label": "test tf cli",
             "type": "npm",
-            "script": "test",
+            "script": "test:v1",
             "path": "TerraformCLI/",
-            "group": "test",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
             "problemMatcher": []
         }
-    ]
+    ] 
 }

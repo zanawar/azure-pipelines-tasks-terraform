@@ -72,6 +72,16 @@
             "outFiles": [
               "${workspaceFolder}/TerraformInstaller/.bin/**/*.js"
             ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "debug:tf cli:tests:v1",
+            "program": "${workspaceFolder}/TerraformCLI/node_modules/cucumber/bin/cucumber-js",
+            "cwd": "${workspaceFolder}/TerraformCLI",
+            "args": [
+                "-p", "default"
+            ]
         }
     ]
 }

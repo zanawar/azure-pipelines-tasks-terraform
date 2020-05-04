@@ -12,5 +12,11 @@
         "terraform",
         "toolrunner",
         "vsts"
-    ]
+    ],
+    "cucumberautocomplete.steps": [
+        "TerraformCLI/src/tests/v1/steps/*.ts",
+        "node_modules/qa-lib/src/step_definitions/*.js"
+    ],
+    "cucumberautocomplete.syncfeatures": "TerraformCLI/src/tests/v1/features/*.feature",
+    "cucumberautocomplete.strictGherkinCompletion": false
 }
