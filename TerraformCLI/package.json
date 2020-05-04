@@ -34,7 +34,7 @@
     "@types/intercept-stdout": "^0.1.0",
     "@types/mocha": "^5.2.6",
     "@types/mock-require": "^2.0.0",
-    "@types/node": "^10.12.27",
+    "@types/node": "^8.0.19",
     "@types/q": "^1.5.1",
     "@types/sinon": "^7.5.2",
     "braces": "^2.3.2",

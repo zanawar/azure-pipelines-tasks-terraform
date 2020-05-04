@@ -10,7 +10,7 @@ export default class RunWithAutoApprove extends RunnerOptionsDecorator{
         if(options.command !== 'apply' && options.command !== 'destroy')
             throw "'-auto-approve option only valid for commands apply and destroy";
         const autoApproveOption = "-auto-approve";
-        if(!options.args || (options.args && options.args.includes(autoApproveOption) === false)){
+        if(!options.args || (options.args && options.args.indexOf(autoApproveOption) === -1)){
             options.args.push(autoApproveOption);
         }
         return options;

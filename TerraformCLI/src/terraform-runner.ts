@@ -187,7 +187,7 @@ export class TerraformRunner{
         const stdout = this._processBuffers(this.stdOutBuffers);        
         const stderr = this._processBuffers(this.stdErrBuffers);
 
-        if(!successfulExitCodes.includes(code)){
+        if(successfulExitCodes.indexOf(code) === -1){
             throw new TerraformAggregateError(this.command.name, stderr, code);
         }
         return new TerraformExecResult(stdout, stderr, code);
