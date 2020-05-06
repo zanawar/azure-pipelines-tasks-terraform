@@ -1,5 +1,5 @@
 import tasks = require("azure-pipelines-task-lib/task");
-import { TerraformCommand, TerraformInterfaces, ILogger } from "./terraform";
+import {TerraformCommand, TerraformInterfaces, ILogger, ITaskAgent} from "./terraform";
 import { IHandleCommandString } from "./command-handler";
 import { injectable, inject } from "inversify";
 import { CommandPipeline } from "./command-pipeline";
@@ -24,20 +24,25 @@ export interface AzureBackendConfig {
     arm_subscription_id     : string,
     arm_tenant_id           : string,
     arm_client_id           : string,
-    arm_client_secret       : string    
+    arm_client_secret       : string
 }
 
 export class TerraformInit extends TerraformCommand{
     readonly backendType: BackendTypes | undefined;
+    readonly secureVarsFile: string | undefined;
 
     constructor(
-        name: string, 
+        name: string,
         workingDirectory: string,
         backendType: string,
-        options?: string | undefined) {
+        options?: string | undefined,
+        secureVarsFile?: string) {
         super(name, workingDirectory, options);
+
+        this.secureVarsFile = secureVarsFile;
+
         if(backendType){
-            this.backendType = BackendTypes[<keyof typeof BackendTypes> backendType];                
+            this.backendType = BackendTypes[<keyof typeof BackendTypes> backendType];
         }
     }
 }
@@ -48,7 +53,7 @@ declare module "./terraform-runner" {
     }
 }
 
-export class TerraformWithAzureRmBackend extends TerraformCommandDecorator{    
+export class TerraformWithAzureRmBackend extends TerraformCommandDecorator{
     private readonly backendType?: BackendTypes | undefined
     private readonly mediator: IMediator;
     constructor(builder: TerraformCommandBuilder, mediator: IMediator, backendType?: BackendTypes | undefined) {
@@ -56,10 +61,10 @@ export class TerraformWithAzureRmBackend extends TerraformCommandDecorator{
         this.backendType = backendType;
         this.mediator = mediator;
     }
-    async onRun(context: TerraformCommandContext): Promise<void> {        
+    async onRun(context: TerraformCommandContext): Promise<void> {
         if(context.command.name !== 'init')
             throw "azurerM backend should only be setup for 'init' command.";
-            
+
         if(this.backendType && this.backendType == BackendTypes.azurerm){
             let backendServiceName = tasks.getInput("backendServiceArm", true);
             let scheme = tasks.getEndpointAuthorizationScheme(backendServiceName, true);
@@ -126,26 +131,31 @@ TerraformRunner.prototype.withAzureRmBackend = function(this: TerraformRunner, m
 export class TerraformInitHandler implements IHandleCommandString{
     private readonly mediator: IMediator;
     private readonly log: ILogger;
+    private readonly taskAgent: ITaskAgent;
 
     constructor(
         @inject(MediatorInterfaces.IMediator) mediator: IMediator,
-        @inject(TerraformInterfaces.ILogger) log: ILogger
+        @inject(TerraformInterfaces.ILogger) log: ILogger,
+        @inject(TerraformInterfaces.ITaskAgent) taskAgent: ITaskAgent,
     ) {
         this.mediator = mediator
         this.log = log;
+        this.taskAgent = taskAgent;
     }
 
     public async execute(command: string): Promise<number> {
         let init = new TerraformInit(
-            command,            
+            command,
             tasks.getInput("workingDirectory"),
             tasks.getInput("backendType"),
             tasks.getInput("commandOptions"),
+            tasks.getInput("secureVarsFile"),
         );
 
         let loggedProps = {
             "backendType": init.backendType || BackendTypes.local,
-            "commandOptionsDefined": init.options !== undefined && init.options !== '' && init.options !== null
+            "commandOptionsDefined": init.options !== undefined && init.options !== '' && init.options !== null,
+            "secureVarsFileDefined": init.secureVarsFile !== undefined && init.secureVarsFile !== '' && init.secureVarsFile !== null,
         };
 
         return this.log.command(init, (command: TerraformInit) => this.onExecute(command), loggedProps);
@@ -153,6 +163,7 @@ export class TerraformInitHandler implements IHandleCommandString{
 
     public async onExecute(command: TerraformInit): Promise<number> {
         return new TerraformRunner(command)
+            .withSecureVarsFile(this.taskAgent, command.secureVarsFile)
             .withAzureRmBackend(this.mediator, command.backendType)
             .exec();
     }

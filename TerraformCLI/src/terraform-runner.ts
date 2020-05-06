@@ -95,6 +95,9 @@ export class TerraformWithSecureVarFile extends TerraformCommandDecorator{
                     throw "The .env file doesn't have valid entries.";
                 }
             } else {
+                if(context.command.name === 'init') {
+                    throw "terraform init command supports only env files, no tfvars are allowed during this stage.";
+                }
                 context.terraform.arg(`-var-file=${secureFilePath}`);
             }
 

@@ -53,5 +53,18 @@ describe('terraform init', function(){
             .assertExecutedTerraformVersion()
             .assertExecutionSucceeded()      
             .run();
+    })
+    it('with secure vars file', function(){
+        new TestScenario(require.resolve('./init-with-secure-var-file'))    
+            .assertExecutedTerraformCommand('init')
+            .assertExecutionSucceeded()
+            .assertExecutedTerraformVersion()      
+            .run();
+    })
+    it('with secure vars file as tfvar file', function(){
+        new TestScenario(require.resolve('./init-with-secure-var-file-as-tfvar-file'))
+            .assertExecutionFailed()
+            .assertExecutedTerraformVersion()      
+            .run();
     });
 });
