@@ -28,7 +28,7 @@
             "name": "variables",
             "displayName": "Variables",
             "isExpanded": false,
-            "visibleRule": "command = init || command = validate || command = plan || command = apply || command = destroy"
+            "visibleRule": "command = init || command = validate || command = plan || command = apply || command = destroy || command = refresh"
         },
         {
             "name": "showVariables",
@@ -50,7 +50,8 @@
                 "plan": "plan",
                 "apply": "apply",
                 "destroy": "destroy",
-                "show": "show"
+                "show": "show",
+                "refresh": "refresh"
             },
             "properties": {
                 "EditableOptions": "False"
@@ -69,7 +70,7 @@
             "type": "connectedService:AzureRM",
             "label": "Environment Azure Subscription",
             "required": false,
-            "visibleRule": "command = plan || command = apply || command = destroy",
+            "visibleRule": "command = plan || command = apply || command = destroy || command = refresh",
             "helpMarkDown": "Select an Azure resource manager subscription for the deployment"
         },
         {

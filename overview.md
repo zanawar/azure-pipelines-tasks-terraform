@@ -12,7 +12,8 @@ The Terraform CLI task supports executing the following commands
 - plan
 - apply
 - destroy
-- show (NEW destroy detection)
+- show
+- refresh (NEW)
 
 ## Compatible with Linux Build Agents
 
@@ -24,13 +25,17 @@ The dedicated `Terraform Installer` task allows for complete control over how fr
 
 ![Terraform Installer Task Definition](https://raw.githubusercontent.com/charleszipp/azure-pipelines-tasks-terraform/master/screenshots/overview-tfinstall-task-fields.jpg)
 
+### (NEW) Support for Installing `Latest` Version
+
+The installer task supports installing the latest terraform version by using the keyword `latest` as the version specified. This is the default option when the installer is added to a pipeline. Specifying latest will instruct the task to lookup and install the latest version of the terraform executable.
+
 ## Contextual Task Configuration
 
 The task definition will adjust to the selected command to prompt for what is relevant to the command. For example, `validate` does not require knowledge of the backend configuration so this section will not be used when executing `validate`. The `validate` command does accept vars file however. Therefore, the field to specify vars file will be available.
 
 ## Azure Service Connection / Service Principal Integration
 
-When executing `plan`, `apply`, and `destroy` commands, the task will prompt for the target azure subscription to use. This is specified as a service connection/principal for deploying azure resources.
+When executing `plan`, `apply`, `destroy`, and `refresh` commands, the task will prompt for the target azure subscription to use. This is specified as a service connection/principal for deploying azure resources.
 
 ![Terraform Azure Environment Subscription](https://raw.githubusercontent.com/charleszipp/azure-pipelines-tasks-terraform/master/screenshots/overview-tfcli-azure-sub.jpg)
 
@@ -77,6 +82,6 @@ Sample expression
 and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_CHANGES'], 'true'))
 ```
 
-## (NEW) Plan Destroy Detection
+## Plan Destroy Detection
 
 The task now has the ability to set a pipeline variable `TERRAFORM_PLAN_HAS_DESTROY_CHANGES` if a generated plan has destroy operations. To utilize this, run terraform plan and set the `-out=my-plan-file-path` to write the generated plan to a file. Then run `terraform show` and provide the path to the generated plan file in the `Target Plan or State File Path` input field. If show, detects a destroy operation within the plan file, then the pipeline variable `TERRAFORM_PLAN_HAS_DESTROY_CHANGES` will be set to true.
