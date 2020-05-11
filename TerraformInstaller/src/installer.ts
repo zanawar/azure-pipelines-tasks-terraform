@@ -6,21 +6,35 @@ import * as fs from 'fs';
 import * as os from 'os';
 import { format } from 'util';
 const uuidV4 = require('uuid/v4');
+const fetch = require('node-fetch');
 const terraformToolName = "terraform";
 
 export async function download(inputVersion: string): Promise<string>{
-    var version = sanitizeVersion(inputVersion);
+    var latestVersion: string = "";
+
+    if(inputVersion.toLowerCase() === 'latest') {
+        console.log("Getting latest version");
+        await fetch('https://checkpoint-api.hashicorp.com/v1/check/terraform')
+            .then((response: { json: () => any; }) => response.json())
+            .then((data: { [x: string]: any; }) => {
+                latestVersion = data.current_version;
+            })
+            .catch((err: any) => {
+                throw new Error(`Unable to retrieve latest version: ${err}`)
+            })
+    }
+    var version = latestVersion != "" ? sanitizeVersion(latestVersion) : sanitizeVersion(inputVersion);
     var cachedToolPath = tools.findLocalTool(terraformToolName, version);
-    if(!cachedToolPath){        
+    if(!cachedToolPath){
         var url = getDownloadUrl(version);
         console.log("Terraform not installed, downloading from: ", url);
         var fileName = `${terraformToolName}-${version}-${uuidV4()}.zip`;
         console.log("Terraform file name as: ", fileName);
-        try{                        
+        try{
             var downloadPath = await tools.downloadTool(url, fileName);
             console.log("Terraform downloaded to path: ", downloadPath);
         }
-        catch (exception){            
+        catch (exception){
             throw new Error(`Terraform download from url '${url}' failed with exception '${exception}'`);
         }
 
@@ -55,7 +69,7 @@ function getDownloadUrl(version: string): string {
         case 'Linux':
             return format(url, "linux");
         case 'Darwin':
-            return format(url, "darwin");        
+            return format(url, "darwin");
         case 'Windows_NT':
             return format(url, "windows");
         default:
