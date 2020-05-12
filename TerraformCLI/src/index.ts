@@ -10,6 +10,7 @@ import { TerraformApplyHandler } from "./terraform-apply";
 import { TerraformDestroyHandler } from "./terraform-destroy";
 import { TerraformShowHandler } from "./terraform-show";
 import { TerraformRefreshHandler } from "./terraform-refresh";
+import { TerraformImportHandler } from "./terraform-import";
 import TaskAgent from "./task-agent";
 import { AzRunner } from "./az-runner";
 import { AzAccountSet, AzAccountSetResult, AzAccountSetHandler } from "./az-account-set";
@@ -70,6 +71,7 @@ container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(
 container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformDestroyHandler).whenTargetNamed("destroy");
 container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformShowHandler).whenTargetNamed("show")
 container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformRefreshHandler).whenTargetNamed("refresh")
+container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformImportHandler).whenTargetNamed("import")
 
 // execute the terraform command
 let mediator = container.get<IMediator>(MediatorInterfaces.IMediator);

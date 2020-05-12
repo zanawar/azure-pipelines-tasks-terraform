@@ -45,6 +45,8 @@ export interface TerraformInputs {
     aiInstrumentationKey?: string;
     environmentVariables: Map<string, string>;
     inputTargetPlanOrStateFilePath: string;
+    resourceAddress: string;
+    resourceId: string
 }
 
 export class TerraformAzureRmEnsureBackend extends TaskInputsAre<TerraformInputs>{

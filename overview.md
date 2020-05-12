@@ -14,6 +14,7 @@ The Terraform CLI task supports executing the following commands
 - destroy
 - show
 - refresh (NEW)
+- import (NEW)
 
 ## Compatible with Linux Build Agents
 

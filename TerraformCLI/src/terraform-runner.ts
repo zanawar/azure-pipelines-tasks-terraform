@@ -77,6 +77,17 @@ export class TerraformWithAutoApprove extends TerraformCommandDecorator{
     }
 }
 
+export class TerraformWithOptions extends TerraformCommandDecorator{
+    constructor(builder: TerraformCommandBuilder) {
+        super(builder);
+    }
+    async onRun(context: TerraformCommandContext): Promise<void> {   
+        if(context.command.options){
+            context.terraform.line(context.command.options);
+        }
+    }
+}
+
 export class TerraformWithSecureVarFile extends TerraformCommandDecorator{    
     private readonly taskAgent: ITaskAgent;
     private readonly secureVarFileId: string | undefined;
@@ -132,6 +143,7 @@ export class TerraformRunner{
     private builder: TerraformCommandBuilder;
     private stdOutBuffers: Buffer[] = [];
     private stdErrBuffers: Buffer[] = [];
+    private optionsAdded: boolean = false;
 
     constructor(command: TerraformCommand) {
         this.command = command;
@@ -170,6 +182,12 @@ export class TerraformRunner{
     withShowOptions(inputFile?: string | undefined): TerraformRunner{
         return this.with((builder) => new TerraformWithShow(builder, inputFile));
     }
+
+    withOptions(): TerraformRunner{
+        this.optionsAdded = true;
+        return this.with((builder) => new TerraformWithOptions(builder));
+    }
+
     private _processBuffers(buffers: Buffer[]): string {
         return buffers
             .map(data => {
@@ -195,9 +213,8 @@ export class TerraformRunner{
             successfulExitCodes = [0];
         }
 
-
-        // append the user provided options last.
-        if (this.command.options) {
+        // append the user provided options last if the command handler didn't already explicitly append
+        if (this.command.options && !this.optionsAdded) {
             this.terraform.line(this.command.options);
         }     
          

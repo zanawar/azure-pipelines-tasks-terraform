@@ -25,10 +25,16 @@
             "visibleRule": "command = init && backendType = azurerm"
         },
         {
+            "name": "importArguments",
+            "displayName": "Import Arguments",
+            "isExpanded": false,
+            "visibleRule": "command = import"
+        },
+        {
             "name": "variables",
             "displayName": "Variables",
             "isExpanded": false,
-            "visibleRule": "command = init || command = validate || command = plan || command = apply || command = destroy || command = refresh"
+            "visibleRule": "command = init || command = validate || command = plan || command = apply || command = destroy || command = refresh || command = import"
         },
         {
             "name": "showVariables",
@@ -51,7 +57,8 @@
                 "apply": "apply",
                 "destroy": "destroy",
                 "show": "show",
-                "refresh": "refresh"
+                "refresh": "refresh",
+                "import": "import"
             },
             "properties": {
                 "EditableOptions": "False"
@@ -70,7 +77,7 @@
             "type": "connectedService:AzureRM",
             "label": "Environment Azure Subscription",
             "required": false,
-            "visibleRule": "command = plan || command = apply || command = destroy || command = refresh",
+            "visibleRule": "command = plan || command = apply || command = destroy || command = refresh || command = import",
             "helpMarkDown": "Select an Azure resource manager subscription for the deployment"
         },
         {
@@ -190,6 +197,22 @@
             "required": false,
             "helpMarkDown": "path to a terraform plan or state file to show its content, If no path is specified, the current state will be shown.",
             "groupName": "showVariables"
+        },
+        {
+            "name": "resourceAddress",
+            "type": "string",
+            "label": "Resource Address",
+            "required": true,
+            "helpMarkDown": "Terraform [Resource Address](https://www.terraform.io/docs/internals/resource-addressing.html) to which the target resource will be imported. See [terraform import usage](https://www.terraform.io/docs/commands/import.html#usage)",
+            "groupName": "importArguments"
+        },
+        {
+            "name": "resourceId",
+            "type": "string",
+            "label": "Resource ID",
+            "required": true,
+            "helpMarkDown": "ID of the target resource to import. For example, the ID of Azure Resource Group is the /sub/{subId}/resourceGroups/{resourceGroupName}. See [azure resource group import example](https://www.terraform.io/docs/providers/azurerm/r/resource_group.html#import) and [terraform import usage](https://www.terraform.io/docs/commands/import.html#usage)",
+            "groupName": "importArguments"
         }
     ],
     "execution": {

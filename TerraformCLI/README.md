@@ -6,6 +6,7 @@ This tasks enables running terraform cli commands from Azure Devops Build and Re
 - plan
 - apply
 - validate
+- import
 
 Terraform is required to exist on the build agent prior to running this task. See TerraformInstaller task within this repository to install terraform. 
 
