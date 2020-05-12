@@ -35,9 +35,9 @@
   "devDependencies": {
     "@types/node": "^10.12.0",
     "@types/q": "^1.5.1",
-    "copyfiles": "^2.1.0",
+    "copyfiles": "^2.2.0",
     "dotenv": "^6.1.0",
-    "mocha": "^5.2.0",
+    "mocha": "^7.1.2",
     "mocha-junit-reporter": "^1.18.0",
     "nyc": "^14.1.1",
     "tfx-cli": "^0.6.3",
