@@ -9,7 +9,7 @@ const uuidV4 = require('uuid/v4');
 const fetch = require('node-fetch');
 const terraformToolName = "terraform";
 
-export async function download(inputVersion: string): Promise<string>{
+export async function download(inputVersion: string, downloadUrl: string): Promise<string>{
     var latestVersion: string = "";
 
     if(inputVersion.toLowerCase() === 'latest') {
@@ -26,7 +26,7 @@ export async function download(inputVersion: string): Promise<string>{
     var version = latestVersion != "" ? sanitizeVersion(latestVersion) : sanitizeVersion(inputVersion);
     var cachedToolPath = tools.findLocalTool(terraformToolName, version);
     if(!cachedToolPath){
-        var url = getDownloadUrl(version);
+        const url = downloadUrl || getDownloadUrl(version)
         console.log("Terraform not installed, downloading from: ", url);
         var fileName = `${terraformToolName}-${version}-${uuidV4()}.zip`;
         console.log("Terraform file name as: ", fileName);

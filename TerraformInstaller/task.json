@@ -26,6 +26,13 @@
       "defaultValue": "latest",
       "required": true,
       "helpMarkDown": "Specify the version of terraform that should be installed"
+    },
+    {
+      "name": "downloadUrl",
+      "type": "string",
+      "label": "Download URL",
+      "required": false,
+      "helpMarkDown": "(optional) Specify a custom URL to pull terraform from. Defaults to HashiCorp"
     }
   ],
   "execution": {

@@ -5,7 +5,8 @@ import * as path from 'path';
 
 async function configureTerraform(){
     var inputVersion = tasks.getInput("terraformVersion", true);
-    var terraformPath = await installer.download(inputVersion);
+    var downloadUrl = tasks.getInput("downloadUrl");
+    var terraformPath = await installer.download(inputVersion, downloadUrl);
     var envPath = process.env['PATH'];
     if(envPath && !envPath.startsWith(path.dirname(terraformPath))){
         tools.prependPath(path.dirname(terraformPath));
