@@ -98,7 +98,7 @@ export class TerraformWithSecureVarFile extends TerraformCommandDecorator{
     }
     async onRun(context: TerraformCommandContext): Promise<void> {        
         if(this.secureVarFileId){
-            const secureFilePath = await this.taskAgent.downloadSecureFile(this.secureVarFileId);
+            var secureFilePath = await this.taskAgent.downloadSecureFile(this.secureVarFileId);
             const fileName = tasks.getSecureFileName(this.secureVarFileId);
             if(this.isEnvFile(fileName)) {
                 let config = dotenv.config({ path: secureFilePath }).parsed;
@@ -109,6 +109,7 @@ export class TerraformWithSecureVarFile extends TerraformCommandDecorator{
                 if(context.command.name === 'init') {
                     throw "terraform init command supports only env files, no tfvars are allowed during this stage.";
                 }
+                secureFilePath = secureFilePath.replace(/ /g, '\\ ');
                 context.terraform.arg(`-var-file=${secureFilePath}`);
             }
 

@@ -13,8 +13,8 @@ const expectedEnv: { [key: string]: string } = {
 
 const terraformCommand: string = 'plan';
 const secureVarsFileId: string = "6b4ef608-ca4c-4185-92fb-0554b8a2ec72"
-const secureVarsFileName: string = "./.bin/tests/terraform-plan/default.vars";
-const commandArgs: string = `-var-file=${secureVarsFileName}`;
+const secureVarsFileName: string = "./.bin/tests/terraform-plan/default file with spaces.vars";
+const commandArgs: string = `-var-file=./.bin/tests/terraform-plan/default\\ file\\ with\\ spaces.vars`;
 const expectedCommand: string = `${terraformCommand} ${commandArgs}`
 
 export let env: any = {
