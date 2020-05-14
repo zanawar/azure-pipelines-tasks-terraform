@@ -105,10 +105,11 @@
             "label": "Backend Type",
             "defaultValue": "local",
             "required": false,
-            "helpMarkDown": "Select the terraform backend type to use.",
+            "helpMarkDown": "Select the terraform backend type to use. Select self-configured if your backend configuration is expected to be set via environment variables or command options. Environment files can be provided using Secure Files Library in AzDO and specified in Secure Files configuration field. Command options such as `-backend-config=` flag can be provided in the Command Options configuration field.",
             "options": {
                 "local": "local",
-                "azurerm": "azurerm"
+                "azurerm": "azurerm",
+                "selfConfigured": "self-configured"
             },
             "properties": {
                 "EditableOptions": "False"

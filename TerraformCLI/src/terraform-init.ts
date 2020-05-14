@@ -13,7 +13,8 @@ import { TerraformRunner, TerraformCommandDecorator, TerraformCommandBuilder, Te
 
 export enum BackendTypes{
     local = "local",
-    azurerm = "azurerm"
+    azurerm = "azurerm",
+    selfConfigured = "self-configured"
 }
 
 export interface AzureBackendConfig {
@@ -49,11 +50,11 @@ export class TerraformInit extends TerraformCommand{
 
 declare module "./terraform-runner" {
     interface TerraformRunner{
-        withAzureRmBackend(this: TerraformRunner, mediator: IMediator, backendType?: BackendTypes | undefined): TerraformRunner;
+        withBackend(this: TerraformRunner, mediator: IMediator, backendType?: BackendTypes | undefined): TerraformRunner;
     }
 }
 
-export class TerraformWithAzureRmBackend extends TerraformCommandDecorator{
+export class TerraformWithBackend extends TerraformCommandDecorator{
     private readonly backendType?: BackendTypes | undefined
     private readonly mediator: IMediator;
     constructor(builder: TerraformCommandBuilder, mediator: IMediator, backendType?: BackendTypes | undefined) {
@@ -63,7 +64,7 @@ export class TerraformWithAzureRmBackend extends TerraformCommandDecorator{
     }
     async onRun(context: TerraformCommandContext): Promise<void> {
         if(context.command.name !== 'init')
-            throw "azurerM backend should only be setup for 'init' command.";
+            throw "backend should only be setup for 'init' command.";
 
         if(this.backendType && this.backendType == BackendTypes.azurerm){
             let backendServiceName = tasks.getInput("backendServiceArm", true);
@@ -123,8 +124,8 @@ export class TerraformWithAzureRmBackend extends TerraformCommandDecorator{
     }
 }
 
-TerraformRunner.prototype.withAzureRmBackend = function(this: TerraformRunner, mediator: IMediator, backendType?: BackendTypes | undefined): TerraformRunner {
-    return this.with((builder) => new TerraformWithAzureRmBackend(builder, mediator, backendType));
+TerraformRunner.prototype.withBackend = function(this: TerraformRunner, mediator: IMediator, backendType?: BackendTypes | undefined): TerraformRunner {
+    return this.with((builder) => new TerraformWithBackend(builder, mediator, backendType));
 }
 
 @injectable()
@@ -164,7 +165,7 @@ export class TerraformInitHandler implements IHandleCommandString{
     public async onExecute(command: TerraformInit): Promise<number> {
         return new TerraformRunner(command)
             .withSecureVarsFile(this.taskAgent, command.secureVarsFile)
-            .withAzureRmBackend(this.mediator, command.backendType)
+            .withBackend(this.mediator, command.backendType)
             .exec();
     }
 }

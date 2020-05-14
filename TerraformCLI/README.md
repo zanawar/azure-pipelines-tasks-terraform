@@ -9,7 +9,7 @@ This tasks enables running terraform cli commands from Azure Devops Build and Re
 - import
 - refresh
 
-Terraform is required to exist on the build agent prior to running this task. See TerraformInstaller task within this repository to install terraform. 
+Terraform is required to exist on the build agent prior to running this task. See TerraformInstaller task within this repository to install terraform.
 
 ** If using hosted Ubuntu build agent, terraform installation should NOT be required as terraform is already installed on these agents.
 ## Development Setup
@@ -35,12 +35,12 @@ The example below contains all the possible inputs the task supports
 
 ```shell
 # These indicate where the task will create installed tools and temp files
-# These can remain as-is. 
+# These can remain as-is.
 AGENT_TOOLSDIRECTORY=./../_test-agent/tools
 AGENT_TEMPDIRECTORY=./../_test-agent/temp
 
-# These settings are needed to access secure files that are uploaded to Pipelines > Library > Secure Files. 
-# The connection handshake is currently happening when the task starts. 
+# These settings are needed to access secure files that are uploaded to Pipelines > Library > Secure Files.
+# The connection handshake is currently happening when the task starts.
 # This means these settings currently have to be in place when running locally even if you did not specify a secure file
 # The azure devops url to your target or (i.e. https://dev.azure.com/chzipp)
 SYSTEM_TEAMFOUNDATIONCOLLECTIONURI=my-azure-devops-org-url
@@ -69,7 +69,7 @@ ENDPOINT_AUTH_PARAMETER_dev_TENANTID=my-target-env-tenant-id
 ENDPOINT_AUTH_PARAMETER_dev_SERVICEPRINCIPALID=my-target-env-service-principal-app-id
 ENDPOINT_AUTH_PARAMETER_dev_SERVICEPRINCIPALKEY=my-target-env-service-principal-key
 
-# Indicates what type of terraform backend to use. Current valid values are 'local', 'azurerm'. 
+# Indicates what type of terraform backend to use. Current valid values are 'local', 'azurerm'.
 INPUT_BACKENDTYPE=local
 
 # If using 'azurerm' backend, this is the service name to the tfstate storage account's subscription
@@ -103,7 +103,7 @@ TerraformTemplates/sample/main.tf
 terraform{
     backend "azurerm"{}
 }
-``` 
+```
 ## Compile
 The `npm run build` script will compile the typescript down to standard es6 javascript
 ```

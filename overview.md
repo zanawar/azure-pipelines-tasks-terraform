@@ -40,12 +40,13 @@ When executing `plan`, `apply`, `destroy`, and `refresh` commands, the task will
 
 ![Terraform Azure Environment Subscription](https://raw.githubusercontent.com/charleszipp/azure-pipelines-tasks-terraform/master/screenshots/overview-tfcli-azure-sub.jpg)
 
-## Remote & Local Backend State Support
+## Remote, Local and Self-configured Backend State Support
 
-The task currently supports two backend configurations
+The task currently supports the following backend configurations
 
 - local (default for terraform) - State is stored on the agent file system.
 - azurerm - State is stored in a blob container within a specified Azure Storage Account.
+- self-configured - State configuration will be provided using environment variables or command options. Environment files can be provided using Secure Files Library in AzDO and specified in Secure Files configuration field. Command options such as `-backend-config=` flag can be provided in the Command Options configuration field.
 
 The backend configuration will be prompted when relevant for the selected command. If azurerm selected, the task will prompt for a service connection and storage account details to use for the backend.
 
@@ -63,7 +64,7 @@ There are three methods to provide secrets within the vars provided to terraform
 
 ### Secure Env Files (NEW)
 
-If the Secure Variables file name is `*.env`, it is referred as `.env` file. This task loads environment variables from the `.env` file.  
+If the Secure Variables file name is `*.env`, it is referred as `.env` file. This task loads environment variables from the `.env` file.
 
 #### _.env file example_
 
