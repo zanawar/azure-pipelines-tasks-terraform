@@ -88,6 +88,17 @@ export class TerraformWithOptions extends TerraformCommandDecorator{
     }
 }
 
+export class TerraformWithJsonOutput extends TerraformCommandDecorator{
+    constructor(builder: TerraformCommandBuilder) {
+        super(builder);
+    }
+    async onRun(context: TerraformCommandContext): Promise<void> {   
+        if(!context.command.options || (context.command.options && !context.command.options.includes("-json"))){
+            context.terraform.arg("-json");
+        }
+    }
+}
+
 export class TerraformWithSecureVarFile extends TerraformCommandDecorator{    
     private readonly taskAgent: ITaskAgent;
     private readonly secureVarFileId: string | undefined;
@@ -187,6 +198,10 @@ export class TerraformRunner{
     withOptions(): TerraformRunner{
         this.optionsAdded = true;
         return this.with((builder) => new TerraformWithOptions(builder));
+    }
+
+    withJsonOutput(): TerraformRunner{
+        return this.with((builder) => new TerraformWithJsonOutput(builder));
     }
 
     private _processBuffers(buffers: Buffer[]): string {

@@ -58,7 +58,8 @@
                 "destroy": "destroy",
                 "show": "show",
                 "refresh": "refresh",
-                "import": "import"
+                "import": "import",
+                "output": "output"
             },
             "properties": {
                 "EditableOptions": "False"

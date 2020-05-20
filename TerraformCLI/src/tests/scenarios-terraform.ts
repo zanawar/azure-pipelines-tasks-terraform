@@ -189,7 +189,7 @@ export class TerraformCommandIsSuccessful extends TaskAnswerDecorator<TerraformI
         
         a.exec[command] = <TaskLibAnswerExecResult>{
             code : this.exitCode || 0,
-            stdout : this.stdout || `${inputs.command} successful`,
+            stdout : this.stdout !== undefined ? this.stdout : `${inputs.command} successful`,
             stderr : this.stderr,
         }
         return a;

@@ -26,6 +26,7 @@ import Logger from "./logger";
 import ai = require('applicationinsights');
 import { TelemetryClient } from "applicationinsights";
 import { TerraformAggregateError } from "./terraform-aggregate-error";
+import { TerraformOutputHandler } from "./terraform-output";
 
 ai.setup(tasks.getInput("aiInstrumentationKey"))
     .setAutoCollectConsole(true, true)
@@ -69,9 +70,10 @@ container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(
 container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformPlanHandler).whenTargetNamed("plan");
 container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformApplyHandler).whenTargetNamed("apply");
 container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformDestroyHandler).whenTargetNamed("destroy");
-container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformShowHandler).whenTargetNamed("show")
-container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformRefreshHandler).whenTargetNamed("refresh")
-container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformImportHandler).whenTargetNamed("import")
+container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformShowHandler).whenTargetNamed("show");
+container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformRefreshHandler).whenTargetNamed("refresh");
+container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformImportHandler).whenTargetNamed("import");
+container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformOutputHandler).whenTargetNamed("output");
 
 // execute the terraform command
 let mediator = container.get<IMediator>(MediatorInterfaces.IMediator);

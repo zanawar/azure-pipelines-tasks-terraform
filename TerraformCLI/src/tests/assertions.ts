@@ -1,5 +1,6 @@
 import assert = require("assert");
 import { MockTestRunner } from "azure-pipelines-task-lib/mock-test";
+import { PipelineVariable } from "./scenarios";
 
 export interface TestContext{
     testRunner: MockTestRunner;
@@ -105,6 +106,18 @@ export class TaskSetPipelineVariable extends TestAssertionDecorator {
     }
 }
 
+export class TaskSetNoOutputPipelineVariable extends TestAssertionDecorator {    
+    constructor(assertions: TestAssertionBuilder) {
+        super(assertions);
+    }
+    run(context: TestContext): void {        
+        this.builder.run(context);
+        let stdoutLine: string = `##vso[task.setvariable variable=TF_OUT`;
+        let message = `Terraform output pipeline variable was set but, expected none to be set`;
+        assert.equal(context.testRunner.stdOutContained(stdoutLine), false, message);
+    }
+}
+
 export class TestScenario{
     public readonly taskScenarioPath: string;
     private assertions: TestAssertionBuilder;    
@@ -132,8 +145,18 @@ export class TestScenario{
         this.assert((assertions) => new TaskExecutedWithEnvironmentVariables(assertions, env));
         return this;
     }
+    public assertPipelineVariablesSet(pipelineVariables: PipelineVariable[]): TestScenario {
+        pipelineVariables.forEach(variable => {
+            this.assertPipelineVariableSet(variable.name, variable.value, variable.secret);
+        });
+        return this;
+    }
     public assertPipelineVariableSet(name: string, value: string, isSecret?: boolean | undefined) : TestScenario {
         this.assert((assertions) => new TaskSetPipelineVariable(assertions, name, value, isSecret));
+        return this;
+    }
+    public assertNoOutputPipelineVariablesSet() : TestScenario {
+        this.assert((assertions) => new TaskSetNoOutputPipelineVariable(assertions));
         return this;
     }
     public run(): void{        

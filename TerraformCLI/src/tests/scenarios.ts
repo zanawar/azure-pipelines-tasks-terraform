@@ -4,6 +4,11 @@ import "reflect-metadata";
 import TaskAgentMock from './../task-agent-mock';
 import LoggerMock from './../logger-mock';
 
+export interface PipelineVariable {
+	name: string;
+	secret: boolean;
+	value: string;
+}
 
 export abstract class TaskInputBuilder<TInputs>{
     abstract build(): TInputs;
