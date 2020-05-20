@@ -22,10 +22,10 @@ export interface AzureBackendConfig {
     container_name          : string,
     key                     : string,
     resource_group_name     : string,
-    arm_subscription_id     : string,
-    arm_tenant_id           : string,
-    arm_client_id           : string,
-    arm_client_secret       : string
+    subscription_id         : string,
+    tenant_id               : string,
+    client_id               : string,
+    client_secret           : string
 }
 
 export class TerraformInit extends TerraformCommand{
@@ -78,10 +78,10 @@ export class TerraformWithBackend extends TerraformCommandDecorator{
                 container_name          : tasks.getInput("backendAzureRmContainerName", true),
                 key                     : tasks.getInput("backendAzureRmKey", true),
                 resource_group_name     : tasks.getInput("backendAzureRmResourceGroupName", true),
-                arm_subscription_id     : tasks.getEndpointDataParameter(backendServiceName, "subscriptionid", true),
-                arm_tenant_id           : tasks.getEndpointAuthorizationParameter(backendServiceName, "tenantid", true),
-                arm_client_id           : tasks.getEndpointAuthorizationParameter(backendServiceName, "serviceprincipalid", true),
-                arm_client_secret       : tasks.getEndpointAuthorizationParameter(backendServiceName, "serviceprincipalkey", true)
+                subscription_id         : tasks.getEndpointDataParameter(backendServiceName, "subscriptionid", true),
+                tenant_id               : tasks.getEndpointAuthorizationParameter(backendServiceName, "tenantid", true),
+                client_id               : tasks.getEndpointAuthorizationParameter(backendServiceName, "serviceprincipalid", true),
+                client_secret           : tasks.getEndpointAuthorizationParameter(backendServiceName, "serviceprincipalkey", true)
             }
 
             for(var config in backendConfig){
@@ -100,12 +100,12 @@ export class TerraformWithBackend extends TerraformCommandDecorator{
     private ensureBackend(backendConfig: AzureBackendConfig, location: string, sku: string){
         let shell = new CommandPipeline()
             .azLogin(new AzLogin(
-                backendConfig.arm_tenant_id,
-                backendConfig.arm_client_id,
-                backendConfig.arm_client_secret
+                backendConfig.tenant_id,
+                backendConfig.client_id,
+                backendConfig.client_secret
             ))
             .azAccountSet(new AzAccountSet(
-                backendConfig.arm_subscription_id
+                backendConfig.subscription_id
             ))
             .azGroupCreate(new AzGroupCreate(
                 backendConfig.resource_group_name,

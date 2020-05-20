@@ -11,7 +11,7 @@ let servicePrincipalId: string = "servicePrincipal1";
 let servicePrincipalKey: string = "servicePrincipalKey123";
 
 let terraformCommand: string = 'init';
-let commandArgs: string = `-backend-config=storage_account_name=${backendStorageAccountName} -backend-config=container_name=${backendContainerName} -backend-config=key=${backendKey} -backend-config=resource_group_name=${backendResourceGroupName} -backend-config=arm_subscription_id=${subscriptionId} -backend-config=arm_tenant_id=${tenantId} -backend-config=arm_client_id=${servicePrincipalId} -backend-config=arm_client_secret=${servicePrincipalKey}`
+let commandArgs: string = `-backend-config=storage_account_name=${backendStorageAccountName} -backend-config=container_name=${backendContainerName} -backend-config=key=${backendKey} -backend-config=resource_group_name=${backendResourceGroupName} -backend-config=subscription_id=${subscriptionId} -backend-config=tenant_id=${tenantId} -backend-config=client_id=${servicePrincipalId} -backend-config=client_secret=${servicePrincipalKey}`
 let expectedCommand: string = `${terraformCommand} ${commandArgs}`
 
 export let env: any = {
