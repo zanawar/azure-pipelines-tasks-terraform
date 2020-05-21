@@ -13,8 +13,17 @@ The Terraform CLI task supports executing the following commands
 - apply
 - destroy
 - show
-- refresh (NEW)
-- import (NEW)
+- refresh
+- import
+- **output (NEW)**
+
+## (NEW) Terraform Output to Pipeline Variables
+
+The TerraformCLI task supports running terraforms `output` command. When this is run, pipeline variables will be created from each output variable emitted from the `terraform output` command. Sensitive variables will be set as secret pipeline variables and their values will not be emitted to the pipeline logs.
+
+For example, an output variable named `some_string`  will set a pipeline variable named `TF_OUT_SOME_STRING`.
+
+This feature currently only supports primitive types `string`, `bool`, and `number`. Complex typed outputs such as `tuple` and `object` will be excluded from the translation.
 
 ## Compatible with Linux Build Agents
 
@@ -84,6 +93,6 @@ Sample expression
 and(succeeded(), eq(variables['TERRAFORM_PLAN_HAS_CHANGES'], 'true'))
 ```
 
-## Plan Destroy Detection
+## Terraform Plan Destroy Detection
 
 The task now has the ability to set a pipeline variable `TERRAFORM_PLAN_HAS_DESTROY_CHANGES` if a generated plan has destroy operations. To utilize this, run terraform plan and set the `-out=my-plan-file-path` to write the generated plan to a file. Then run `terraform show` and provide the path to the generated plan file in the `Target Plan or State File Path` input field. If show, detects a destroy operation within the plan file, then the pipeline variable `TERRAFORM_PLAN_HAS_DESTROY_CHANGES` will be set to true.
