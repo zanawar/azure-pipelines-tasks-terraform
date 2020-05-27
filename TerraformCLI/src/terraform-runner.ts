@@ -37,18 +37,18 @@ export class TerraformWithCommand extends TerraformCommandBuilder{
     }
     async run(context: TerraformCommandContext): Promise<void> {
         if (this.command) {
-            context.terraform.arg(this.command.name);            
+            context.terraform.arg(this.command.name);
         }
     }
 }
 
-export class TerraformWithAzureRmProvider extends TerraformCommandDecorator{
-    private readonly environmentServiceName: string;
-    constructor(builder: TerraformCommandBuilder, environmentServiceName: string) {
+export class TerraformWithProvider extends TerraformCommandDecorator{
+    private readonly environmentServiceName: string | undefined;
+    constructor(builder: TerraformCommandBuilder, environmentServiceName: string | undefined) {
         super(builder);
         this.environmentServiceName = environmentServiceName;
     }
-    async onRun(context: TerraformCommandContext): Promise<void> {        
+    async onRun(context: TerraformCommandContext): Promise<void> {
         if(this.environmentServiceName){
             let scheme = tasks.getEndpointAuthorizationScheme(this.environmentServiceName, true);
             if(scheme != "ServicePrincipal"){
@@ -60,14 +60,14 @@ export class TerraformWithAzureRmProvider extends TerraformCommandDecorator{
             process.env['ARM_CLIENT_ID']        = tasks.getEndpointAuthorizationParameter(this.environmentServiceName, "serviceprincipalid", false);
             process.env['ARM_CLIENT_SECRET']    = tasks.getEndpointAuthorizationParameter(this.environmentServiceName, "serviceprincipalkey", false);
         }
-    }    
+    }
 }
 
 export class TerraformWithAutoApprove extends TerraformCommandDecorator{
     constructor(builder: TerraformCommandBuilder) {
         super(builder);
     }
-    async onRun(context: TerraformCommandContext): Promise<void> {   
+    async onRun(context: TerraformCommandContext): Promise<void> {
         if(context.command.name !== 'apply' && context.command.name !== 'destroy')
             throw "'-auto-approve option only valid for commands apply and destroy";
         const autoApproveOption = "-auto-approve";
@@ -81,7 +81,7 @@ export class TerraformWithOptions extends TerraformCommandDecorator{
     constructor(builder: TerraformCommandBuilder) {
         super(builder);
     }
-    async onRun(context: TerraformCommandContext): Promise<void> {   
+    async onRun(context: TerraformCommandContext): Promise<void> {
         if(context.command.options){
             context.terraform.line(context.command.options);
         }
@@ -92,14 +92,14 @@ export class TerraformWithJsonOutput extends TerraformCommandDecorator{
     constructor(builder: TerraformCommandBuilder) {
         super(builder);
     }
-    async onRun(context: TerraformCommandContext): Promise<void> {   
+    async onRun(context: TerraformCommandContext): Promise<void> {
         if(!context.command.options || (context.command.options && !context.command.options.includes("-json"))){
             context.terraform.arg("-json");
         }
     }
 }
 
-export class TerraformWithSecureVarFile extends TerraformCommandDecorator{    
+export class TerraformWithSecureVarFile extends TerraformCommandDecorator{
     private readonly taskAgent: ITaskAgent;
     private readonly secureVarFileId: string | undefined;
     constructor(builder: TerraformCommandBuilder, taskAgent: ITaskAgent, secureVarFileId?: string | undefined) {
@@ -107,7 +107,7 @@ export class TerraformWithSecureVarFile extends TerraformCommandDecorator{
         this.taskAgent = taskAgent;
         this.secureVarFileId = secureVarFileId;
     }
-    async onRun(context: TerraformCommandContext): Promise<void> {        
+    async onRun(context: TerraformCommandContext): Promise<void> {
         if(this.secureVarFileId){
             var secureFilePath = await this.taskAgent.downloadSecureFile(this.secureVarFileId);
             const fileName = tasks.getSecureFileName(this.secureVarFileId);
@@ -139,7 +139,7 @@ export class TerraformWithShow extends TerraformCommandDecorator{
     constructor(builder: TerraformCommandBuilder, inputFile?: string |undefined) {
         super(builder);
         this.inputFile =  inputFile;
-    } 
+    }
     async onRun(context: TerraformCommandContext): Promise<void>{
         context.terraform.arg('-json');
         if(this.inputFile){
@@ -160,7 +160,7 @@ export class TerraformRunner{
     constructor(command: TerraformCommand) {
         this.command = command;
         this.builder = new TerraformWithCommand(command);
-        
+
         this.terraformPath = tasks.which("terraform", true);
         this.terraform = tasks.tool(this.terraformPath);
 
@@ -177,8 +177,8 @@ export class TerraformRunner{
         return this;
     }
 
-    withAzureRmProvider(environmentServiceName: string): TerraformRunner{
-        this.builder = new TerraformWithAzureRmProvider(this.builder, environmentServiceName);
+    withProvider(environmentServiceName: string | undefined): TerraformRunner{
+        this.builder = new TerraformWithProvider(this.builder, environmentServiceName);
         return this;
     }
 
@@ -214,7 +214,7 @@ export class TerraformRunner{
     }
 
     async exec(successfulExitCodes?: number[] | undefined): Promise<number>{
-        
+
         let result = await this.execWithOutput(successfulExitCodes);
         return result.code;
     }
@@ -232,21 +232,21 @@ export class TerraformRunner{
         // append the user provided options last if the command handler didn't already explicitly append
         if (this.command.options && !this.optionsAdded) {
             this.terraform.line(this.command.options);
-        }     
-         
-        const code = await this.terraform.exec(<IExecOptions>{	
-            cwd: this.command.workingDirectory,	
+        }
+
+        const code = await this.terraform.exec(<IExecOptions>{
+            cwd: this.command.workingDirectory,
             ignoreReturnCode: true,
             silent: this.command.isSilent
-        });        	
+        });
 
-        const stdout = this._processBuffers(this.stdOutBuffers);        	
-        const stderr = this._processBuffers(this.stdErrBuffers);	
+        const stdout = this._processBuffers(this.stdOutBuffers);
+        const stderr = this._processBuffers(this.stdErrBuffers);
 
-        if(!successfulExitCodes.includes(code)){	
-            throw new TerraformAggregateError(this.command.name, stderr, code);	
+        if(!successfulExitCodes.includes(code)){
+            throw new TerraformAggregateError(this.command.name, stderr, code);
         }
-        
+
         return <IExecSyncResult>{
             code,
             stdout,
@@ -254,4 +254,3 @@ export class TerraformRunner{
         };
     }
 }
-

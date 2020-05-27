@@ -6,13 +6,13 @@ import { TerraformRunner } from "./terraform-runner";
 
 export class TerraformRefresh extends TerraformCommand{
     readonly secureVarsFile: string | undefined;
-    readonly environmentServiceName: string;
+    readonly environmentServiceName: string | undefined;
 
     constructor(
-        name: string, 
+        name: string,
         workingDirectory: string,
-        environmentServiceName: string,
-        options?: string, 
+        environmentServiceName: string | undefined,
+        options?: string,
         secureVarsFile?: string) {
         super(name, workingDirectory, options);
         this.secureVarsFile = secureVarsFile;
@@ -29,7 +29,7 @@ export class TerraformRefreshHandler implements IHandleCommandString{
         @inject(TerraformInterfaces.ITaskAgent) taskAgent: ITaskAgent,
         @inject(TerraformInterfaces.ILogger) log: ILogger
     ) {
-        this.taskAgent = taskAgent; 
+        this.taskAgent = taskAgent;
         this.log = log;
     }
 
@@ -37,22 +37,23 @@ export class TerraformRefreshHandler implements IHandleCommandString{
         let refresh = new TerraformRefresh(
             command,
             tasks.getInput("workingDirectory"),
-            tasks.getInput("environmentServiceName", true),
+            tasks.getInput("environmentServiceName"),
             tasks.getInput("commandOptions"),
             tasks.getInput("secureVarsFile")
         );
 
         let loggedProps = {
             "secureVarsFileDefined": refresh.secureVarsFile !== undefined && refresh.secureVarsFile !== '' && refresh.secureVarsFile !== null,
-            "commandOptionsDefined": refresh.options !== undefined && refresh.options !== '' && refresh.options !== null
-        }        
-        
+            "commandOptionsDefined": refresh.options !== undefined && refresh.options !== '' && refresh.options !== null,
+            "environmentServiceNameDefined": refresh.environmentServiceName !== undefined && refresh.environmentServiceName !== '' && refresh.environmentServiceName !== null,
+        }
+
         return this.log.command(refresh, (command: TerraformRefresh) => this.onExecute(command), loggedProps);
     }
 
     private async onExecute(command: TerraformRefresh): Promise<number> {
         return new TerraformRunner(command)
-            .withAzureRmProvider(command.environmentServiceName)
+            .withProvider(command.environmentServiceName)
             .withSecureVarsFile(this.taskAgent, command.secureVarsFile)
             .exec();
     }

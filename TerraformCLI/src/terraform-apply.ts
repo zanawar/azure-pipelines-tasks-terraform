@@ -6,12 +6,12 @@ import { TerraformRunner } from "./terraform-runner";
 
 export class TerraformApply extends TerraformCommand {
     readonly secureVarsFile: string | undefined;
-    readonly environmentServiceName: string;
+    readonly environmentServiceName: string | undefined;
 
     constructor(
-        name: string, 
+        name: string,
         workingDirectory: string,
-        environmentServiceName: string, 
+        environmentServiceName: string | undefined,
         secureVarsFile: string | undefined,
         options?: string) {
         super(name, workingDirectory, options);
@@ -28,8 +28,8 @@ export class TerraformApplyHandler implements IHandleCommandString{
     constructor(
         @inject(TerraformInterfaces.ITaskAgent) taskAgent: ITaskAgent,
         @inject(TerraformInterfaces.ILogger) log: ILogger
-    ) {    
-        this.taskAgent = taskAgent;     
+    ) {
+        this.taskAgent = taskAgent;
         this.log = log;
     }
 
@@ -37,16 +37,17 @@ export class TerraformApplyHandler implements IHandleCommandString{
         let apply = new TerraformApply(
             command,
             tasks.getInput("workingDirectory"),
-            tasks.getInput("environmentServiceName", true),
+            tasks.getInput("environmentServiceName"),
             tasks.getInput("secureVarsFile"),
             tasks.getInput("commandOptions")
         );
 
         let loggedProps = {
             "secureVarsFileDefined": apply.secureVarsFile !== undefined && apply.secureVarsFile !== '' && apply.secureVarsFile !== null,
-            "commandOptionsDefined": apply.options !== undefined && apply.options !== '' && apply.options !== null
+            "commandOptionsDefined": apply.options !== undefined && apply.options !== '' && apply.options !== null,
+            "environmentServiceNameDefined": apply.environmentServiceName !== undefined && apply.environmentServiceName !== '' && apply.environmentServiceName !== null,
         }
-        
+
         return this.log.command(apply, (command: TerraformApply) => this.onExecute(command), loggedProps);
     }
 
@@ -54,7 +55,7 @@ export class TerraformApplyHandler implements IHandleCommandString{
         return await new TerraformRunner(command)
             .withSecureVarsFile(this.taskAgent, command.secureVarsFile)
             .withAutoApprove()
-            .withAzureRmProvider(command.environmentServiceName)
+            .withProvider(command.environmentServiceName)
             .exec();
     }
 }

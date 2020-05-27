@@ -6,12 +6,12 @@ import { TerraformRunner } from "./terraform-runner";
 
 export class TerraformDestroy extends TerraformCommand{
     readonly secureVarsFile: string | undefined;
-    readonly environmentServiceName: string;
+    readonly environmentServiceName: string | undefined;
 
     constructor(
-        name: string, 
+        name: string,
         workingDirectory: string,
-        environmentServiceName: string, 
+        environmentServiceName: string | undefined,
         secureVarsFile: string | undefined,
         options?: string) {
         super(name, workingDirectory, options);
@@ -29,7 +29,7 @@ export class TerraformDestroyHandler implements IHandleCommandString{
         @inject(TerraformInterfaces.ITaskAgent) taskAgent: ITaskAgent,
         @inject(TerraformInterfaces.ILogger) log: ILogger
     ) {
-        this.taskAgent = taskAgent;     
+        this.taskAgent = taskAgent;
         this.log = log;
     }
 
@@ -37,23 +37,24 @@ export class TerraformDestroyHandler implements IHandleCommandString{
         let destroy = new TerraformDestroy(
             command,
             tasks.getInput("workingDirectory"),
-            tasks.getInput("environmentServiceName", true),
+            tasks.getInput("environmentServiceName"),
             tasks.getInput("secureVarsFile"),
             tasks.getInput("commandOptions")
         );
 
         let loggedProps = {
             "secureVarsFileDefined": destroy.secureVarsFile !== undefined && destroy.secureVarsFile !== '' && destroy.secureVarsFile !== null,
-            "commandOptionsDefined": destroy.options !== undefined && destroy.options !== '' && destroy.options !== null
+            "commandOptionsDefined": destroy.options !== undefined && destroy.options !== '' && destroy.options !== null,
+            "environmentServiceNameDefined": destroy.environmentServiceName !== undefined && destroy.environmentServiceName !== '' && destroy.environmentServiceName !== null,
         }
-        
+
         return this.log.command(destroy, (command: TerraformDestroy) => this.onExecute(command), loggedProps);
     }
 
     private async onExecute(command: TerraformDestroy): Promise<number> {
-        return await new TerraformRunner(command)                                    
+        return await new TerraformRunner(command)
             .withAutoApprove()
-            .withAzureRmProvider(command.environmentServiceName)            
+            .withProvider(command.environmentServiceName)
             .withSecureVarsFile(this.taskAgent, command.secureVarsFile)
             .exec();
     }

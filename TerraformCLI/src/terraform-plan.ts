@@ -6,13 +6,13 @@ import { TerraformRunner } from "./terraform-runner";
 
 export class TerraformPlan extends TerraformCommand{
     readonly secureVarsFile: string | undefined;
-    readonly environmentServiceName: string;
+    readonly environmentServiceName: string | undefined;
 
     constructor(
-        name: string, 
+        name: string,
         workingDirectory: string,
-        environmentServiceName: string, 
-        options?: string, 
+        environmentServiceName: string | undefined,
+        options?: string,
         secureVarsFile?: string) {
         super(name, workingDirectory, options);
         this.environmentServiceName = environmentServiceName;
@@ -29,7 +29,7 @@ export class TerraformPlanHandler implements IHandleCommandString{
         @inject(TerraformInterfaces.ITaskAgent) taskAgent: ITaskAgent,
         @inject(TerraformInterfaces.ILogger) log: ILogger
     ) {
-        this.taskAgent = taskAgent;   
+        this.taskAgent = taskAgent;
         this.log = log;
     }
 
@@ -37,22 +37,23 @@ export class TerraformPlanHandler implements IHandleCommandString{
         let plan = new TerraformPlan(
             command,
             tasks.getInput("workingDirectory"),
-            tasks.getInput("environmentServiceName", true),
+            tasks.getInput("environmentServiceName"),
             tasks.getInput("commandOptions"),
             tasks.getInput("secureVarsFile")
         );
 
         let loggedProps = {
             "secureVarsFileDefined": plan.secureVarsFile !== undefined && plan.secureVarsFile !== '' && plan.secureVarsFile !== null,
-            "commandOptionsDefined": plan.options !== undefined && plan.options !== '' && plan.options !== null
+            "commandOptionsDefined": plan.options !== undefined && plan.options !== '' && plan.options !== null,
+            "environmentServiceNameDefined": plan.environmentServiceName !== undefined && plan.environmentServiceName !== '' && plan.environmentServiceName !== null,
         }
-         
+
         return this.log.command(plan, (command: TerraformPlan) => this.onExecute(command), loggedProps);
     }
 
     private async onExecute(command: TerraformPlan): Promise<number> {
         let exitCode = await new TerraformRunner(command)
-            .withAzureRmProvider(command.environmentServiceName)
+            .withProvider(command.environmentServiceName)
             .withSecureVarsFile(this.taskAgent, command.secureVarsFile)
             .exec(this.getPlanSuccessfulExitCodes(command.options));
 
@@ -72,7 +73,7 @@ export class TerraformPlanHandler implements IHandleCommandString{
     private hasDetailedExitCode(commandOptions: string | undefined): boolean{
         return commandOptions !== undefined && commandOptions !== null && commandOptions.indexOf('-detailed-exitcode') > -1;
     }
-    
+
     private getPlanHasChangesExitCode(commandOptions: string | undefined): number{
         return this.hasDetailedExitCode(commandOptions) ? 2 : 0;
     }

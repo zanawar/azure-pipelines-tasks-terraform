@@ -6,15 +6,15 @@ import { TerraformRunner, TerraformCommandDecorator, TerraformCommandBuilder, Te
 
 export class TerraformImport extends TerraformCommand{
     readonly inputTargetPlanOrStateFilePath: string |undefined;
-    readonly environmentServiceName: string;
+    readonly environmentServiceName: string | undefined;
     readonly resourceAddress: string;
     readonly resourceId: string;
     readonly secureVarsFile: string | undefined;
 
     constructor(
-        name: string, 
+        name: string,
         workingDirectory: string,
-        environmentServiceName: string,
+        environmentServiceName: string | undefined,
         resourceAddress: string,
         resourceId: string,
         options?: string,
@@ -41,7 +41,7 @@ export class TerraformWithResourceImport extends TerraformCommandDecorator{
         this.resourceAddress = resourceAddress;
         this.resourceId = resourceId;
     }
-    async onRun(context: TerraformCommandContext): Promise<void> {            
+    async onRun(context: TerraformCommandContext): Promise<void> {
         context.terraform.arg([
             this.resourceAddress,
             this.resourceId
@@ -62,7 +62,7 @@ export class TerraformImportHandler implements IHandleCommandString{
         @inject(TerraformInterfaces.ITaskAgent) taskAgent: ITaskAgent,
         @inject(TerraformInterfaces.ILogger) log: ILogger
     ) {
-        this.taskAgent = taskAgent;   
+        this.taskAgent = taskAgent;
         this.log = log;
     }
 
@@ -70,30 +70,31 @@ export class TerraformImportHandler implements IHandleCommandString{
     public async execute(command: string): Promise<number> {
         let tfImport = new TerraformImport(
             command,
-            tasks.getInput("workingDirectory"),   
-            tasks.getInput("environmentServiceName", true),
+            tasks.getInput("workingDirectory"),
+            tasks.getInput("environmentServiceName"),
             tasks.getInput("resourceAddress", true),
             tasks.getInput("resourceId", true),
             tasks.getInput("commandOptions"),
             tasks.getInput("secureVarsFile")
         );
-        
+
         let loggedProps = {
             "secureVarsFileDefined": tfImport.secureVarsFile !== undefined && tfImport.secureVarsFile !== '' && tfImport.secureVarsFile !== null,
             "commandOptionsDefined": tfImport.options !== undefined && tfImport.options !== '' && tfImport.options !== null,
-        }   
-        return this.log.command(tfImport, (command: TerraformImport) => this.onExecute(command), loggedProps);       
+            "environmentServiceNameDefined": tfImport.environmentServiceName !== undefined && tfImport.environmentServiceName !== '' && tfImport.environmentServiceName !== null,
+        }
+        return this.log.command(tfImport, (command: TerraformImport) => this.onExecute(command), loggedProps);
     }
 
-    
+
     private async onExecute(command: TerraformImport): Promise<number> {
         let exitCode = await new TerraformRunner(command)
-            .withAzureRmProvider(command.environmentServiceName)
+            .withProvider(command.environmentServiceName)
             .withSecureVarsFile(this.taskAgent, command.secureVarsFile)
             .withOptions()
-            .withResourceImport(command.resourceAddress, command.resourceId)            
+            .withResourceImport(command.resourceAddress, command.resourceId)
             .exec();
-        
+
         return exitCode;
     }
 }
