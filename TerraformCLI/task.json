@@ -87,11 +87,7 @@
             "label": "Secured Variables File (Secrets)",
             "required": false,
             "helpMarkDown": "Pick a secure file from Azure DevOps Secure Files. This option is used to pass terraform variables using a tfvars or .env file stored in secure files.",
-            "groupName": "variables",
-            "properties": {
-                "EnableManage": "True",
-                "ManageLink": "https://dev.azure.com/chzipp/azure-pipelines-tasks-terraform/_library?itemType=SecureFiles"
-            }
+            "groupName": "variables"
         },
         {
             "name": "commandOptions",
