@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/charleszipp/azure-pipelines-tasks-terraform#readme",
   "dependencies": {
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "vsts-task-lib": "^2.7.0",
     "vsts-task-tool-lib": "^0.10.0"
   },
