@@ -3,6 +3,7 @@ import { TerraformCommand, ILogger } from "./terraform";
 import { RequestTelemetry, ExceptionTelemetry } from "applicationinsights/out/Declarations/Contracts";
 import { TelemetryClient } from "applicationinsights";
 import { TerraformAggregateError } from "./terraform-aggregate-error";
+import tasks = require("azure-pipelines-task-lib/task");
 
 @injectable()
 export default class Logger implements ILogger {
@@ -15,6 +16,7 @@ export default class Logger implements ILogger {
 
     async command<TCommand extends TerraformCommand>(command: TCommand, handler: (command: TCommand) => Promise<number>, properties: any) : Promise<number>{
         let start: [number, number] = process.hrtime();
+        let allowTelemetryCollection = tasks.getBoolInput("allowTelemetryCollection")
         
         let loggedOptions: any = {};
         if(command.options){
@@ -41,45 +43,49 @@ export default class Logger implements ILogger {
             request.success = true;
             return rvalue;
         }
-        catch(e) {            
-            request.resultCode = 500;
-            request.success = false;
-            if(e instanceof TerraformAggregateError){
-                let aggregateErrors = (<TerraformAggregateError>e);
-                let errorProperties = {
-                    "stderr": aggregateErrors.stderr,
-                    "aggregated-errors" : JSON.stringify(aggregateErrors.errors)
-                }
-                this.telemetry.trackException(<ExceptionTelemetry>{
-                    exception: e,
-                    properties : {
-                        ...loggedOptions, ...properties, ...errorProperties
+        catch(e) {      
+            if (allowTelemetryCollection) {
+                request.resultCode = 500;
+                request.success = false;
+                if(e instanceof TerraformAggregateError){
+                    let aggregateErrors = (<TerraformAggregateError>e);
+                    let errorProperties = {
+                        "stderr": aggregateErrors.stderr,
+                        "aggregated-errors" : JSON.stringify(aggregateErrors.errors)
                     }
-                });
-                aggregateErrors.errors
-                    .map(error => <ExceptionTelemetry>{ 
-                        exception: error,
+                    this.telemetry.trackException(<ExceptionTelemetry>{
+                        exception: e,
                         properties : {
                             ...loggedOptions, ...properties, ...errorProperties
+                        }
+                    });
+                    aggregateErrors.errors
+                        .map(error => <ExceptionTelemetry>{ 
+                            exception: error,
+                            properties : {
+                                ...loggedOptions, ...properties, ...errorProperties
+                            } 
+                        })
+                        .forEach(exception => this.telemetry.trackException(exception));                
+                }
+                else{
+                    this.telemetry.trackException(<ExceptionTelemetry>{ 
+                        exception: e,
+                        properties : {
+                            ...loggedOptions, ...properties
                         } 
-                    })
-                    .forEach(exception => this.telemetry.trackException(exception));                
-            }
-            else{
-                this.telemetry.trackException(<ExceptionTelemetry>{ 
-                    exception: e,
-                    properties : {
-                        ...loggedOptions, ...properties
-                    } 
-                });
+                    });
+                }
             }
             
             throw e;
         }
         finally{
-            let end: [number, number] = process.hrtime(start);
-            request.duration = end[1] / 1000000;
-            this.telemetry.trackRequest(request);
+            if(allowTelemetryCollection) {
+                let end: [number, number] = process.hrtime(start);
+                request.duration = end[1] / 1000000;
+                this.telemetry.trackRequest(request);
+            }
         }        
     }
 

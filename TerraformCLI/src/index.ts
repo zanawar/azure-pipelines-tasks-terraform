@@ -28,22 +28,26 @@ import { TelemetryClient } from "applicationinsights";
 import { TerraformAggregateError } from "./terraform-aggregate-error";
 import { TerraformOutputHandler } from "./terraform-output";
 
-ai.setup(tasks.getInput("aiInstrumentationKey"))
-    .setAutoCollectConsole(true, true)
-    .setAutoCollectExceptions(true)
-    .setAutoCollectDependencies(true)
-    .setAutoDependencyCorrelation(true)
-    .setInternalLogging(false)
-    .start();
 
-ai.defaultClient.commonProperties = {
-    'system.teamfoundationcollectionuri': tasks.getVariable("System.TeamFoundationCollectionUri"),
-    'system.teamproject': tasks.getVariable("System.TeamProject"),
-    'system.hosttype': tasks.getVariable("System.HostType"),
-    'agent.os': tasks.getVariable("Agent.OS"),
-    'agent.osarchitecture': tasks.getVariable("Agent.OSArchitecture"),
-    'agent.jobstatus': tasks.getVariable("Agent.JobStatus")
-}    
+let allowTelemetryCollection =  tasks.getBoolInput("allowTelemetryCollection")
+if(allowTelemetryCollection) {
+    ai.setup(tasks.getInput("aiInstrumentationKey"))
+        .setAutoCollectConsole(true, true)
+        .setAutoCollectExceptions(true)
+        .setAutoCollectDependencies(true)
+        .setAutoDependencyCorrelation(true)
+        .setInternalLogging(false)
+        .start();
+
+    ai.defaultClient.commonProperties = {
+        'system.teamfoundationcollectionuri': tasks.getVariable("System.TeamFoundationCollectionUri"),
+        'system.teamproject': tasks.getVariable("System.TeamProject"),
+        'system.hosttype': tasks.getVariable("System.HostType"),
+        'agent.os': tasks.getVariable("Agent.OS"),
+        'agent.osarchitecture': tasks.getVariable("Agent.OSArchitecture"),
+        'agent.jobstatus': tasks.getVariable("Agent.JobStatus")
+    }  
+}  
 
 var container = new Container();
 
@@ -93,7 +97,9 @@ mediator.executeRawString("version")
     .then((exitCode) => {
         tasks.setVariable(lastExitCodeVariableName, exitCode.toString(), false);
         tasks.setResult(tasks.TaskResult.Succeeded, "");
-        ai.defaultClient.flush();
+        if(allowTelemetryCollection) {
+            ai.defaultClient.flush();
+        }
     })
     .catch((error) => {
         let exitCode: number = 1;
@@ -101,6 +107,8 @@ mediator.executeRawString("version")
             exitCode = (<TerraformAggregateError>error).exitCode || exitCode;
         tasks.setVariable(lastExitCodeVariableName, exitCode.toString(), false);
         tasks.setResult(tasks.TaskResult.Failed, error);
-        ai.defaultClient.flush();
+        if(allowTelemetryCollection) {
+            ai.defaultClient.flush();
+        }
     });
 
