@@ -31,6 +31,12 @@
             "visibleRule": "command = import"
         },
         {
+            "name": "forceUnlockArguments",
+            "displayName": "Force-unlock Arguments",
+            "isExpanded": false,
+            "visibleRule": "command = force-unlock"
+        },
+        {
             "name": "variables",
             "displayName": "Variables",
             "isExpanded": false,
@@ -59,7 +65,8 @@
                 "show": "show",
                 "refresh": "refresh",
                 "import": "import",
-                "output": "output"
+                "output": "output",
+                "force-unlock": "force-unlock"
             },
             "properties": {
                 "EditableOptions": "False"
@@ -219,6 +226,14 @@
             "required": true,
             "helpMarkDown": "ID of the target resource to import. For example, the ID of Azure Resource Group is the /sub/{subId}/resourceGroups/{resourceGroupName}. See [azure resource group import example](https://www.terraform.io/docs/providers/azurerm/r/resource_group.html#import) and [terraform import usage](https://www.terraform.io/docs/commands/import.html#usage)",
             "groupName": "importArguments"
+        },
+        {
+            "name": "lockID",
+            "type": "string",
+            "label": "Lock ID",
+            "required": true,
+            "helpMarkDown": "Lock ID which needs to be forcefully removed",
+            "groupName": "forceUnlockArguments"
         }
     ],
     "execution": {

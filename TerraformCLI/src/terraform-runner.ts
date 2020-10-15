@@ -148,6 +148,20 @@ export class TerraformWithShow extends TerraformCommandDecorator{
     }
 }
 
+export class TerraformWithLockID extends TerraformCommandDecorator{
+    private readonly lockID: string | undefined;
+    constructor(builder: TerraformCommandBuilder, lockID?: string |undefined) {
+        super(builder);
+        this.lockID =  lockID;
+    }
+    async onRun(context: TerraformCommandContext): Promise<void>{
+        context.terraform.arg('-force');
+        if(this.lockID){
+            context.terraform.arg(this.lockID.toString())
+        }
+    }
+}
+
 export class TerraformRunner{
     private readonly terraform: ToolRunner;
     private readonly terraformPath: string;
@@ -193,6 +207,10 @@ export class TerraformRunner{
 
     withShowOptions(inputFile?: string | undefined): TerraformRunner{
         return this.with((builder) => new TerraformWithShow(builder, inputFile));
+    }
+
+    withLockID(lockID?: string | undefined): TerraformRunner{
+        return this.with((builder) => new TerraformWithLockID(builder, lockID));
     }
 
     withOptions(): TerraformRunner{
