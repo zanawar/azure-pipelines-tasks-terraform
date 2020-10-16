@@ -40,7 +40,7 @@
             "name": "variables",
             "displayName": "Variables",
             "isExpanded": false,
-            "visibleRule": "command = init || command = validate || command = plan || command = apply || command = destroy || command = refresh || command = import"
+            "visibleRule": "command = init || command = validate || command = plan || command = apply || command = destroy || command = refresh || command = import || command = force-unlock"
         },
         {
             "name": "showVariables",
