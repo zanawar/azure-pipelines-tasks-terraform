@@ -34,13 +34,13 @@
             "name": "forceUnlockArguments",
             "displayName": "Force-unlock Arguments",
             "isExpanded": false,
-            "visibleRule": "command = force-unlock"
+            "visibleRule": "command = forceunlock"
         },
         {
             "name": "variables",
             "displayName": "Variables",
             "isExpanded": false,
-            "visibleRule": "command = init || command = validate || command = plan || command = apply || command = destroy || command = refresh || command = import || command = force-unlock"
+            "visibleRule": "command = init || command = validate || command = plan || command = apply || command = destroy || command = refresh || command = import || command = forceunlock"
         },
         {
             "name": "showVariables",
@@ -66,7 +66,7 @@
                 "refresh": "refresh",
                 "import": "import",
                 "output": "output",
-                "force-unlock": "force-unlock"
+                "forceunlock": "force-unlock"
             },
             "properties": {
                 "EditableOptions": "False"
@@ -102,7 +102,7 @@
             "label": "Command Options",
             "helpMarkDown": "Any additional options for the selected command such as `-input=true`. Multiple options can be provided delimited by spaces as `-option1=value -option2=value -option3=value`",
             "required": "false",
-            "visibleRule": "command != force-unlock"
+            "visibleRule": "command != forceunlock"
         },
         {
             "name": "backendType",
