@@ -101,7 +101,8 @@
             "type": "string",
             "label": "Command Options",
             "helpMarkDown": "Any additional options for the selected command such as `-input=true`. Multiple options can be provided delimited by spaces as `-option1=value -option2=value -option3=value`",
-            "required": "false"
+            "required": "false",
+            "visibleRule": "command != force-unlock"
         },
         {
             "name": "backendType",
