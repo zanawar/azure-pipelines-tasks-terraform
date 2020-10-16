@@ -14,9 +14,8 @@ export class TerraformForceUnlock extends TerraformCommand{
         workingDirectory: string,
         environmentServiceName: string | undefined,
         lockID: string,
-        options?: string,
         secureVarsFile?: string) {
-        super(name, workingDirectory, options);
+        super(name, workingDirectory);
         this.secureVarsFile = secureVarsFile;
         this.environmentServiceName = environmentServiceName;
         this.lockID = lockID;
@@ -41,14 +40,12 @@ export class TerraformForceUnlockHandler implements IHandleCommandString{
             command,
             tasks.getInput("workingDirectory"),
             tasks.getInput("environmentServiceName"),
-            tasks.getInput("commandOptions"),
+            tasks.getInput("lockID"),
             tasks.getInput("secureVarsFile"),
-            tasks.getInput("lockID")
         );
 
         let loggedProps = {
             "secureVarsFileDefined": forceUnlock.secureVarsFile !== undefined && forceUnlock.secureVarsFile !== '' && forceUnlock.secureVarsFile !== null,
-            "commandOptionsDefined": forceUnlock.options !== undefined && forceUnlock.options !== '' && forceUnlock.options !== null,
             "environmentServiceNameDefined": forceUnlock.environmentServiceName !== undefined && forceUnlock.environmentServiceName !== '' && forceUnlock.environmentServiceName !== null,
         }
 
