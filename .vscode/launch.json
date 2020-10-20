@@ -44,7 +44,7 @@
             "args": [
                 "--timeout",
                 "999999",
-                ".bin/tests/terraform-show/show_spec.js"
+                ".bin/tests/terraform-force-unlock/force-unlock_spec.js"
             ],
         },
         {

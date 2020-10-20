@@ -46,7 +46,8 @@ export interface TerraformInputs {
     environmentVariables: Map<string, string>;
     inputTargetPlanOrStateFilePath: string;
     resourceAddress: string;
-    resourceId: string
+    resourceId: string;
+    lockID: string;
 }
 
 export class TerraformAzureRmEnsureBackend extends TaskInputsAre<TerraformInputs>{
@@ -91,7 +92,7 @@ TaskScenario.prototype.inputTerraformCommand = function(this: TaskScenario<Terra
     return this;
 }
 
-export class SecureVarsFileIs extends TaskInputDecorator<TerraformInputs> {    
+export class SecureVarsFileIs extends TaskInputDecorator<TerraformInputs> {
     private readonly secureVarsFileId: string;
     private readonly secureVarsFileName: string;
 
@@ -106,7 +107,7 @@ export class SecureVarsFileIs extends TaskInputDecorator<TerraformInputs> {
         inputs.environmentVariables = inputs.environmentVariables || new Map<string, string>();
         inputs.environmentVariables.set(`SECUREFILE_NAME_${this.secureVarsFileId}`, this.secureVarsFileName);
         return inputs;
-    }    
+    }
 }
 TaskScenario.prototype.inputTerraformSecureVarsFile = function(this: TaskScenario<TerraformInputs>, secureVarsFileId: string, secureVarsFileName: string) : TaskScenario<TerraformInputs>{
     this.inputFactory((builder) => new SecureVarsFileIs(builder, secureVarsFileId, secureVarsFileName));
@@ -131,7 +132,7 @@ TaskScenario.prototype.inputTerrformShowCommand = function (this: TaskScenario<T
     this.inputFactory((builder) => new ShowVarsIs(builder, inputTargetPlanOrStateFilePath));
     return this;
 }
-export class TerraformAzureRmBackend extends TaskInputsAre<TerraformInputs> {    
+export class TerraformAzureRmBackend extends TaskInputsAre<TerraformInputs> {
     constructor(inputs: TaskInputBuilder<TerraformInputs>, serviceName: string, storageAccountName: string, containerName: string, key: string, resourceGroupName: string) {
         super(inputs, {
             backendType: "azurerm",
@@ -141,7 +142,7 @@ export class TerraformAzureRmBackend extends TaskInputsAre<TerraformInputs> {
             backendAzureRmKey: key,
             backendAzureRmResourceGroupName: resourceGroupName
         });
-    }    
+    }
 }
 TaskScenario.prototype.inputAzureRmBackend = function(this: TaskScenario<TerraformInputs>, serviceName: string, storageAccountName: string, containerName: string, key: string, resourceGroupName: string): TaskScenario<TerraformInputs>{
     this.inputFactory((builder) => new TerraformAzureRmBackend(builder, serviceName, storageAccountName, containerName, key, resourceGroupName));
@@ -172,7 +173,7 @@ export class TerraformCommandIsSuccessful extends TaskAnswerDecorator<TerraformI
     private readonly exitCode: number | undefined;
     private readonly stderr: string | undefined;
     private readonly stdout:string | undefined;
-    //update to add optional stdout , provide 
+    //update to add optional stdout , provide
     constructor(builder: TaskAnswerBuilder<TerraformInputs>, args?: string, exitCode?: number, stderr?: string, stdout?:string) {
         super(builder);
         this.args = args;
@@ -185,8 +186,8 @@ export class TerraformCommandIsSuccessful extends TaskAnswerDecorator<TerraformI
         a.exec = a.exec || {};
         let command = `terraform ${inputs.command}`;
         if(this.args)
-            command = `${command} ${this.args}`;                  
-        
+            command = `${command} ${this.args}`;
+
         a.exec[command] = <TaskLibAnswerExecResult>{
             code : this.exitCode || 0,
             stdout : this.stdout !== undefined ? this.stdout : `${inputs.command} successful`,
@@ -267,7 +268,7 @@ export class AzCommandIsSuccessfulWithResultRaw<TCommand extends ICommand<TResul
         this.warning = warning;
     }
     build(inputs: TerraformInputs): TaskLibAnswers {
-        let a = this.builder.build(inputs);        
+        let a = this.builder.build(inputs);
         a.exec = a.exec || {};
         let command = `az ${this.command.toString()}`;
         a.exec[command] =  <TaskLibAnswerExecResult>{
@@ -278,7 +279,7 @@ export class AzCommandIsSuccessfulWithResultRaw<TCommand extends ICommand<TResul
         return a;
     }
 }
-TaskScenario.prototype.answerAzCommandIsSuccessfulWithResultRaw = function<TCommand extends ICommand<TResult>, TResult>(this: TaskScenario<TerraformInputs>, command: TCommand, result: string, warning: string = ""): TaskScenario<TerraformInputs>{    
+TaskScenario.prototype.answerAzCommandIsSuccessfulWithResultRaw = function<TCommand extends ICommand<TResult>, TResult>(this: TaskScenario<TerraformInputs>, command: TCommand, result: string, warning: string = ""): TaskScenario<TerraformInputs>{
     return this.answerFactory((builder) => new AzCommandIsSuccessfulWithResultRaw<TCommand, TResult>(builder, command, result, warning));
 }
 
@@ -300,7 +301,7 @@ export class AzCommandFailsWithErrorRaw<TCommand extends ICommand<TResult>, TRes
         this.error = error;
     }
     build(inputs: TerraformInputs): TaskLibAnswers {
-        let a = this.builder.build(inputs);        
+        let a = this.builder.build(inputs);
         a.exec = a.exec || {};
         let command = `az ${this.command.toString()}`;
         a.exec[command] =  <TaskLibAnswerExecResult>{
@@ -311,11 +312,6 @@ export class AzCommandFailsWithErrorRaw<TCommand extends ICommand<TResult>, TRes
         return a;
     }
 }
-TaskScenario.prototype.answerAzCommandFailsWithErrorRaw = function<TCommand extends ICommand<TResult>, TResult>(this: TaskScenario<TerraformInputs>, command: TCommand, error: string): TaskScenario<TerraformInputs>{    
+TaskScenario.prototype.answerAzCommandFailsWithErrorRaw = function<TCommand extends ICommand<TResult>, TResult>(this: TaskScenario<TerraformInputs>, command: TCommand, error: string): TaskScenario<TerraformInputs>{
     return this.answerFactory((builder) => new AzCommandFailsWithErrorRaw<TCommand, TResult>(builder, command, error));
 }
-
-
-
-
-

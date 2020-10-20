@@ -11,6 +11,7 @@ import { TerraformDestroyHandler } from "./terraform-destroy";
 import { TerraformShowHandler } from "./terraform-show";
 import { TerraformRefreshHandler } from "./terraform-refresh";
 import { TerraformImportHandler } from "./terraform-import";
+import { TerraformForceUnlockHandler } from "./terraform-force-unlock";
 import TaskAgent from "./task-agent";
 import { AzRunner } from "./az-runner";
 import { AzAccountSet, AzAccountSetResult, AzAccountSetHandler } from "./az-account-set";
@@ -46,8 +47,8 @@ if(allowTelemetryCollection) {
         'agent.os': tasks.getVariable("Agent.OS"),
         'agent.osarchitecture': tasks.getVariable("Agent.OSArchitecture"),
         'agent.jobstatus': tasks.getVariable("Agent.JobStatus")
-    }  
-}  
+    }
+}
 
 var container = new Container();
 
@@ -78,6 +79,7 @@ container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(
 container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformRefreshHandler).whenTargetNamed("refresh");
 container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformImportHandler).whenTargetNamed("import");
 container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformOutputHandler).whenTargetNamed("output");
+container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformForceUnlockHandler).whenTargetNamed("force-unlock");
 
 // execute the terraform command
 let mediator = container.get<IMediator>(MediatorInterfaces.IMediator);
@@ -111,4 +113,3 @@ mediator.executeRawString("version")
             ai.defaultClient.flush();
         }
     });
-
