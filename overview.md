@@ -16,7 +16,6 @@ The Terraform CLI task supports executing the following commands
 - refresh
 - import
 - output
-- **force-unlock (NEW)**
 
 ## (NEW) Terraform Output to Pipeline Variables
 
