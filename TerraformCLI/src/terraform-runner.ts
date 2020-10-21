@@ -37,7 +37,11 @@ export class TerraformWithCommand extends TerraformCommandBuilder{
     }
     async run(context: TerraformCommandContext): Promise<void> {
         if (this.command) {
-            context.terraform.arg(this.command.name);
+            if (this.command.name == "forceunlock") {
+                context.terraform.arg("force-unlock");
+            } else {
+                context.terraform.arg(this.command.name);
+            }
         }
     }
 }

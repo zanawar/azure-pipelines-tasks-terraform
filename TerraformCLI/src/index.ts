@@ -79,7 +79,7 @@ container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(
 container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformRefreshHandler).whenTargetNamed("refresh");
 container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformImportHandler).whenTargetNamed("import");
 container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformOutputHandler).whenTargetNamed("output");
-container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformForceUnlockHandler).whenTargetNamed("force-unlock");
+container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformForceUnlockHandler).whenTargetNamed("forceunlock");
 
 // execute the terraform command
 let mediator = container.get<IMediator>(MediatorInterfaces.IMediator);
