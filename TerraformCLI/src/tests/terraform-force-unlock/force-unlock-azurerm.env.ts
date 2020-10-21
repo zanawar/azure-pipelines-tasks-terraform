@@ -11,9 +11,9 @@ const expectedEnv: { [key: string]: string } = {
     'ARM_CLIENT_SECRET': servicePrincipalKey,
 }
 
-const terraformCommand: string = 'force-unlock';
+const terraformCommand: string = 'forceunlock';
 const lockID = "3ea12870-968e-b9b9-cf3b-f4c3fbe36684";
-const expectedCommand = `${terraformCommand} -force ${lockID}`
+const expectedCommand = `force-unlock -force ${lockID}`
 
 export let env: any = {
     taskScenarioPath:           require.resolve('./force-unlock-azurerm'),
