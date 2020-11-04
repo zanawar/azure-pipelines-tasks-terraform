@@ -8,60 +8,70 @@ import { ResultDetails } from "azure-devops-node-api/interfaces/TestInterfaces";
 
 export class TerraformShow extends TerraformCommand{
    readonly inputTargetPlanOrStateFilePath: string |undefined;
+   readonly secureVarsFile: string | undefined;
 
     constructor(
-        name: string, 
+        name: string,
         workingDirectory: string,
         inputTargetPlanOrStateFilePath: string,
-        options?: string){
+        options?: string,
+        secureVarsFile?: string){
         super(name, workingDirectory, options, true);
+
         this.inputTargetPlanOrStateFilePath = inputTargetPlanOrStateFilePath;
+        this.secureVarsFile = secureVarsFile;
     }
 }
 
 @injectable()
 export class TerraformShowHandler implements IHandleCommandString{
     private readonly log: ILogger;
+    private readonly taskAgent: ITaskAgent;
 
     constructor(
+        @inject(TerraformInterfaces.ITaskAgent) taskAgent: ITaskAgent,
         @inject(TerraformInterfaces.ILogger) log: ILogger
     ) {
         this.log = log;
+        this.taskAgent = taskAgent;
     }
 
     public async execute(command: string): Promise<number> {
         let show = new TerraformShow(
             command,
-            tasks.getInput("workingDirectory"),   
+            tasks.getInput("workingDirectory"),
             tasks.getInput("inputTargetPlanOrStateFilePath"),
-            tasks.getInput("commandOptions")
+            tasks.getInput("commandOptions"),
+            tasks.getInput("secureVarsFile")
         );
-        
+
         let loggedProps = {
             "commandOptionsDefined": show.options !== undefined && show.options !== '' && show.options !== null,
-        }   
-        return this.log.command(show, (command: TerraformShow) => this.onExecute(command), loggedProps);       
+            "secureVarsFileDefined": show.secureVarsFile !== undefined && show.secureVarsFile !== '' && show.secureVarsFile !== null,
+        }
+        return this.log.command(show, (command: TerraformShow) => this.onExecute(command), loggedProps);
     }
 
-    
+
     private async onExecute(command: TerraformShow): Promise<number> {
         let result = await new TerraformRunner(command)
             .withShowOptions(command.inputTargetPlanOrStateFilePath)
+            .withSecureVarsFile(this.taskAgent, command.secureVarsFile)
             .execWithOutput();
-              
+
         //check for destroy
         if (command.inputTargetPlanOrStateFilePath)
         {
             if(command.inputTargetPlanOrStateFilePath.includes(".tfstate"))
-            {     
-                tasks.warning("Cannot check for destroy in .tfstate file");       
-            }  
-            else 
             {
-                this.detectDestroyChanges(result.stdout);   
-            } 
-        }      
-        
+                tasks.warning("Cannot check for destroy in .tfstate file");
+            }
+            else
+            {
+                this.detectDestroyChanges(result.stdout);
+            }
+        }
+
         return result.code;
     }
 
@@ -79,7 +89,7 @@ export class TerraformShowHandler implements IHandleCommandString{
             }
         }
         tasks.debug("No destroy detected")
-        this.setDestroyDetectedFlag(false);  
+        this.setDestroyDetectedFlag(false);
     }
 
     private setDestroyDetectedFlag(value : boolean):void
