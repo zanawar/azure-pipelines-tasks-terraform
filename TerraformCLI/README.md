@@ -9,6 +9,7 @@ This tasks enables running terraform cli commands from Azure Devops Build and Re
 - import
 - refresh
 - force-unlock (under the alias `forceunlock`)
+- state
 
 Terraform is required to exist on the build agent prior to running this task. See TerraformInstaller task within this repository to install terraform.
 
