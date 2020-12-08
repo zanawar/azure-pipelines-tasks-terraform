@@ -12,6 +12,7 @@ import { TerraformShowHandler } from "./terraform-show";
 import { TerraformRefreshHandler } from "./terraform-refresh";
 import { TerraformImportHandler } from "./terraform-import";
 import { TerraformForceUnlockHandler } from "./terraform-force-unlock";
+import { TerraformStateHandler } from "./terraform-state";
 import TaskAgent from "./task-agent";
 import { AzRunner } from "./az-runner";
 import { AzAccountSet, AzAccountSetResult, AzAccountSetHandler } from "./az-account-set";
@@ -80,6 +81,7 @@ container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(
 container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformImportHandler).whenTargetNamed("import");
 container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformOutputHandler).whenTargetNamed("output");
 container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformForceUnlockHandler).whenTargetNamed("forceunlock");
+container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformStateHandler).whenTargetNamed("state");
 
 // execute the terraform command
 let mediator = container.get<IMediator>(MediatorInterfaces.IMediator);
