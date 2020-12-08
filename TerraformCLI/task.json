@@ -67,6 +67,7 @@
                 "import": "import",
                 "output": "output",
                 "forceunlock": "force-unlock"
+                "state": "state"
             },
             "properties": {
                 "EditableOptions": "False"
