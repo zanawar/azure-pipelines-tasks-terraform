@@ -66,7 +66,7 @@
                 "refresh": "refresh",
                 "import": "import",
                 "output": "output",
-                "forceunlock": "force-unlock"
+                "forceunlock": "force-unlock",
                 "state": "state"
             },
             "properties": {

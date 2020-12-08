@@ -14,7 +14,7 @@ export class TerraformState extends TerraformCommand{
         environmentServiceName: string | undefined,
         secureVarsFile?: string,
         options?: string) {
-        super(name, workingDirectory);
+        super(name, workingDirectory, options);
         this.secureVarsFile = secureVarsFile;
         this.environmentServiceName = environmentServiceName;
     }
@@ -34,7 +34,7 @@ export class TerraformStateHandler implements IHandleCommandString{
     }
 
     public async execute(command: string): Promise<number> {
-        let stateCommand = new TerraformState(
+        let state = new TerraformState(
             command,
             tasks.getInput("workingDirectory"),
             tasks.getInput("environmentServiceName"),
@@ -43,12 +43,12 @@ export class TerraformStateHandler implements IHandleCommandString{
         );
 
         let loggedProps = {
-            "secureVarsFileDefined": apply.secureVarsFile !== undefined && apply.secureVarsFile !== '' && apply.secureVarsFile !== null,
-            "commandOptionsDefined": apply.options !== undefined && apply.options !== '' && apply.options !== null,
-            "environmentServiceNameDefined": apply.environmentServiceName !== undefined && apply.environmentServiceName !== '' && apply.environmentServiceName !== null,
+            "secureVarsFileDefined": state.secureVarsFile !== undefined && state.secureVarsFile !== '' && state.secureVarsFile !== null,
+            "commandOptionsDefined": state.options !== undefined && state.options !== '' && state.options !== null,
+            "environmentServiceNameDefined": state.environmentServiceName !== undefined && state.environmentServiceName !== '' && state.environmentServiceName !== null,
         }
 
-        return this.log.command(stateCommand, (command: TerraformState) => this.onExecute(command), loggedProps);
+        return this.log.command(state, (command: TerraformState) => this.onExecute(command), loggedProps);
     }
 
     private async onExecute(command: TerraformState): Promise<number> {
