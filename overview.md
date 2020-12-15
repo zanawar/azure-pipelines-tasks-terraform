@@ -16,6 +16,7 @@ The Terraform CLI task supports executing the following commands
 - refresh
 - import
 - output
+- fmt
 
 ## (NEW) Terraform Output to Pipeline Variables
 

@@ -40,7 +40,7 @@
             "name": "variables",
             "displayName": "Variables",
             "isExpanded": false,
-            "visibleRule": "command = init || command = validate || command = plan || command = apply || command = destroy || command = refresh || command = import || command = forceunlock || command = show"
+            "visibleRule": "command = init || command = validate || command = plan || command = apply || command = destroy || command = refresh || command = import || command = forceunlock || command = show || command = fmt"
         },
         {
             "name": "showVariables",
@@ -67,7 +67,8 @@
                 "import": "import",
                 "output": "output",
                 "forceunlock": "force-unlock",
-                "state": "state"
+                "state": "state",
+                "fmt": "fmt"
             },
             "properties": {
                 "EditableOptions": "False"

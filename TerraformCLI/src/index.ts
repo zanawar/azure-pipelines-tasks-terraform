@@ -1,35 +1,34 @@
 import tasks = require("azure-pipelines-task-lib/task");
+import { TelemetryClient } from "applicationinsights";
 import { Container, interfaces } from 'inversify';
 import "reflect-metadata";
-import { TerraformInterfaces, ITaskAgent, ILogger } from "./terraform";
-import { TerraformInitHandler } from "./terraform-init";
-import { TerraformVersionHandler } from "./terraform-version";
-import { TerraformValidateHandler } from "./terraform-validate";
-import { TerraformPlanHandler } from "./terraform-plan";
+import { AzAccountSet, AzAccountSetHandler, AzAccountSetResult } from "./az-account-set";
+import { AzGroupCreate, AzGroupCreateHandler, AzGroupCreateResult } from "./az-group-create";
+import { AzLogin, AzLoginHandler, AzLoginResult } from "./az-login";
+import { AzRunner } from "./az-runner";
+import { AzStorageAccountCreate, AzStorageAccountCreateHandler, AzStorageAccountCreateResult } from "./az-storage-account-create";
+import { AzStorageAccountKeysList, AzStorageAccountKeysListHandler, AzStorageAccountKeysListResult } from "./az-storage-account-keys-list";
+import { AzStorageContainerCreate, AzStorageContainerCreateHandler, AzStorageContainerCreateResult } from "./az-storage-container-create";
+import { CommandInterfaces, IHandleCommand, IHandleCommandString } from "./command-handler";
+import Logger from "./logger";
+import { IMediator, Mediator, MediatorInterfaces } from "./mediator";
+import TaskAgent from "./task-agent";
+import { ILogger, ITaskAgent, TerraformInterfaces } from "./terraform";
+import { TerraformAggregateError } from "./terraform-aggregate-error";
 import { TerraformApplyHandler } from "./terraform-apply";
 import { TerraformDestroyHandler } from "./terraform-destroy";
-import { TerraformShowHandler } from "./terraform-show";
-import { TerraformRefreshHandler } from "./terraform-refresh";
-import { TerraformImportHandler } from "./terraform-import";
+import { TerraformFmtHandler } from "./terraform-fmt";
 import { TerraformForceUnlockHandler } from "./terraform-force-unlock";
-import { TerraformStateHandler } from "./terraform-state";
-import TaskAgent from "./task-agent";
-import { AzRunner } from "./az-runner";
-import { AzAccountSet, AzAccountSetResult, AzAccountSetHandler } from "./az-account-set";
-import { AzLoginResult, AzLogin, AzLoginHandler } from "./az-login";
-import { AzGroupCreate, AzGroupCreateResult, AzGroupCreateHandler } from "./az-group-create";
-import { AzStorageAccountCreate, AzStorageAccountCreateResult, AzStorageAccountCreateHandler } from "./az-storage-account-create";
-import { AzStorageAccountKeysList, AzStorageAccountKeysListResult, AzStorageAccountKeysListHandler } from "./az-storage-account-keys-list";
-import { AzStorageContainerCreate, AzStorageContainerCreateHandler, AzStorageContainerCreateResult } from "./az-storage-container-create";
-import { MediatorInterfaces, IMediator, Mediator } from "./mediator";
-import { IHandleCommandString, CommandInterfaces, IHandleCommand } from "./command-handler";
-import Logger from "./logger";
-
-import ai = require('applicationinsights');
-import { TelemetryClient } from "applicationinsights";
-import { TerraformAggregateError } from "./terraform-aggregate-error";
+import { TerraformImportHandler } from "./terraform-import";
+import { TerraformInitHandler } from "./terraform-init";
 import { TerraformOutputHandler } from "./terraform-output";
-
+import { TerraformPlanHandler } from "./terraform-plan";
+import { TerraformRefreshHandler } from "./terraform-refresh";
+import { TerraformShowHandler } from "./terraform-show";
+import { TerraformStateHandler } from "./terraform-state";
+import { TerraformValidateHandler } from "./terraform-validate";
+import { TerraformVersionHandler } from "./terraform-version";
+import ai = require('applicationinsights');
 
 let allowTelemetryCollection =  tasks.getBoolInput("allowTelemetryCollection")
 if(allowTelemetryCollection) {
@@ -73,6 +72,7 @@ container.bind<IHandleCommand<AzStorageContainerCreate, AzStorageContainerCreate
 container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformInitHandler).whenTargetNamed("init");
 container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformVersionHandler).whenTargetNamed("version");
 container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformValidateHandler).whenTargetNamed("validate");
+container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformFmtHandler).whenTargetNamed("fmt");
 container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformPlanHandler).whenTargetNamed("plan");
 container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformApplyHandler).whenTargetNamed("apply");
 container.bind<IHandleCommandString>(CommandInterfaces.IHandleCommandString).to(TerraformDestroyHandler).whenTargetNamed("destroy");
