@@ -13,6 +13,17 @@ describe('terraform show', function(){
             //.assertExecutedTerraformCommand(env.expectedCommand)
             .run();
     });
+    it('with json with EOL chars in it', function(){
+        let env = require('./show-with-eol-json.env').env
+        new TestScenario(env.taskScenarioPath)
+            .assertExecutionSucceeded()
+            .assertExecutedTerraformVersion()
+            //Cannot test show command, as it sets command.silent to true
+            //causing the test framwork to not be able to find the ran commands
+            // in the azdo stdout
+            //.assertExecutedTerraformCommand(env.expectedCommand)
+            .run();
+    });
     it('with plan input with destroy', function(){
         let env = require('./show-with-plan-input-file-with-destroy.env').env
         new TestScenario(env.taskScenarioPath)

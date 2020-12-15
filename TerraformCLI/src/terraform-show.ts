@@ -77,7 +77,7 @@ export class TerraformShowHandler implements IHandleCommandString{
 
     private detectDestroyChanges(result: string): void
     {
-        let jsonResult = JSON.parse(result);
+        let jsonResult = JSON.parse(result.replace(/(\r\n|\r|\n)/gm, ""));
         const deleteValue = "delete";
 
         for (let resourceChange  of jsonResult.resource_changes) {
