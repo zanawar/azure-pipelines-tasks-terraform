@@ -25,6 +25,7 @@ export class TerraformForceUnlock implements ICommand {
         const provider = this.getProvider(ctx);
         const options = await new RunWithTerraform(ctx, undefined, "force-unlock")            
             .withProvider(ctx, provider)
+            .withSecureVarFile(this.taskAgent, ctx.secureVarsFileId, ctx.secureVarsFileName)
             .withForce()
             .withLockId(ctx.lockId)
             .build();
